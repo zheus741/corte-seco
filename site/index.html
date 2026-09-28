@@ -82,6 +82,12 @@ p{margin:0}
 .smart-list .switch+.switch{border-top:1px solid var(--line)}
 .smart-list .switch small{display:block;margin-top:2px}
 .smart-sum{font-size:13px;color:var(--ink2)}
+.lt-styles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lt-style{display:grid;gap:4px;padding:4px;border:1px solid var(--line2);background:var(--well);border-radius:0;text-align:left;color:var(--mute)}
+.lt-style canvas{width:100%;height:auto;aspect-ratio:16/9;display:block}
+.lt-style small{font-size:11.5px;padding:0 2px 1px}
+.lt-style:hover{border-color:#4a4c52}
+.lt-style[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber);color:var(--ink)}
 .smart-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
 .btn.block{width:100%}
 .btn[aria-pressed="true"],.btn.ghost[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--amber-ink)}
@@ -440,6 +446,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 .ph span{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bin-actions{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#000;border-bottom:1px solid #000}
 .bin-actions>:first-child{grid-column:1/-1;background:var(--raise2)}
+.bin-actions>:last-child{grid-column:1/-1}
 .bin-actions .btn{padding:8px 6px;font-size:12px;border:0;border-radius:0;background:var(--raise);white-space:nowrap}
 .bin-actions .btn:hover{background:var(--raise2)}
 .bin-list{overflow:auto;flex:1;min-height:0;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px 8px;align-content:start}
@@ -789,6 +796,25 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
         <label class="switch"><span>Gancho na tela no início</span><input type="checkbox" data-bind="fmt.hook"></label>
         <div class="field"><label>Duração do gancho <output data-out="fmt.hookDur" data-fmt="s"></output></label><input type="range" min="1" max="8" step="0.5" data-bind="fmt.hookDur"></div>
         <label class="switch"><span>Barra de progresso</span><input type="checkbox" data-bind="fmt.progress"></label>
+        <div class="hr"></div>
+        <h4 id="ltHead">Lower third</h4>
+        <label class="switch"><span>Mostrar nome e cargo <small class="fine">em todos os cortes deste vídeo</small></span><input type="checkbox" id="ltOn" data-bind="lt.on"></label>
+        <div class="grid2">
+          <div class="field"><label for="ltName">Nome</label><input type="text" id="ltName" data-bind="lt.name" placeholder="Ex.: Ana Souza" maxlength="60"></div>
+          <div class="field"><label for="ltRole">Cargo ou descrição</label><input type="text" id="ltRole" data-bind="lt.role" placeholder="Ex.: CEO da Loja X" maxlength="80"></div>
+        </div>
+        <div class="field"><span class="lbl">Estilo</span><div id="ltStylesCuts"></div></div>
+        <div class="field"><span class="lbl">Cor de destaque</span><div class="swatches" data-sw="lt.c1"></div></div>
+        <div class="colors"><label>Destaque<input type="color" data-bind="lt.c1"></label><label>Fundo<input type="color" data-bind="lt.c2"></label></div>
+        <div class="field"><label for="ltFont">Fonte</label><select id="ltFont" data-bind="lt.font"></select></div>
+        <div class="field"><span class="lbl">Alinhamento</span><div class="seg seg-full" data-seg="lt.align"><button type="button" data-v="left">Esquerda</button><button type="button" data-v="center">Centro</button><button type="button" data-v="right">Direita</button></div></div>
+        <div class="grid2">
+          <div class="field"><label>Aparece em <output data-out="lt.at" data-fmt="s"></output></label><input type="range" min="0" max="15" step="0.5" data-bind="lt.at"></div>
+          <div class="field"><label>Fica por <output data-out="lt.dur" data-fmt="s"></output></label><input type="range" min="2" max="12" step="0.5" data-bind="lt.dur"></div>
+          <div class="field"><label>Tamanho <output data-out="lt.size" data-fmt="pct"></output></label><input type="range" min="0.6" max="1.6" step="0.05" data-bind="lt.size"></div>
+          <div class="field"><label>Posição vertical <output data-out="lt.y" data-fmt="pct"></output></label><input type="range" min="0.08" max="0.95" step="0.01" data-bind="lt.y"></div>
+        </div>
+        <p class="fine">Na Edição, “+ Lower third” põe quantos você quiser na linha do tempo, cada um com seu nome.</p>
       </div>
 
       <!-- Limpeza -->
@@ -871,6 +897,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
       <label class="btn" style="position:relative;overflow:hidden">Importar mídia<input type="file" id="mediaIn" multiple accept="video/*,image/*,audio/*,.mov,.mp4,.mp3,.wav,.m4a" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
       <button class="btn" id="addText">+ Texto</button>
       <button class="btn" id="addCap">+ Legenda</button>
+      <button class="btn" id="addLt" title="Nome e cargo na parte de baixo da tela, com entrada animada">+ Lower third</button>
     </div>
     <div class="bin-list" id="binList"></div>
     <p class="fine bin-note">Vídeos de apoio, fotos e música. Arraste para a linha do tempo, ou use + / clique duplo para inserir no cursor.</p>
@@ -1033,6 +1060,7 @@ function fillFontSelect() {
     sel.appendChild(g2);
   }
   sel.value = cur;
+  const ls = $('#ltFont'); if (ls) { ls.innerHTML = sel.innerHTML; ls.value = st.lt.font; }
 }
 
 /* ---------------- presets ---------------- */
@@ -1066,13 +1094,17 @@ const st = {
   fmt: { aspect: '9:16', fit: 'crop', bg: '#0E0F11', x: 0.5, y: 0.5, zoom: 1, autoZoom: true, zoomAmt: 1.12, hook: true, hookDur: 3, progress: false, autoFrame: true },
   reframe: null, // {segs:[{a,b,cx}], n} from the face scan
   removed: [], removedKinds: { sil: 0, fill: 0, take: 0, del: 0 }, ranges: [], pages: [], autoWord: new Set(), takeSegs: new Set(),
-  brand: { on: false, pos: 'tr', size: 0.16, opacity: 0.92, logo: null, tags: '' }
+  brand: { on: false, pos: 'tr', size: 0.16, opacity: 0.92, logo: null, tags: '' },
+  lt: null // lower third dos cortes; ver LT_BASE
 };
 { const ss = store.get('cs:style', null); if (ss) Object.assign(st.style, STYLE_BASE, ss); }
 Object.assign(st.fmt, store.get('cs:fmt', {}));
 Object.assign(st.brand, store.get('cs:brand', {}), { logo: null });
 Object.assign(st.cuts, store.get('cs:cuts', {}), { thr: null });
 Object.assign(st.opts, store.get('cs:opts', {}));
+/* lower third (nome + cargo): o visual fica guardado como padrão; ligar nos cortes vale só para o projeto aberto */
+const LT_BASE = { on: false, name: '', role: '', style: 'barra', c1: '#FFE14A', c2: '#111111', font: 'Inter', align: 'left', size: 1, y: 0.8, at: 1, dur: 4 };
+st.lt = Object.assign({}, LT_BASE, { c1: st.style.hi || LT_BASE.c1 }, store.get('cs:lt', {}), { on: false });
 /* Edição inteligente: nada disso entra sozinho. Cada vídeo abre como foi gravado e a pessoa aplica.
    As seis chaves valem por projeto (salvas com ele); smartPick é o que a pessoa escolheu da última vez. */
 const SMART = [
@@ -1432,7 +1464,7 @@ async function startAnalysis(file, force) {
   }
   pcm = null;
   stage('cuts', 'on');
-  if (!restored) setSmart(smartNone()); // abre como foi gravado: a edição inteligente só entra quando a pessoa aplica
+  if (!restored) { setSmart(smartNone()); st.lt.on = false; } // abre como foi gravado: a edição inteligente só entra quando a pessoa aplica
   computeRemoval();
   const goalEdit = st.opts.goal === 'edit';
   if (!st.clips.length) {
@@ -1702,7 +1734,7 @@ function saveProject() {
     const data = {
       v: 1, lang: st.lang,
       segs: st.segs.map(s => ({ start: s.start, end: s.end, text: s.text, words: s.words.map(w => ({ w: w.w, start: w.start, end: w.end, del: w.del || undefined, nocap: w.nocap || undefined, emph: w.emph })) })),
-      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow()
+      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow(), lt: { on: !!st.lt.on }
     };
     const key = projectKey(st.file, st.model);
     idb.putProj(key, data).then(ok => { if (!ok) store.set(key, data); else { try { localStorage.removeItem(key); } catch (e) {} } markSaved(); });
@@ -1719,10 +1751,11 @@ function restoreProject(d) {
   st.reframe = d.reframe && d.reframe.segs ? d.reframe : null;
   // projetos de antes desta versão foram abertos com a limpeza já aplicada: continuam como estavam
   setSmart(d.smart && typeof d.smart === 'object' ? d.smart : smartPick);
+  st.lt.on = !!(d.lt && d.lt.on);
   OFFLINE = new Map((d.media || []).filter(x => x && x.id).map(x => [x.id, x]));
   relinkOffline();
 }
-function saveLooks() { const b = Object.assign({}, st.brand); delete b.logo; store.set('cs:brand', b); store.set('cs:style', st.style); store.set('cs:fmt', st.fmt); const c = Object.assign({}, st.cuts); delete c.thr; store.set('cs:cuts', c); }
+function saveLooks() { const b = Object.assign({}, st.brand); delete b.logo; store.set('cs:brand', b); const l = Object.assign({}, st.lt); delete l.on; store.set('cs:lt', l); store.set('cs:style', st.style); store.set('cs:fmt', st.fmt); const c = Object.assign({}, st.cuts); delete c.thr; store.set('cs:cuts', c); }
 
 /* ---------------- cleanup (what gets removed) ---------------- */
 function autoThr() {
@@ -2219,6 +2252,120 @@ const easeOut = k => 1 - Math.pow(1 - k, 3);
 function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 function lum(hex) { const n = parseInt(hex.slice(1), 16); const r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
 
+/* ---------- lower third: nome + cargo, com entrada e saída animadas ---------- */
+const LT_STYLES = [['barra', 'Barra'], ['linha', 'Linha'], ['etiqueta', 'Etiqueta'], ['faixa', 'Faixa']];
+const ltLabel = L => [L.name, L.role].map(x => String(x || '').trim()).filter(Boolean).join(' — ');
+const inkOn = hex => lum(hex) > 0.55 ? '#111111' : '#FFFFFF';
+/* g: canvas context · L: {name, role, style, c1, c2, font, align, size} · t: seconds since it appeared · d: how long it stays */
+function drawLowerThird(g, W, H, L, t, d, alpha, y, px) {
+  const name = String(L.name || '').trim(), role = String(L.role || '').trim();
+  if (!name && !role) return null;
+  const S = Math.min(W, H) * (L.size || 1);
+  const fam = L.font || 'Inter', gf = GF.find(x => x.f === fam);
+  const wB = gf ? gf.w[gf.w.length - 1] : 700, wR = gf ? gf.w[0] : 400;
+  const nf = S * 0.05, rf = S * 0.031;
+  const fN = `${wB} ${nf}px "${fam}", "Arial Black", sans-serif`, fR = `${wR} ${rf}px "${fam}", Arial, sans-serif`;
+  g.save();
+  g.font = fN; const nw = name ? g.measureText(name).width : 0;
+  g.font = fR; const rw = role ? g.measureText(role).width : 0;
+  const ease = k => 1 - Math.pow(1 - clamp(k, 0, 1), 3);
+  // entra entre a e b segundos; sai terminando "lag" segundos antes do fim (o cargo sai antes do nome)
+  const p = (a, b, lag) => Math.min(ease((t - a) / (b - a)), ease((d - lag - t) / 0.3));
+  const align = L.align || 'left', fromRight = align === 'right', mx = W * 0.06;
+  const ax = (align === 'left' ? mx : fromRight ? W - mx : W / 2) + (px || 0) * W;
+  const cy = H * (y != null ? y : L.y != null ? L.y : 0.8);
+  const c1 = L.c1 || '#FFE14A', c2 = L.c2 || '#111111';
+  g.globalAlpha = alpha; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.shadowColor = 'transparent';
+  const grow = (x, yy, w, h, k) => { const ww = w * k; return fromRight ? [x + w - ww, yy, ww, h] : align === 'center' ? [x + (w - ww) / 2, yy, ww, h] : [x, yy, ww, h]; };
+  const clipTo = r => { g.beginPath(); g.rect(r[0], r[1], Math.max(0, r[2]), r[3]); g.clip(); };
+  const text = (str, font, color, x, base) => { g.font = font; g.fillStyle = color; g.fillText(str, x, base); };
+  let box;
+  const kind = L.style || 'barra';
+  if (kind === 'barra' || kind === 'etiqueta') {
+    const eti = kind === 'etiqueta';
+    const acc = eti ? 0 : Math.max(3, S * 0.011);
+    const padN = nf * 0.42, padR = rf * 0.6;
+    const nh = name ? nf * 1.34 : 0, rh = role ? rf * 1.62 : 0;
+    const nbw = name ? nw + padN * 2 : 0, rbw = role ? rw + padR * 2 : 0;
+    const ind = eti && name && role ? nf * 0.45 : 0;
+    const GW = acc + Math.max(nbw, rbw + ind);
+    const gx = align === 'left' ? ax : fromRight ? ax - GW : ax - GW / 2;
+    const top = cy - (nh + rh) / 2;
+    const nbx = fromRight ? gx + GW - acc - nbw : gx + acc;
+    const rbx = fromRight ? gx + GW - acc - ind - rbw : gx + acc + ind;
+    if (acc) { const k = p(0, 0.2, 0), ah = (nh + rh) * k; g.fillStyle = c1; g.fillRect(fromRight ? gx + GW - acc : gx, top + (nh + rh - ah) / 2, acc, ah); }
+    if (name) {
+      const k = p(0.08, 0.46, 0.08), bg = eti ? c1 : c2;
+      g.save(); clipTo(grow(nbx, top, nbw, nh, k));
+      g.globalAlpha = alpha * (eti ? 1 : 0.92); g.fillStyle = bg; g.fillRect(nbx, top, nbw, nh); g.globalAlpha = alpha;
+      text(name, fN, inkOn(bg), nbx + padN + (1 - k) * nf * 0.5 * (fromRight ? 1 : -1), top + nh / 2 + nf * 0.36);
+      g.restore();
+    }
+    if (role) {
+      const k = p(0.18, 0.56, 0.16), ry = top + nh, bg = eti ? c2 : c1;
+      g.save(); clipTo(grow(rbx, ry, rbw, rh, k));
+      g.fillStyle = bg; g.fillRect(rbx, ry, rbw, rh);
+      text(role, fR, inkOn(bg), rbx + padR, ry + rh / 2 + rf * 0.36);
+      g.restore();
+    }
+    box = { x: gx, y: top, w: GW, h: nh + rh };
+  } else if (kind === 'linha') {
+    const lw = Math.max(2, S * 0.0075), gap = nf * 0.38;
+    const nh = name ? nf * 1.2 : 0, rh = role ? rf * 1.45 : 0, hh = nh + rh;
+    const tw = Math.max(nw, rw), GW = lw + gap + tw;
+    const gx = align === 'left' ? ax : fromRight ? ax - GW : ax - GW / 2;
+    const top = cy - hh / 2;
+    const kL = p(0, 0.28, 0); g.fillStyle = c1; g.fillRect(fromRight ? gx + GW - lw : gx, top + hh * (1 - kL) / 2, lw, hh * kL);
+    const kT = p(0.14, 0.55, 0.1), tx0 = fromRight ? gx : gx + lw + gap;
+    g.save(); clipTo(fromRight ? [tx0 + tw * (1 - kT), top - nf * 0.4, tw * kT + gap, hh + nf * 0.8] : [tx0 - gap, top - nf * 0.4, tw * kT + gap, hh + nf * 0.8]);
+    g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = nf * 0.3; g.shadowOffsetY = nf * 0.04;
+    if (name) text(name, fN, '#FFFFFF', fromRight ? gx + tw - nw : tx0, top + nf * 0.95);
+    if (role) text(role, fR, c1, fromRight ? gx + tw - rw : tx0, top + nh + rf * 1.05);
+    g.restore();
+    box = { x: gx, y: top, w: GW, h: hh };
+  } else { // faixa: uma faixa de lado a lado
+    const padV = nf * 0.4, nh = name ? nf * 1.15 : 0, rh = role ? rf * 1.4 : 0, bh = nh + rh + padV * 2;
+    const top = cy - bh / 2, line = Math.max(2, S * 0.006);
+    const kB = p(0, 0.38, 0.06);
+    g.save(); clipTo(grow(0, top - line, W, bh + line, kB));
+    g.globalAlpha = alpha * 0.86; g.fillStyle = c2; g.fillRect(0, top, W, bh); g.globalAlpha = alpha;
+    g.fillStyle = c1; g.fillRect(0, top - line, W, line);
+    g.restore();
+    const kT = p(0.16, 0.52, 0), off = (1 - kT) * nf * 0.4;
+    const xAt = w => (align === 'left' ? ax : fromRight ? ax - w : ax - w / 2);
+    g.save(); g.globalAlpha = alpha * kT;
+    if (name) text(name, fN, inkOn(c2), xAt(nw), top + padV + nf * 0.92 + off);
+    if (role) text(role, fR, lum(c1) > 0.35 ? c1 : inkOn(c2), xAt(rw), top + padV + nh + rf * 1.05 + off);
+    g.restore();
+    box = { x: 0, y: top - line, w: W, h: bh + line };
+  }
+  g.restore();
+  return box;
+}
+/* small preview tile of a style, drawn with the real renderer */
+function ltThumb(L, kind) {
+  const c = document.createElement('canvas'); c.width = 320; c.height = 180;
+  const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 320, 180); gr.addColorStop(0, '#3a3f47'); gr.addColorStop(1, '#16181c'); g.fillStyle = gr; g.fillRect(0, 0, 320, 180);
+  g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(190, 30, 70, 150); g.beginPath(); g.arc(225, 45, 28, 0, Math.PI * 2); g.fill();
+  drawLowerThird(g, 320, 180, Object.assign({}, L, { style: kind, name: L.name || 'Ana Souza', role: L.role || 'Diretora de Marketing', size: 2, align: 'left' }), 2, 10, 1, 0.66, 0);
+  return c;
+}
+/* style picker used by the Cortes panel and by the clip panel in Edição */
+function ltStylePicker(get, set) {
+  const box = document.createElement('div'); box.className = 'lt-styles'; box.setAttribute('role', 'group'); box.setAttribute('aria-label', 'Estilo do lower third');
+  const L = get();
+  for (const [k, label] of LT_STYLES) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'lt-style'; b.dataset.k = k;
+    b.setAttribute('aria-pressed', String((L.style || 'barra') === k)); b.setAttribute('aria-label', 'Estilo ' + label);
+    const cv2 = ltThumb(L, k); cv2.setAttribute('aria-hidden', 'true');
+    const sm = document.createElement('small'); sm.textContent = label;
+    b.append(cv2, sm); b.onclick = () => set(k);
+    box.appendChild(b);
+  }
+  return box;
+}
+
 /* draw a video frame: <video>/<img>/canvas via drawImage, decoded samples via their own draw (keeps rotation) */
 function blit(src, x, y, w, h) { if (src && typeof src.draw === 'function' && !(src instanceof Element)) src.draw(ctx, x, y, w, h); else ctx.drawImage(src, x, y, w, h); }
 function drawFrame(off) {
@@ -2246,6 +2393,8 @@ function drawFrame(off) {
   }
   const c = curClip();
   const total = sumRanges(st.ranges), o = outAt(t);
+  const L = st.lt;
+  if (L.on && total > L.at) { const dd = Math.min(L.dur, total - L.at); if (o >= L.at && o < L.at + dd) drawLowerThird(ctx, W, H, L, o - L.at, dd, 1, L.y, 0); }
   if (st.style.on) drawCaptions(t);
   if (F.hook && c && c.hook && o < F.hookDur) drawHook(c.hook, o);
   if (F.progress && total > 0) { ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(0, H - H * 0.006, W, H * 0.006); ctx.fillStyle = st.style.hi; ctx.fillRect(0, H - H * 0.006, W * clamp(o / total, 0, 1), H * 0.006); }
@@ -2748,11 +2897,11 @@ $('#tabs').addEventListener('click', e => {
 
 /* ---------------- undo in the Cortes view: style, format, text cuts, corrections ---------------- */
 const LU = { undo: [], redo: [] };
-function looksSnap(what) { const b = Object.assign({}, st.brand); delete b.logo; return { what, style: JSON.stringify(st.style), fmt: JSON.stringify(st.fmt), brand: JSON.stringify(b), cuts: JSON.stringify(st.cuts), segs: segsSnap(), clips: JSON.stringify(st.clips), cur: st.cur }; }
+function looksSnap(what) { const b = Object.assign({}, st.brand); delete b.logo; return { what, style: JSON.stringify(st.style), fmt: JSON.stringify(st.fmt), brand: JSON.stringify(b), cuts: JSON.stringify(st.cuts), lt: JSON.stringify(st.lt), segs: segsSnap(), clips: JSON.stringify(st.clips), cur: st.cur }; }
 function pushLooks(what) { if (!st.segs.length) return; LU.undo.push(looksSnap(what)); if (LU.undo.length > 60) LU.undo.shift(); LU.redo = []; updLooksBtns(); }
 function replaceObj(o, n) { for (const k of Object.keys(o)) if (!(k in n)) delete o[k]; Object.assign(o, n); }
 async function applyLooks(sn) {
-  replaceObj(st.style, JSON.parse(sn.style)); replaceObj(st.fmt, JSON.parse(sn.fmt)); const logo = st.brand.logo; replaceObj(st.brand, JSON.parse(sn.brand)); st.brand.logo = logo; replaceObj(st.cuts, JSON.parse(sn.cuts));
+  replaceObj(st.style, JSON.parse(sn.style)); replaceObj(st.fmt, JSON.parse(sn.fmt)); const logo = st.brand.logo; replaceObj(st.brand, JSON.parse(sn.brand)); st.brand.logo = logo; replaceObj(st.cuts, JSON.parse(sn.cuts)); if (sn.lt) replaceObj(st.lt, JSON.parse(sn.lt));
   restoreSegs(sn.segs); st.clips = JSON.parse(sn.clips); st.cur = sn.cur;
   await ensureFont(st.style.font, st.style.weight);
   buildPages(); refreshClip(true); renderClips(); renderTranscript(); syncControls(); saveLooks(); saveProject(); onCleanupChanged(); updateSmartUI(); dirty = true;
@@ -2764,7 +2913,7 @@ function updLooksBtns() { const u = $('#cUndo'), r = $('#cRedo'); if (u) u.disab
 $('#cUndo').addEventListener('click', undoLooks); $('#cRedo').addEventListener('click', redoLooks);
 let lastBind = { path: '', t: 0 };
 function pushLooksFor(path) { const now = performance.now(); if (path !== lastBind.path || now - lastBind.t > 1500) pushLooks(LOOK_NAMES[path] || 'ajuste'); lastBind = { path, t: now }; }
-const LOOK_NAMES = { 'fmt.autoZoom': 'zoom alternado', 'fmt.hook': 'gancho na tela', 'clip.title': 'título do corte', 'clip.hook': 'gancho na tela', 'style.hi': 'cor do destaque', 'style.hi2': 'cor das palavras-chave', 'style.color': 'cor do texto', 'style.size': 'tamanho da legenda', 'style.y': 'posição da legenda', 'style.words': 'palavras por vez', 'style.mode': 'tipo de destaque', 'style.anim': 'animação', 'style.on': 'mostrar legenda', 'fmt.aspect': 'formato', 'fmt.fit': 'preenchimento', 'fmt.zoom': 'zoom', 'fmt.x': 'enquadramento', 'fmt.y': 'enquadramento', 'brand.on': 'logo no vídeo', 'brand.pos': 'posição do logo', 'cuts.silence': 'cortar silêncios', 'cuts.fillers': 'cortar vícios', 'cuts.takes': 'cortar takes' };
+const LOOK_NAMES = { 'lt.on': 'lower third', 'lt.name': 'nome do lower third', 'lt.role': 'cargo do lower third', 'lt.c1': 'cor do lower third', 'lt.c2': 'fundo do lower third', 'lt.font': 'fonte do lower third', 'lt.align': 'alinhamento do lower third', 'lt.at': 'quando o lower third aparece', 'lt.dur': 'duração do lower third', 'lt.size': 'tamanho do lower third', 'lt.y': 'posição do lower third', 'fmt.autoZoom': 'zoom alternado', 'fmt.hook': 'gancho na tela', 'clip.title': 'título do corte', 'clip.hook': 'gancho na tela', 'style.hi': 'cor do destaque', 'style.hi2': 'cor das palavras-chave', 'style.color': 'cor do texto', 'style.size': 'tamanho da legenda', 'style.y': 'posição da legenda', 'style.words': 'palavras por vez', 'style.mode': 'tipo de destaque', 'style.anim': 'animação', 'style.on': 'mostrar legenda', 'fmt.aspect': 'formato', 'fmt.fit': 'preenchimento', 'fmt.zoom': 'zoom', 'fmt.x': 'enquadramento', 'fmt.y': 'enquadramento', 'brand.on': 'logo no vídeo', 'brand.pos': 'posição do logo', 'cuts.silence': 'cortar silêncios', 'cuts.fillers': 'cortar vícios', 'cuts.takes': 'cortar takes' };
 
 /* ---------------- controls binding ---------------- */
 function getPath(p) { const [o, k] = p.split('.'); return st[o][k]; }
@@ -2801,7 +2950,26 @@ function onChange(path) {
   if (path === 'fmt.autoFrame' && st.fmt.autoFrame && !st.reframe && !rfJob) runReframe(false);
   onChange.prevAspect = st.fmt.aspect;
   if (SMART_PATHS.has(path)) { saveProject(); updateSmartUI(); if (!path.startsWith('cuts.')) updateStats(); }
+  if (path.startsWith('lt.')) onLtChange(path);
   syncControls(); dirty = true; saveLooks();
+}
+/* lower third dos cortes: mostra na prévia enquanto a pessoa mexe */
+function renderLtCuts() {
+  const box = $('#ltStylesCuts'); if (!box) return;
+  box.innerHTML = '';
+  box.appendChild(ltStylePicker(() => st.lt, v => { if (MODE !== 'mont') pushLooks('estilo do lower third'); st.lt.style = v; if (!st.lt.on) st.lt.on = true; onChange('lt.style'); }));
+}
+let ltThumbT = 0;
+async function onLtChange(path) {
+  if (path === 'lt.font') await ensureFont(st.lt.font, fontWeightFor(st.lt.font));
+  if (path === 'lt.on' || path === 'lt.style') saveProject();
+  if (path !== 'lt.at' && path !== 'lt.dur' && path !== 'lt.y') { clearTimeout(ltThumbT); ltThumbT = setTimeout(renderLtCuts, path === 'lt.name' || path === 'lt.role' ? 350 : 0); }
+  // turning it on or editing it: jump the preview to a moment where it is on screen
+  if (MODE !== 'mont' && st.lt.on && !playing && st.ranges.length) {
+    const o = outAt(vid.currentTime), total = sumRanges(st.ranges), a = st.lt.at, b = Math.min(total, a + st.lt.dur);
+    if ((o < a || o >= b) && b > a) { vid.currentTime = srcAtOut(Math.min(b - 0.05, a + Math.min(1.2, (b - a) / 2))); }
+  }
+  dirty = true;
 }
 $$('[data-bind]').forEach(el => {
   const ev = el.tagName === 'SELECT' || el.type === 'checkbox' ? 'change' : 'input';
@@ -2926,6 +3094,7 @@ function openEditor() {
   sizeTimeline();
   onChange.prevAspect = st.fmt.aspect; syncAspectChips();
   maybeReframe();
+  renderLtCuts();
   const c = curClip();
   refreshClip(true);
   vid.currentTime = st.ranges.length ? st.ranges[0][0] : c.start;
@@ -3333,6 +3502,11 @@ async function exportVideo(opts = {}) {
   if (MODE !== 'mont' && (!curClip() || !st.ranges.length)) { toast('Esse corte ficou vazio.'); return; }
   let MB;
   try { MB = await loadMB(); } catch (e) { return MODE === 'mont' ? exportMontageRT() : exportVideoRT(); }
+  { // fonts of lower thirds and texts must be loaded before the first frame is drawn
+    const fams = new Set(); if (st.lt.on) fams.add(st.lt.font);
+    if (MODE === 'mont') for (const k of M.clips) { if (k.lt) fams.add(k.lt.font); else if (k.ts && k.ts.font) fams.add(k.ts.font); }
+    for (const f of fams) if (f) await ensureFont(f, fontWeightFor(f));
+  }
   pause(); if (MODE === 'mont') montPause();
   exporting = true; exp = { fast: true, cancelled: false };
   setExpUI(true);
@@ -3420,8 +3594,8 @@ async function exportMontPack(c, aspect, videoBase, first) {
   if (v1) {
     await seekVid(v1.in + Math.min(1.2, cdur(v1) / 2));
     sizeCanvas(1);
-    const keepOn = st.style.on, keepHook = st.fmt.hook; st.style.on = false; st.fmt.hook = false;
-    try { drawFrame(); } finally { st.style.on = keepOn; st.fmt.hook = keepHook; }
+    const keepOn = st.style.on, keepHook = st.fmt.hook, keepLt = st.lt.on; st.style.on = false; st.fmt.hook = false; st.lt.on = false;
+    try { drawFrame(); } finally { st.style.on = keepOn; st.fmt.hook = keepHook; st.lt.on = keepLt; }
     drawCoverTitle(coverText(c));
     cover = await new Promise(r => cv.toBlob(r, 'image/png'));
   }
@@ -3899,9 +4073,9 @@ async function coverPNG(c) {
   const t = Math.min(R[0][1] - 0.05, R[0][0] + Math.min(1.2, (R[0][1] - R[0][0]) / 2));
   await seekVid(t);
   sizeCanvas(1);
-  const keepOn = st.style.on, keepHook = st.fmt.hook;
-  st.style.on = false; st.fmt.hook = false;
-  try { drawFrame(); } finally { st.style.on = keepOn; st.fmt.hook = keepHook; }
+  const keepOn = st.style.on, keepHook = st.fmt.hook, keepLt = st.lt.on;
+  st.style.on = false; st.fmt.hook = false; st.lt.on = false;
+  try { drawFrame(); } finally { st.style.on = keepOn; st.fmt.hook = keepHook; st.lt.on = keepLt; }
   drawCoverTitle(coverText(c));
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
   return blob;
@@ -4131,6 +4305,10 @@ function updUndoBtns() { const u = $('#tUndo'), r = $('#tRedo'); if (u) u.disabl
 function buildMontageFrom(c) {
   const rs = rangesFor(c); let tl = 0;
   const clips = rs.map(r => { const k = { id: nid(), track: 'V1', media: 'm0', tl, in: r[0], out: r[1], vol: 1, fadeIn: 0, fadeOut: 0, scale: 1, px: 0, py: 0, opacity: 1 }; tl += r[1] - r[0]; return k; });
+  if (st.lt.on && ltLabel(st.lt) && tl > st.lt.at + 0.5) {
+    const L = { name: st.lt.name, role: st.lt.role, style: st.lt.style, c1: st.lt.c1, c2: st.lt.c2, font: st.lt.font, align: st.lt.align, size: st.lt.size };
+    clips.push(makeLtClip(L, st.lt.y, st.lt.at, Math.min(st.lt.dur, tl - st.lt.at)));
+  }
   montages[c.id] = { clips, hook: c.hook || '', T: 0, v1Auto: true };
 }
 function loadMontage(id) {
@@ -4145,6 +4323,7 @@ function saveMontage() { if (M.key) montages[M.key] = { clips: M.clips, hook: M.
 function saveMontSoon() { clearTimeout(smT); smT = setTimeout(saveMontage, 800); }
 function wordIdxAt(t) { const W = st.words; let lo = 0, hi = W.length; while (lo < hi) { const m = (lo + hi) >> 1; if (W[m].end <= t) lo = m + 1; else hi = m; } return Math.max(0, lo - 2); }
 function clipLabel(c) {
+  if (c.lt) return 'Lower third · ' + (c.text || '');
   if (c.text != null) return c.text.replace(/\s+/g, ' ');
   const m = MEDIA.get(c.media); if (!m) { const o = OFFLINE.get(c.media); return RELINKING.has(c.media) ? `Carregando ${o ? o.name : ''}…` : o ? `Faltando: ${o.name}` : 'Arquivo faltando'; }
   if (c.media === 'm0') { const ws = []; for (let i = wordIdxAt(c.in); i < st.words.length; i++) { const w = st.words[i]; if (w.start >= c.out) break; if (w.end > c.in && !w.del) ws.push(w.w); if (ws.length > 8) break; } if (ws.length) return ws.join(' '); }
@@ -4228,7 +4407,7 @@ function overwrite(track, a, b, except) {
     const s = c.tl, e = cend(c);
     if (e <= a + 1e-6 || s >= b - 1e-6) continue;
     if (s >= a - 1e-6 && e <= b + 1e-6) { M.clips = M.clips.filter(k => k !== c); continue; }
-    if (s < a && e > b) { const r = Object.assign({}, c, { id: nid() }); r.in = c.in + (b - s); r.tl = b; c.out = c.in + (a - s); M.clips.push(r); continue; }
+    if (s < a && e > b) { const r = Object.assign({}, c, { id: nid() }); if (r.ts) r.ts = Object.assign({}, r.ts); if (r.lt) r.lt = Object.assign({}, r.lt); r.in = c.in + (b - s); r.tl = b; c.out = c.in + (a - s); M.clips.push(r); continue; }
     if (s < a) c.out = c.in + (a - s);
     else { c.in += b - s; c.tl = b; }
   }
@@ -4240,6 +4419,7 @@ function splitClip(c, t) {
   const off = t - c.tl;
   c.out = c.in + off; k.in = c.in + off; k.tl = t; c.fadeOut = 0; k.fadeIn = 0;
   if (k.ts) k.ts = Object.assign({}, k.ts);
+  if (k.lt) k.lt = Object.assign({}, k.lt);
   M.clips.push(k); return k;
 }
 function splitAllAt(t) {
@@ -4355,6 +4535,27 @@ function addTextClip() {
   M.clips.push(c); M.sel = new Set([c.id]); M.selCap = null;
   changed(); activateTab('clip');
   setTimeout(() => { const ta = $('#ecText'); if (ta) { ta.focus(); ta.select(); } }, 30);
+}
+/* lower third on V3: starts from the last one in this sequence (same look, same person), or from the Cortes panel */
+function ltNewSpec() {
+  const last = M.clips.filter(k => k.lt).sort((a, b) => b.tl - a.tl)[0];
+  const b = last ? last.lt : st.lt;
+  const L = { name: b.name || '', role: b.role || '', style: b.style || 'barra', c1: b.c1, c2: b.c2, font: b.font || 'Inter', align: b.align || 'left', size: b.size || 1 };
+  if (!L.name && !L.role) { L.name = 'Nome Sobrenome'; L.role = 'Cargo ou descrição'; }
+  return { L, y: last && last.ts ? last.ts.y : st.lt.y };
+}
+function makeLtClip(L, y, tl, dur) { return { id: nid(), track: 'V3', media: null, text: ltLabel(L), lt: L, tl, in: 0, out: dur, opacity: 1, fadeIn: 0, fadeOut: 0, px: 0, py: 0, ts: { y } }; }
+function addLowerThird() {
+  if (M.trk.V3.lock) { toast('A trilha de textos está travada.'); return; }
+  pushUndo(false, 'novo lower third');
+  const { L, y } = ltNewSpec();
+  const c = makeLtClip(L, y, M.T, 5);
+  overwrite('V3', c.tl, cend(c), new Set());
+  M.clips.push(c); M.sel = new Set([c.id]); M.selCap = null;
+  ensureFont(L.font, fontWeightFor(L.font));
+  changed(); activateTab('clip');
+  if (!M.playing) seekM(Math.min(cend(c) - 0.05, c.tl + 1.2)); // mostra já entrado, não no primeiro quadro da animação
+  setTimeout(() => { const i = $('#ecLtName'); if (i) { i.focus(); i.select(); } }, 30);
 }
 
 /* ---------- smart edit: V1 follows the cleanup while it is untouched ---------- */
@@ -4628,7 +4829,8 @@ function drawMont(ov) {
   M.rects = {};
   for (const L of layers) {
     const alpha = clipAlpha(L.c, T);
-    if (L.text) drawTextClip(L.c, T, alpha);
+    if (L.text && L.c.lt) { const r = drawLowerThird(ctx, W, H, L.c.lt, T - L.c.tl, cdur(L.c), alpha, L.c.ts ? L.c.ts.y : null, L.c.px || 0); if (r) M.rects[L.c.id] = r; }
+    else if (L.text) drawTextClip(L.c, T, alpha);
     else if (L.offline && !exporting && RELINKING.has(L.c.media)) { /* still loading from disk: show nothing alarming */ }
     else if (L.offline && !exporting) { const nm = (OFFLINE.get(L.c.media) || {}).name; ctx.fillStyle = 'rgba(229,83,75,.25)'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; ctx.font = `600 ${W * 0.034}px sans-serif`; ctx.fillText(nm ? `Arquivo faltando: ${nm}` : 'Arquivo faltando', W * 0.08, H * 0.48); ctx.font = `500 ${W * 0.028}px sans-serif`; ctx.fillText('Importe de novo em Mídia para reconectar', W * 0.08, H * 0.53); }
     else drawMediaClip(L.src, L.sw, L.sh, L.c, L.tid, alpha, T);
@@ -5122,6 +5324,7 @@ $('#mediaIn').addEventListener('change', async e => { const f = [...e.target.fil
 $('#binPanel').addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')) { e.preventDefault(); } });
 $('#binPanel').addEventListener('drop', async e => { const f = [...(e.dataTransfer.files || [])]; if (f.length) { e.preventDefault(); await importMedia(f); } });
 $('#addText').addEventListener('click', addTextClip);
+$('#addLt').addEventListener('click', addLowerThird);
 $('#addCap').addEventListener('click', addCaptionAtPlayhead);
 
 /* ---------- effect controls ---------- */
@@ -5199,11 +5402,43 @@ function renderEC() {
   if (sel.length === 1) {
     const c = sel[0], k = kindOf(c), m = MEDIA.get(c.media);
     const hd = ecEl('div', 'ec-hd');
-    hd.append(ecEl('span', 'tag', c.track), ecEl('b', null, c.text != null ? 'Texto' : m ? (m.main ? 'Vídeo principal' : m.name) : `Faltando: ${(OFFLINE.get(c.media) || {}).name || 'arquivo'}`));
+    hd.append(ecEl('span', 'tag', c.track), ecEl('b', null, c.lt ? 'Lower third' : c.text != null ? 'Texto' : m ? (m.main ? 'Vídeo principal' : m.name) : `Faltando: ${(OFFLINE.get(c.media) || {}).name || 'arquivo'}`));
     add(hd);
     if (!m && c.text == null) { const rb = ecEl('button', 'btn primary block', 'Reconectar arquivo…'); rb.type = 'button'; rb.onclick = () => relinkAsk(); add(ecEl('p', 'fine', 'Esse arquivo não está carregado agora. Escolha o mesmo arquivo de novo e a edição volta como estava.')); add(rb); }
     add(ecEl('p', 'fine mono', `No tempo ${fmtTC(c.tl, fps)} · dura ${fmtTC(cdur(c), fps)}` + (k === 'video' || k === 'audio' ? ` · origem ${fmtTC(c.in, fps)}` : '')));
-    if (k === 'text') {
+    if (c.lt) {
+      const L = c.lt;
+      const sync = () => { c.text = ltLabel(L); M.labels.set(c.id, clipLabel(c)); M.dirty = true; dirty = true; saveMontSoon(); };
+      const tf = (label, id, key, ph) => {
+        const f = ecEl('div', 'field'); const l = ecEl('label', null, label); l.htmlFor = id;
+        const i = document.createElement('input'); i.type = 'text'; i.id = id; i.value = L[key] || ''; i.placeholder = ph; i.maxLength = 80;
+        let armed = true;
+        i.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); i.blur(); } });
+        i.addEventListener('input', () => { if (armed) { pushUndo(false, 'texto do lower third'); armed = false; } L[key] = i.value; sync(); });
+        i.addEventListener('change', () => { armed = true; changed(true); });
+        f.append(l, i); return f;
+      };
+      add(tf('Nome', 'ecLtName', 'name', 'Ex.: Ana Souza'), tf('Cargo ou descrição', 'ecLtRole', 'role', 'Ex.: CEO da Loja X'));
+      const sf = ecEl('div', 'field'); sf.append(ecEl('span', 'lbl', 'Estilo'), ltStylePicker(() => L, v => { pushUndo(false, 'estilo do lower third'); L.style = v; changed(); })); add(sf);
+      const cf = ecEl('div', 'field'); cf.append(ecEl('span', 'lbl', 'Cor de destaque'));
+      const sws = ecEl('div', 'swatches');
+      for (const [hex, nm] of SWATCHES) { const b = ecEl('button', 'sw'); b.type = 'button'; b.style.background = hex; b.title = nm; b.setAttribute('aria-label', nm); b.setAttribute('aria-pressed', String(String(L.c1).toUpperCase() === hex)); b.onclick = () => { pushUndo(false, 'cor do lower third'); L.c1 = hex; changed(); }; sws.appendChild(b); }
+      cf.appendChild(sws); add(cf);
+      const cols = ecEl('div', 'colors'); cols.append(ecColor('Destaque', () => L.c1, v => { L.c1 = v; }), ecColor('Fundo', () => L.c2, v => { L.c2 = v; })); add(cols);
+      const ff = ecEl('div', 'field'); const fl = ecEl('label', null, 'Fonte'); const fsel = document.createElement('select'); fsel.id = 'ecLtFont'; fl.htmlFor = 'ecLtFont';
+      for (const g of GF) { const o = document.createElement('option'); o.value = g.f; o.textContent = g.f; fsel.appendChild(o); }
+      for (const n of customFonts) { const o = document.createElement('option'); o.value = n; o.textContent = n; fsel.appendChild(o); }
+      fsel.value = L.font || 'Inter';
+      fsel.addEventListener('change', async () => { pushUndo(false, 'fonte do lower third'); L.font = fsel.value; await ensureFont(L.font, fontWeightFor(L.font)); changed(); });
+      ff.append(fl, fsel); add(ff);
+      const af = ecEl('div', 'field'); af.append(ecEl('span', 'lbl', 'Alinhamento'));
+      const seg = ecEl('div', 'seg seg-full');
+      for (const [v, t] of [['left', 'Esquerda'], ['center', 'Centro'], ['right', 'Direita']]) { const b = ecEl('button', null, t); b.type = 'button'; b.setAttribute('aria-pressed', String((L.align || 'left') === v)); b.onclick = () => { pushUndo(false, 'alinhamento do lower third'); L.align = v; c.px = 0; changed(); }; seg.appendChild(b); }
+      af.appendChild(seg); add(af);
+      add(ecRange('Tamanho ', () => L.size || 1, v => { L.size = v; }, 0.6, 1.6, 0.05, pct));
+      add(ecRange('Posição vertical ', () => c.ts.y, v => { c.ts.y = v; }, 0.08, 0.95, 0.01, pct));
+      add(ecEl('p', 'fine', 'Arraste no monitor para mover. Na trilha V3, puxe as bordas para mudar quanto tempo fica: a entrada e a saída se ajustam sozinhas.'));
+    } else if (k === 'text') {
       const ta = document.createElement('textarea'); ta.id = 'ecText'; ta.rows = 3; ta.value = c.text;
       let armed = true;
       ta.addEventListener('keydown', e => e.stopPropagation());
@@ -5442,7 +5677,7 @@ function buildMontEDL(fps) {
 })();
 window.addEventListener('resize', () => { fitCanvasCSS(); sizeTimeline(); });
 new ResizeObserver(() => { document.documentElement.style.setProperty('--toph', $('.top').offsetHeight + 'px'); }).observe($('.top'));
-window.__cs = { st, M, MEDIA, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
+window.__cs = { st, M, MEDIA, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
 })();
 </script>
 </body>
