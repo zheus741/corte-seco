@@ -1,0 +1,107 @@
+{
+  "name": "corte-seco",
+  "productName": "Corte Seco",
+  "version": "1.0.0",
+  "description": "Editor de vídeo automático: cortes, legendas virais e edição inteligente, tudo no seu computador.",
+  "main": "main.js",
+  "author": "Zheus",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-app.js",
+    "start": "npm run sync && electron .",
+    "dist:mac": "npm run sync && electron-builder --mac --arm64 --x64",
+    "dist:win": "npm run sync && electron-builder --win --x64"
+  },
+  "dependencies": {
+    "onnxruntime-node": "1.30.0"
+  },
+  "devDependencies": {
+    "electron": "44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "br.com.zheus.corteseco",
+    "productName": "Corte Seco",
+    "copyright": "Corte Seco",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "engine/**",
+      "app/**",
+      "!app/models/tiny-*",
+      "node_modules/onnxruntime-node/package.json",
+      "node_modules/onnxruntime-node/dist/**",
+      "node_modules/onnxruntime-node/lib/**",
+      "node_modules/onnxruntime-common/**",
+      "!**/*.map",
+      "!**/*.d.ts",
+      "!**/esm/**",
+      "node_modules/onnxruntime-node/bin/**"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "engine/**",
+      "app/asr-core.js",
+      "app/models/**",
+      "node_modules/onnxruntime-node/**",
+      "node_modules/onnxruntime-common/**"
+    ],
+    "npmRebuild": false,
+    "mac": {
+      "category": "public.app-category.video",
+      "target": [
+        {
+          "target": "dmg"
+        },
+        {
+          "target": "zip"
+        }
+      ],
+      "icon": "build/icon.icns",
+      "hardenedRuntime": false,
+      "identity": null,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Não usado.",
+        "LSApplicationCategoryType": "public.app-category.video"
+      },
+      "artifactName": "Corte-Seco-${version}-mac-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "Corte Seco",
+      "artifactName": "Corte-Seco-${version}-mac-${arch}.dmg"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Corte-Seco-${version}-windows-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "Corte-Seco-${version}-windows-instalador.${ext}",
+      "shortcutName": "Corte Seco",
+      "language": "1046"
+    },
+    "publish": null,
+    "afterPack": "build/after-pack.js"
+  }
+}

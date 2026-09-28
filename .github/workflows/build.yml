@@ -1,0 +1,56 @@
+# Builds the Mac (Apple Silicon + Intel) and Windows installers and attaches them to a GitHub release.
+name: build
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  mac:
+    runs-on: macos-14
+    strategy:
+      matrix:
+        arch: [arm64, x64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx electron-builder --mac dir --${{ matrix.arch }} --publish never
+      - name: Sign (ad-hoc), zip and dmg
+        run: |
+          V=$(node -p "require('./package.json').version")
+          D=dist/mac-${{ matrix.arch }}; [ "${{ matrix.arch }}" = "x64" ] && D=dist/mac
+          codesign --force --deep --sign - "$D/Corte Seco.app"
+          ditto -c -k --sequesterRsrc --keepParent "$D/Corte Seco.app" "dist/Corte-Seco-$V-mac-${{ matrix.arch }}.zip"
+          mkdir -p dmgroot && cp -R "$D/Corte Seco.app" dmgroot/ && ln -s /Applications dmgroot/Aplicativos
+          hdiutil create -volname "Corte Seco" -srcfolder dmgroot -ov -format UDZO "dist/Corte-Seco-$V-mac-${{ matrix.arch }}.dmg"
+      - uses: actions/upload-artifact@v4
+        with: { name: mac-${{ matrix.arch }}, path: "dist/Corte-Seco-*-mac-*" }
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx electron-builder --win nsis --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with: { name: windows, path: "dist/Corte-Seco-*-windows-*.exe" }
+  release:
+    needs: [mac, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('build-{0}', github.run_number) }}
+          name: Corte Seco ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('build {0}', github.run_number) }}
+          files: out/*
+          body: |
+            **Mac com chip M (M1–M4):** baixe o `.dmg` ou o `.zip` com `arm64`.
+            **Mac Intel:** o arquivo com `x64`.
+            **Windows:** o `instalador.exe`.
+            Primeira abertura no Mac: se aparecer o aviso de segurança, vá em Ajustes do Sistema → Privacidade e Segurança → "Abrir mesmo assim".
