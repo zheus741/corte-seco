@@ -5,7 +5,7 @@ acha os melhores cortes, legenda no estilo viral com a sua marca e exporta mais 
 O vídeo não sai do computador.
 
 ## Versão web
-Abra o site no Chrome ou no Edge (no Mac ou no Windows). Tudo roda no navegador: o vídeo não é enviado para lugar nenhum.
+**https://corte-seco.vercel.app** — abra no Chrome ou no Edge (no Mac ou no Windows). Tudo roda no navegador: o vídeo não é enviado para lugar nenhum.
 - Para ter um ícone no Dock: menu do Chrome → "Instalar Corte Seco". Depois da primeira visita, abre até sem internet.
 - Em Exportar → "Escolher pasta", os vídeos vão direto para uma pasta sua (sem passar pelos Downloads).
 - O site é a pasta `site/`, gerada por `python3 web/build.py` a partir de `app/`. Na Vercel: Root Directory = `site`,
