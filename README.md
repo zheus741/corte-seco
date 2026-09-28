@@ -1,8 +1,11 @@
 # Corte Seco
 
-Editor de vídeo automático que roda no seu computador (navegador, Mac e Windows): transcreve, tira pausas e vícios,
-acha os melhores cortes, legenda no estilo viral com a sua marca e exporta mais rápido que o tempo real.
-O vídeo não sai do computador.
+Editor de vídeo que roda no seu computador (navegador, Mac e Windows): transcreve, acha os melhores cortes e,
+quando você aplica a edição inteligente, tira pausas, vícios e takes repetidos e põe legenda viral, zoom e gancho
+com a sua marca. Exporta mais rápido que o tempo real. O vídeo não sai do computador.
+
+O vídeo sempre abre como foi gravado: a edição inteligente só entra quando você clica em **Edição inteligente**
+(no alto da tela), escolhe o que entra e aplica. Dá para desfazer ou voltar ao original a qualquer momento.
 
 ## Versão web
 **https://corte-seco.vercel.app** — abra no Chrome ou no Edge (no Mac ou no Windows). Tudo roda no navegador: o vídeo não é enviado para lugar nenhum.

@@ -70,6 +70,19 @@ p{margin:0}
 .btn.ghost:hover{color:var(--ink);background:var(--raise)}
 .btn.ai{background:var(--ai-soft);border-color:rgba(169,148,255,.4);color:#DCD3FF}
 .btn.ai:hover{background:rgba(169,148,255,.22)}
+.btn.smart{background:var(--amber-soft);border-color:rgba(244,185,66,.6);color:var(--amber);white-space:nowrap}
+.btn.smart:hover{background:rgba(244,185,66,.22);border-color:var(--amber)}
+.btn.smart .ic-ok{display:none}
+.btn.smart.on{background:var(--raise);border-color:var(--line2);color:var(--ink)}
+.btn.smart.on:hover{background:var(--raise2)}
+.btn.smart.on .ic-ok{display:block;color:var(--keep)}
+.btn.smart.on .ic-spark{display:none}
+.smart-list{display:grid;gap:0;border:1px solid var(--line);background:var(--well)}
+.smart-list .switch{padding:9px 12px;margin:0}
+.smart-list .switch+.switch{border-top:1px solid var(--line)}
+.smart-list .switch small{display:block;margin-top:2px}
+.smart-sum{font-size:13px;color:var(--ink2)}
+.smart-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
 .btn.block{width:100%}
 .btn[aria-pressed="true"],.btn.ghost[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--amber-ink)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
@@ -522,6 +535,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
   <div class="file" id="fileInfo"></div>
   <div class="seg mode-seg" id="modeSeg" hidden><button type="button" data-m="cuts" aria-pressed="true">Cortes</button><button type="button" data-m="mont" aria-pressed="false">Edição</button></div>
   <span class="local-pill" title="Transcrição e edição rodam neste navegador">● processamento local</span>
+  <button class="btn smart" id="smartBtn" type="button" hidden aria-haspopup="dialog"><svg class="ic-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3l1.8 4.9L19 9.5l-5.2 1.7L12 16l-1.8-4.8L5 9.5l5.2-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><svg class="ic-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span class="nb-label">Edição inteligente</span></button>
   <button class="btn primary" id="topExport" hidden>Exportar</button>
   <button class="btn" id="installBtn" hidden title="Instalar o Corte Seco como app neste computador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><path d="M12 3v11M7 9l5 5 5-5M4 17v3h16v-3"/></svg><span class="nb-label">Instalar app</span></button>
   <button class="btn ghost" id="setBtn" hidden aria-label="Configurações" title="Configurações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
@@ -533,9 +547,9 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 <section class="start" id="scrStart">
   <div class="hero">
     <div class="hero-copy">
-      <p class="eyebrow hero-eyebrow"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#logoMark"/></svg><span id="heroEyebrow">Edição automática para Reels</span></p>
+      <p class="eyebrow hero-eyebrow"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#logoMark"/></svg><span id="heroEyebrow">Edição inteligente para Reels</span></p>
       <h1>Solte o vídeo.<br><span class="slice" data-t="Saem os cortes.">Saem os cortes.</span></h1>
-      <p class="lede" id="heroLede">Transcreve, tira as pausas, acha os melhores trechos e coloca legenda viral com a sua marca. O vídeo não sai do seu computador.</p>
+      <p class="lede" id="heroLede">Transcreve, acha os melhores trechos e, quando você mandar, tira as pausas e coloca legenda viral com a sua marca. O vídeo não sai do seu computador.</p>
       <div class="goals" id="goalSeg" role="group" aria-label="O que você quer fazer com o vídeo">
         <label class="goal" data-v="cuts" id="drop">
           <input type="file" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" data-goal="cuts" aria-label="Achar os melhores cortes: escolher vídeo">
@@ -548,7 +562,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
           <input type="file" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" data-goal="edit" aria-label="Limpar o vídeo inteiro: escolher vídeo">
           <span class="g-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 7h6v10H3zM15 7h6v10h-6z"/><path d="M11 9l2 6M13 9l-2 6"/></svg></span>
           <b>Limpar o vídeo inteiro</b>
-          <span class="gp">Vídeo gravado para um post. Tira pausas e vícios, põe legenda e abre na linha do tempo.</span>
+          <span class="gp">Vídeo gravado para um post. Abre inteiro na linha do tempo; pausas, vícios e legenda saem num clique, quando você quiser.</span>
           <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte o vídeo aqui ou clique</span>
         </label>
       </div>
@@ -615,8 +629,8 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 
   <ol class="how">
     <li><span class="n">1</span><b>Solte o vídeo</b><p>MP4, MOV ou WebM, do celular ou da câmera.</p></li>
-    <li><span class="n">2</span><b>Ele transcreve e limpa</b><p>Tira pausas, “ahn”, “hum” e frases repetidas.</p></li>
-    <li><span class="n">3</span><b>Escolha corte e estilo</b><p>Legenda viral, logo, formato 9:16 com o rosto no centro.</p></li>
+    <li><span class="n">2</span><b>Ele transcreve e marca</b><p>Acha pausas, “ahn”, “hum” e frases repetidas, sem cortar nada ainda.</p></li>
+    <li><span class="n">3</span><b>Você aplica a edição</b><p>Um clique corta o que foi marcado e põe legenda viral, zoom e gancho. Você escolhe o que entra.</p></li>
     <li><span class="n">4</span><b>Exporte tudo de uma vez</b><p>Reels, Feed e YouTube, com .srt, capa e texto do post.</p></li>
   </ol>
 </section>
@@ -1059,6 +1073,23 @@ Object.assign(st.fmt, store.get('cs:fmt', {}));
 Object.assign(st.brand, store.get('cs:brand', {}), { logo: null });
 Object.assign(st.cuts, store.get('cs:cuts', {}), { thr: null });
 Object.assign(st.opts, store.get('cs:opts', {}));
+/* Edição inteligente: nada disso entra sozinho. Cada vídeo abre como foi gravado e a pessoa aplica.
+   As seis chaves valem por projeto (salvas com ele); smartPick é o que a pessoa escolheu da última vez. */
+const SMART = [
+  { k: 'silence', path: 'cuts.silence', label: 'Cortar silêncios', cut: true },
+  { k: 'fillers', path: 'cuts.fillers', label: 'Cortar vícios (ahn, hum…)', cut: true },
+  { k: 'takes', path: 'cuts.takes', label: 'Cortar takes repetidos', cut: true },
+  { k: 'captions', path: 'style.on', label: 'Legendas dinâmicas' },
+  { k: 'zoom', path: 'fmt.autoZoom', label: 'Zoom alternado nos cortes' },
+  { k: 'hook', path: 'fmt.hook', label: 'Gancho na tela no início' }
+];
+const SMART_PATHS = new Set(SMART.map(s => s.path));
+const smartNone = () => Object.fromEntries(SMART.map(s => [s.k, false]));
+const smartNow = () => Object.fromEntries(SMART.map(s => [s.k, !!getPath(s.path)]));
+const smartAny = () => SMART.some(s => !!getPath(s.path));
+function setSmart(f) { for (const s of SMART) setPath(s.path, !!(f && f[s.k])); }
+let smartPick = store.get('cs:smartPick', null);
+if (!smartPick) { smartPick = smartNow(); if (!SMART.some(s => smartPick[s.k])) smartPick = Object.fromEntries(SMART.map(s => [s.k, true])); store.set('cs:smartPick', smartPick); }
 let userPresets = store.get('cs:presets', []);
 let dirty = true;
 
@@ -1068,6 +1099,8 @@ function show(id) {
   $('#newBtn').hidden = id === 'scrStart';
   $('#modeSeg').hidden = !(id === 'scrEdit' || id === 'scrMont');
   $('#topExport').hidden = !(id === 'scrEdit' || id === 'scrMont');
+  $('#smartBtn').hidden = !(id === 'scrEdit' || id === 'scrMont');
+  if (id === 'scrEdit' || id === 'scrMont') updateSmartUI();
 }
 function setFileInfo() {
   const el = $('#fileInfo');
@@ -1356,7 +1389,7 @@ async function startAnalysis(file, force) {
   const myWork = work;
   show('scrWork');
   { const lang = ($('#optLang').selectedOptions[0] || {}).textContent || '', mb = $(`#optModel button[data-v="${st.opts.model}"]`), len = ($('#optLen').selectedOptions[0] || {}).textContent || ''; $('#workSet').textContent = [st.opts.goal === 'edit' ? 'Limpar o vídeo inteiro' : 'Achar os melhores cortes', lang, 'transcrição ' + (mb ? mb.textContent.toLowerCase() : ''), st.opts.goal === 'edit' ? '' : 'cortes de ' + len].filter(Boolean).join(' · '); }
-  $('#cutsStageLabel').textContent = st.opts.goal === 'edit' ? 'Tirando pausas e montando a edição' : 'Mapeando pausas e sugerindo cortes';
+  $('#cutsStageLabel').textContent = st.opts.goal === 'edit' ? 'Marcando pausas e montando a linha do tempo' : 'Marcando pausas e sugerindo cortes';
   $('#workFile').textContent = file.name;
   $('#workTitle').textContent = 'Analisando';
   $('#live').innerHTML = ''; $('#workErr').hidden = true; $('#workMeter').style.width = '0%';
@@ -1399,6 +1432,7 @@ async function startAnalysis(file, force) {
   }
   pcm = null;
   stage('cuts', 'on');
+  if (!restored) setSmart(smartNone()); // abre como foi gravado: a edição inteligente só entra quando a pessoa aplica
   computeRemoval();
   const goalEdit = st.opts.goal === 'edit';
   if (!st.clips.length) {
@@ -1407,14 +1441,14 @@ async function startAnalysis(file, force) {
   }
   if (goalEdit) { st.cur = 'full'; if (!st.clips.find(c => c.id === 'full')) st.clips.unshift(fullClip()); }
   refreshClip();
-  stage('cuts', 'done', goalEdit ? `saem ${fmtT(st.dur - sumRanges(st.ranges))} de pausas e vícios` : `${st.clips.length - 1} sugestões`);
+  { const pv = smartSecs(smartPick, fullClip()); stage('cuts', 'done', goalEdit ? (pv > 0.05 ? `${fmtT(pv)} de pausas e vícios marcados` : 'pronto') : `${st.clips.length - 1} sugestões`); }
   work = null;
   saveProject();
   openEditor();
   if (goalEdit) setMode('mont');
   setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
   if (restored) toast('Continuando de onde você parou.', 2400);
-  else if (goalEdit && !Q.running) toast('Pronto: saíram pausas e vícios; entraram legenda, zoom alternado e gancho. Dá para ligar e desligar cada um na aba Clipe.', 6500);
+  else if (!Q.running) toastAction(goalEdit ? 'Pronto. O vídeo abriu como foi gravado: nada foi cortado ainda.' : 'Pronto. Os cortes abriram como foram gravados: nada foi limpo ainda.', 'Edição inteligente…', openSmart, 12000);
   return true;
 }
 
@@ -1668,7 +1702,7 @@ function saveProject() {
     const data = {
       v: 1, lang: st.lang,
       segs: st.segs.map(s => ({ start: s.start, end: s.end, text: s.text, words: s.words.map(w => ({ w: w.w, start: w.start, end: w.end, del: w.del || undefined, nocap: w.nocap || undefined, emph: w.emph })) })),
-      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta()
+      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow()
     };
     const key = projectKey(st.file, st.model);
     idb.putProj(key, data).then(ok => { if (!ok) store.set(key, data); else { try { localStorage.removeItem(key); } catch (e) {} } markSaved(); });
@@ -1683,6 +1717,8 @@ function restoreProject(d) {
   if (d.clips && d.clips.length) { st.clips = d.clips; st.cur = d.cur || d.clips[0].id; }
   if (d.mont && typeof d.mont === 'object') montages = d.mont;
   st.reframe = d.reframe && d.reframe.segs ? d.reframe : null;
+  // projetos de antes desta versão foram abertos com a limpeza já aplicada: continuam como estavam
+  setSmart(d.smart && typeof d.smart === 'object' ? d.smart : smartPick);
   OFFLINE = new Map((d.media || []).filter(x => x && x.id).map(x => [x.id, x]));
   relinkOffline();
 }
@@ -1732,12 +1768,13 @@ function findTakes() {
   }
   return res;
 }
-function computeRemoval() {
+/* what would be removed with these switches (f = {silence, fillers, takes}); words cut by hand always go */
+function removalFor(f) {
   const list = [];
   const kinds = { sil: 0, fill: 0, take: 0, del: 0 };
-  st.autoWord = new Set();
-  st.takeSegs = st.cuts.takes ? findTakes() : new Set();
-  if (st.cuts.silence && st.env) {
+  const autoWord = new Set();
+  const takeSegs = f.takes ? findTakes() : new Set();
+  if (f.silence && st.env) {
     const thr = curThr();
     const env = st.env, minF = Math.max(1, Math.round(st.cuts.minSil / 0.02));
     let i = 0;
@@ -1749,34 +1786,43 @@ function computeRemoval() {
       } else i++;
     }
   }
-  const fs = st.cuts.fillers ? fillerSet() : new Set();
+  const fs = f.fillers ? fillerSet() : new Set();
   let run = null;
   const pushRun = () => { if (run) { list.push([snap(run[0], -1), snap(run[1], 1)]); run = null; } };
   for (const w of st.words) {
     let why = null;
     if (w.del) why = 'del';
-    else if (st.takeSegs.has(w.seg)) why = 'take';
+    else if (takeSegs.has(w.seg)) why = 'take';
     else if (fs.size && fs.has(normKeepAccent(w.w))) why = 'fill';
     if (why) {
-      if (why !== 'del') st.autoWord.add(w.i);
+      if (why !== 'del') autoWord.add(w.i);
       kinds[why]++;
       if (run && w.start - run[1] < 0.25) run[1] = w.end; else { pushRun(); run = [w.start, w.end]; }
     } else pushRun();
   }
   pushRun();
-  for (const i of st.takeSegs) { const a = st.segs[i], b = st.segs[i + 1]; if (b) list.push([a.start, b.start]); }
-  st.removed = mergeIntervals(list);
-  st.removedKinds = kinds;
+  for (const i of takeSegs) { const a = st.segs[i], b = st.segs[i + 1]; if (b) list.push([a.start, b.start]); }
+  return { removed: mergeIntervals(list), kinds, autoWord, takeSegs };
+}
+function computeRemoval() {
+  const r = removalFor(st.cuts);
+  st.removed = r.removed; st.removedKinds = r.kinds; st.autoWord = r.autoWord; st.takeSegs = r.takeSegs;
   refreshClip();
+}
+/* seconds the smart edit would take out of clip c with the switches in f (preview, changes nothing) */
+function smartSecs(f, c) {
+  c = c || curClip(); if (!c) return 0;
+  const r = removalFor({ silence: !!f.silence, fillers: !!f.fillers, takes: !!f.takes });
+  return Math.max(0, (c.end - c.start) - sumRanges(rangesFor(c, r.removed)));
 }
 function isRemoved(t) {
   const r = st.removed; let lo = 0, hi = r.length - 1;
   while (lo <= hi) { const m = (lo + hi) >> 1; if (r[m][1] <= t) lo = m + 1; else if (r[m][0] > t) hi = m - 1; else return true; }
   return false;
 }
-function rangesFor(c) {
+function rangesFor(c, removed) {
   const out = []; let t = c.start;
-  for (const [a, b] of st.removed) {
+  for (const [a, b] of removed || st.removed) {
     if (b <= c.start) continue;
     if (a >= c.end) break;
     if (a > t) out.push([t, Math.min(a, c.end)]);
@@ -1855,7 +1901,7 @@ function renderClips() {
     const meta = document.createElement('div'); meta.className = 'meta';
     const tg = document.createElement('span'); tg.className = 'tag' + (c.src === 'ai' ? ' ai' : c.src === 'manual' ? ' man' : '');
     tg.textContent = { ai: 'IA', auto: 'sugerido', manual: 'manual', full: 'original' }[c.src] || c.src;
-    const d = document.createElement('span'); d.className = 'mono'; d.textContent = c.src === 'full' ? `${fmtT(c.end - c.start)} → ${fmtT(outD)} sem pausas` : `${fmtT(outD)} · de ${fmtT(c.start)} a ${fmtT(c.end)}`;
+    const d = document.createElement('span'); d.className = 'mono'; d.textContent = c.src === 'full' ? (c.end - c.start - outD > 0.05 ? `${fmtT(c.end - c.start)} → ${fmtT(outD)} ${smartAny() ? 'sem pausas' : 'com seus cortes'}` : `${fmtT(c.end - c.start)} · como foi gravado`) : `${fmtT(outD)} · de ${fmtT(c.start)} a ${fmtT(c.end)}`;
     meta.append(tg, d); body.appendChild(meta);
     if (c.why) { const y = document.createElement('p'); y.className = 'why'; y.textContent = c.why; body.appendChild(y); }
     el.append(sc, body);
@@ -1893,9 +1939,12 @@ function updateStats() {
   const c = curClip(); if (!c) return;
   const orig = c.end - c.start, out = sumRanges(st.ranges);
   const cuts = Math.max(0, st.ranges.length - 1) + (st.ranges.length && st.ranges[0][0] > c.start + 0.05 ? 1 : 0);
-  $('#stats').innerHTML = `De <b>${fmtT(orig)}</b> para <b>${fmtT(out)}</b> · ${cuts} ${cuts === 1 ? 'corte' : 'cortes'} de pausa e fala · ${st.pages.length} legendas`;
+  const cutOn = st.cuts.silence || st.cuts.fillers || st.cuts.takes;
+  if (smartAny()) $('#stats').innerHTML = `De <b>${fmtT(orig)}</b> para <b>${fmtT(out)}</b> · ${cuts} ${cuts === 1 ? 'corte' : 'cortes'} de pausa e fala${st.style.on ? ` · ${st.pages.length} legendas` : ''}`;
+  else $('#stats').innerHTML = (orig - out > 0.05 ? `De <b>${fmtT(orig)}</b> para <b>${fmtT(out)}</b> com o que você cortou` : `<b>${fmtT(orig)}</b> como foi gravado`) + ' · edição inteligente não aplicada';
   const k = st.removedKinds;
-  $('#cleanStats').innerHTML = `No vídeo todo: <b>${k.sil}</b> pausas, <b>${k.fill}</b> vícios, <b>${k.del}</b> palavras cortadas à mão${st.cuts.takes ? `, <b>${st.takeSegs.size}</b> takes repetidos` : ''}. Saem <b>${fmtT(sumRanges(st.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>.`;
+  if (cutOn) $('#cleanStats').innerHTML = `No vídeo todo: <b>${k.sil}</b> pausas, <b>${k.fill}</b> vícios, <b>${k.del}</b> palavras cortadas à mão${st.cuts.takes ? `, <b>${st.takeSegs.size}</b> takes repetidos` : ''}. Saem <b>${fmtT(sumRanges(st.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>.`;
+  else { const pv = removalFor({ silence: true, fillers: true, takes: true }), kk = pv.kinds; $('#cleanStats').innerHTML = `${k.del ? `Por enquanto só saem as ${k.del} palavras que você cortou à mão.` : 'Nada cortado ainda.'} No vídeo todo há <b>${kk.sil}</b> pausas, <b>${kk.fill}</b> vícios e <b>${pv.takeSegs.size}</b> ${pv.takeSegs.size === 1 ? 'take repetido' : 'takes repetidos'} (<b>${fmtT(sumRanges(pv.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>). Ligue abaixo o que quer cortar, ou use a Edição inteligente no alto.`; }
   $('#takesNote').textContent = st.cuts.takes ? `${st.takeSegs.size} ${st.takeSegs.size === 1 ? 'take repetido encontrado' : 'takes repetidos encontrados'}. Fica só a última versão de cada frase.` : 'Quando você repete uma frase, fica só a última versão.';
   updateExportCard();
 }
@@ -2706,7 +2755,7 @@ async function applyLooks(sn) {
   replaceObj(st.style, JSON.parse(sn.style)); replaceObj(st.fmt, JSON.parse(sn.fmt)); const logo = st.brand.logo; replaceObj(st.brand, JSON.parse(sn.brand)); st.brand.logo = logo; replaceObj(st.cuts, JSON.parse(sn.cuts));
   restoreSegs(sn.segs); st.clips = JSON.parse(sn.clips); st.cur = sn.cur;
   await ensureFont(st.style.font, st.style.weight);
-  buildPages(); refreshClip(true); renderClips(); renderTranscript(); syncControls(); saveLooks(); saveProject(); onCleanupChanged(); dirty = true;
+  buildPages(); refreshClip(true); renderClips(); renderTranscript(); syncControls(); saveLooks(); saveProject(); onCleanupChanged(); updateSmartUI(); dirty = true;
   if (MODE === 'mont') { buildMontPages(); M.dirty = true; }
 }
 function undoLooks() { const sn = LU.undo.pop(); if (!sn) { toast('Nada para desfazer.', 1200); return; } LU.redo.push(looksSnap(sn.what)); applyLooks(sn); updLooksBtns(); toast(sn.what ? `Desfeito: ${sn.what}.` : 'Desfeito.', 1400); }
@@ -2715,7 +2764,7 @@ function updLooksBtns() { const u = $('#cUndo'), r = $('#cRedo'); if (u) u.disab
 $('#cUndo').addEventListener('click', undoLooks); $('#cRedo').addEventListener('click', redoLooks);
 let lastBind = { path: '', t: 0 };
 function pushLooksFor(path) { const now = performance.now(); if (path !== lastBind.path || now - lastBind.t > 1500) pushLooks(LOOK_NAMES[path] || 'ajuste'); lastBind = { path, t: now }; }
-const LOOK_NAMES = { 'clip.title': 'título do corte', 'clip.hook': 'gancho na tela', 'style.hi': 'cor do destaque', 'style.hi2': 'cor das palavras-chave', 'style.color': 'cor do texto', 'style.size': 'tamanho da legenda', 'style.y': 'posição da legenda', 'style.words': 'palavras por vez', 'style.mode': 'tipo de destaque', 'style.anim': 'animação', 'style.on': 'mostrar legenda', 'fmt.aspect': 'formato', 'fmt.fit': 'preenchimento', 'fmt.zoom': 'zoom', 'fmt.x': 'enquadramento', 'fmt.y': 'enquadramento', 'brand.on': 'logo no vídeo', 'brand.pos': 'posição do logo', 'cuts.silence': 'cortar silêncios', 'cuts.fillers': 'cortar vícios', 'cuts.takes': 'cortar takes' };
+const LOOK_NAMES = { 'fmt.autoZoom': 'zoom alternado', 'fmt.hook': 'gancho na tela', 'clip.title': 'título do corte', 'clip.hook': 'gancho na tela', 'style.hi': 'cor do destaque', 'style.hi2': 'cor das palavras-chave', 'style.color': 'cor do texto', 'style.size': 'tamanho da legenda', 'style.y': 'posição da legenda', 'style.words': 'palavras por vez', 'style.mode': 'tipo de destaque', 'style.anim': 'animação', 'style.on': 'mostrar legenda', 'fmt.aspect': 'formato', 'fmt.fit': 'preenchimento', 'fmt.zoom': 'zoom', 'fmt.x': 'enquadramento', 'fmt.y': 'enquadramento', 'brand.on': 'logo no vídeo', 'brand.pos': 'posição do logo', 'cuts.silence': 'cortar silêncios', 'cuts.fillers': 'cortar vícios', 'cuts.takes': 'cortar takes' };
 
 /* ---------------- controls binding ---------------- */
 function getPath(p) { const [o, k] = p.split('.'); return st[o][k]; }
@@ -2751,6 +2800,7 @@ function onChange(path) {
   if (path === 'fmt.aspect') { sizeCanvas(exporting ? 1 : PREVIEW_SCALE); syncAspectChips(onChange.prevAspect); }
   if (path === 'fmt.autoFrame' && st.fmt.autoFrame && !st.reframe && !rfJob) runReframe(false);
   onChange.prevAspect = st.fmt.aspect;
+  if (SMART_PATHS.has(path)) { saveProject(); updateSmartUI(); if (!path.startsWith('cuts.')) updateStats(); }
   syncControls(); dirty = true; saveLooks();
 }
 $$('[data-bind]').forEach(el => {
@@ -2783,7 +2833,7 @@ $('#cutLevel').addEventListener('click', e => {
   if (MODE !== 'mont') pushLooks('quanto cortar');
   Object.assign(st.cuts, { silence: true, thr: null, lvlD: L.d, minSil: L.minSil, pad: L.pad });
   computeRemoval(); const after = removedSecs(), dl = after - before;
-  onChange('cuts.minSil');
+  onChange('cuts.minSil'); saveProject(); updateSmartUI();
   toast(Math.abs(dl) < 0.05 ? `${b.textContent}: nesse vídeo não muda nada.` : `${b.textContent}: agora saem ${fmtT(after)} de pausas (${dl > 0 ? 'mais' : 'menos'} ${fmtT(Math.abs(dl))}).`, 2600);
 });
 $('#fontSel').addEventListener('change', async e => {
@@ -2833,8 +2883,8 @@ function presetSample(p) {
     Object.assign(st.style, STYLE_BASE, p.style || p, { preset: p.key });
     delete st.style.key; delete st.style.label; delete st.style.group;
     await ensureFont(st.style.font, st.style.weight);
-    buildPages(); syncControls(); saveLooks(); dirty = true; if (MODE === 'mont') M.dirty = true;
-    toastAction(`Estilo “${p.label}” aplicado.`, 'Desfazer', MODE !== 'mont' ? undoLooks : async () => { replaceObj(st.style, JSON.parse(prevStyle)); await ensureFont(st.style.font, st.style.weight); buildPages(); syncControls(); saveLooks(); dirty = true; M.dirty = true; }, 8000);
+    buildPages(); syncControls(); saveLooks(); saveProject(); updateSmartUI(); updateStats(); dirty = true; if (MODE === 'mont') { M.dirty = true; renderEC(); }
+    toastAction(`Estilo “${p.label}” aplicado.`, 'Desfazer', MODE !== 'mont' ? undoLooks : async () => { replaceObj(st.style, JSON.parse(prevStyle)); await ensureFont(st.style.font, st.style.weight); buildPages(); syncControls(); saveLooks(); saveProject(); updateSmartUI(); dirty = true; M.dirty = true; }, 8000);
   };
   return el;
 }
@@ -2856,7 +2906,7 @@ $('#emphSw').addEventListener('change', e => { if (MODE !== 'mont') pushLooks('p
 $('#savePreset').addEventListener('click', () => {
   const n = userPresets.length + 1;
   const label = `Meu estilo ${n}`;
-  const style = Object.assign({}, st.style); delete style.preset;
+  const style = Object.assign({}, st.style); delete style.preset; delete style.on;
   userPresets.push({ label, style });
   store.set('cs:presets', userPresets);
   st.style.preset = 'u:' + label;
@@ -3548,7 +3598,7 @@ async function openSettings() {
   if (r === 'save') { await DESK.settings.set({ claudeKey: key.value.trim() }); toast('Configurações salvas.', 1500); updAiBtn(); }
 }
 if (DESK) {
-  $('#heroEyebrow').textContent = 'Edição automática para Reels';
+  $('#heroEyebrow').textContent = 'Edição inteligente para Reels';
   $('#workHint').textContent = 'Pode minimizar a janela: o trabalho continua. Nada é enviado para a internet.';
 }
 if (DESK) { $('#fontNote').textContent = 'Suas fontes ficam guardadas neste computador.'; }
@@ -3588,6 +3638,8 @@ async function startQueue(files) {
   for (const [v, l] of [['cuts', 'Achar os melhores cortes'], ['edit', 'Limpar o vídeo inteiro']]) { const b = el('button', null, l); b.type = 'button'; b.dataset.v = v; b.setAttribute('aria-pressed', String(v === g)); b.onclick = () => { g = v; $$('button', goal).forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === g))); }; goal.appendChild(b); }
   const f1 = el('div', 'field'); f1.append(el('span', 'lbl', 'O que fazer com cada vídeo'), goal);
   const mk = (label, on) => { const l = el('label', 'switch'); const i = el('input'); i.type = 'checkbox'; i.checked = on; l.append(el('span', null, label), i); return [l, i]; };
+  const [lSmart, iSmart] = mk('Aplicar a edição inteligente em cada vídeo', store.get('cs:qSmart', false));
+  { const inc = SMART.filter(s => smartPick[s.k]).map(s => s.label.replace(/ \(.*\)$/, '').toLowerCase()); if (inc.length) { const sm = el('small', 'fine', 'Entra: ' + inc.join(', ') + '. Muda no botão Edição inteligente.'); sm.style.display = 'block'; sm.style.marginTop = '2px'; lSmart.querySelector('span').appendChild(sm); } }
   const [lExp, iExp] = mk('Exportar sozinho no final', true);
   const [lPack, iPack] = mk('Com legenda .srt, capa e texto do post', true);
   const hasAI = await aiAvailable();
@@ -3596,11 +3648,14 @@ async function startQueue(files) {
   const chips = el('div', 'chips'); const cur = selectedAspects();
   for (const [v, l] of [['9:16', '9:16 Reels'], ['4:5', '4:5 Feed'], ['1:1', '1:1'], ['16:9', '16:9 YouTube']]) { const lb = el('label', 'chip'); const i = el('input'); i.type = 'checkbox'; i.value = v; i.checked = cur.includes(v); lb.append(i, el('span', null, l)); chips.appendChild(lb); }
   const f2 = el('div', 'field'); f2.append(el('span', 'lbl', 'Formatos'), chips);
-  const note = el('p', 'fine', `Usa o estilo de legenda${st.brand.on && st.brand.logo ? ', o logo' : ''} e a transcrição “${(deskModels ? (deskModels.find(m => m.id === st.opts.model) || {}).label : st.opts.model === 'base' ? 'Precisa' : 'Rápida') || ''}” que estão escolhidos agora.${DESK ? ' Os arquivos vão para a pasta de exportação, uma subpasta por vídeo.' : ''}`);
-  const r = await openModal(`${files.length} vídeos na fila`, [f1, f2, lExp, lPack, lAI, note], [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Começar', value: 'go', primary: true }]);
+  const note = el('p', 'fine');
+  const updNote = () => { note.textContent = `${iSmart.checked ? 'Usa' : 'Sem a edição inteligente, cada vídeo sai como foi gravado, sem cortar pausas e sem legenda. Usa'} o estilo de legenda${st.brand.on && st.brand.logo ? ', o logo' : ''} e a transcrição “${(deskModels ? (deskModels.find(m => m.id === st.opts.model) || {}).label : st.opts.model === 'base' ? 'Precisa' : 'Rápida') || ''}” que estão escolhidos agora.${DESK ? ' Os arquivos vão para a pasta de exportação, uma subpasta por vídeo.' : ''}`; };
+  iSmart.addEventListener('change', updNote); updNote();
+  const r = await openModal(`${files.length} vídeos na fila`, [f1, f2, lSmart, lExp, lPack, lAI, note], [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Começar', value: 'go', primary: true }]);
   if (r !== 'go') return;
   const aspects = $$('input', chips).filter(i => i.checked).map(i => i.value);
-  Q.opts = { goal: g, export: iExp.checked, pack: iPack.checked, ai: hasAI && iAI.checked, aspects: aspects.length ? aspects : ['9:16'] };
+  store.set('cs:qSmart', iSmart.checked);
+  Q.opts = { goal: g, smart: iSmart.checked && SMART.some(s => smartPick[s.k]), export: iExp.checked, pack: iPack.checked, ai: hasAI && iAI.checked, aspects: aspects.length ? aspects : ['9:16'] };
   Q.items = files.map(f => ({ file: f, status: 'wait', note: '' })); Q.stop = false;
   $('#queueBox').hidden = false; renderQueue(); runQueue();
 }
@@ -3617,6 +3672,7 @@ async function runQueue() {
     if (!ok) { it.status = 'err'; it.note = 'não deu para analisar esse arquivo'; renderQueue(); continue; }
     $('#queueBox').classList.add('min'); renderQueue();
     if (Q.opts.ai && st.opts.goal === 'cuts') { it.note = 'escolhendo os cortes com IA'; renderQueue(); try { await aiSuggest(); } catch (e) {} }
+    if (Q.opts.smart) { it.note = 'aplicando a edição inteligente'; renderQueue(); applySmart(smartPick, { quiet: true }); }
     if (Q.opts.export && !Q.stop) {
       $$('#expAspects input').forEach(b => { b.checked = Q.opts.aspects.includes(b.value); });
       it.note = 'exportando'; renderQueue();
@@ -3633,6 +3689,82 @@ async function runQueue() {
   const msg = `Fila pronta: ${n} de ${Q.items.length} vídeos${files ? `, ${files} ${files === 1 ? 'arquivo' : 'arquivos'} de vídeo` : ''} em ${fmtT((performance.now() - t0) / 1000)}.`;
   if (DESK && last) toastAction(msg, 'Mostrar na pasta', () => DESK.files.reveal(last), 15000); else toast(msg, 8000);
 }
+
+/* ---------------- edição inteligente: só entra quando a pessoa aplica ---------------- */
+function updateSmartUI() {
+  const b = $('#smartBtn'); if (!b) return;
+  const n = SMART.filter(s => !!getPath(s.path)).length;
+  b.classList.toggle('on', n > 0);
+  const t = n ? `Edição inteligente aplicada (${n} de ${SMART.length} partes). Clique para mudar ou voltar ao original.` : 'Aplicar a edição inteligente: cortar pausas e vícios, pôr legenda, zoom e gancho.';
+  b.title = t; b.setAttribute('aria-label', t);
+  if (updateSmartUI.any !== undefined && updateSmartUI.any !== n > 0 && MODE === 'mont') renderEC();
+  updateSmartUI.any = n > 0;
+}
+function smartInfo() {
+  const pv = removalFor({ silence: true, fillers: true, takes: true }), k = pv.kinds, tk = pv.takeSegs.size;
+  const pl = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+  const pr = st.style.preset, lab = pr && PRESETS[pr] ? PRESETS[pr].label : pr && String(pr).startsWith('u:') ? String(pr).slice(2) : null;
+  const hook = MODE === 'mont' ? M.hook : (curClip() || {}).hook;
+  return {
+    silence: k.sil ? `${pl(k.sil, 'pausa encontrada', 'pausas encontradas')} no vídeo` : 'nenhuma pausa longa encontrada',
+    fillers: k.fill ? pl(k.fill, '“ahn”, “hum” ou parecido encontrado', '“ahn”, “hum” e parecidos encontrados') : 'nenhum “ahn” ou “hum” encontrado',
+    takes: tk ? `${pl(tk, 'frase repetida', 'frases repetidas')}: fica a última versão` : 'nenhuma frase repetida encontrada',
+    captions: `estilo ${lab ? '“' + lab + '”' : 'atual'}; troque na aba Legenda`,
+    zoom: `aproxima ${Math.round((st.fmt.zoomAmt - 1) * 100)}% um trecho sim, outro não`,
+    hook: hook ? `“${firstWords(hook, 8)}” nos primeiros ${fmtOut(st.fmt.hookDur, 's')}` : 'sem texto: escreva em “Gancho na tela”'
+  };
+}
+async function openSmart() {
+  if (exporting) { toast('Espere a exportação terminar.'); return; }
+  if (!st.segs.length && !st.dur) return;
+  if ($('#dlg').open) return;
+  pause(); if (MODE === 'mont') montPause();
+  const any = smartAny(), pick = Object.assign({}, any ? smartNow() : smartPick);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const info = smartInfo(), c = curClip();
+  const intro = el('p', 'fine', any ? 'Está aplicada neste vídeo. Mude o que entra e aplique de novo, ou volte ao vídeo como foi gravado.' : 'Nada muda no vídeo até você aplicar. Escolha o que entra:');
+  const list = el('div', 'smart-list');
+  const sum = el('p', 'smart-sum');
+  const upd = () => {
+    const orig = c.end - c.start, out = orig - smartSecs(pick, c);
+    sum.innerHTML = `${c.src === 'full' ? 'Vídeo inteiro' : 'Este corte'}: <b>${fmtT(orig)}</b> → <b>${fmtT(out)}</b>${orig - out > 0.05 ? ` <span class="fine">(saem ${fmtT(orig - out)})</span>` : ' <span class="fine">(nada é cortado)</span>'}`;
+    const ap = $('#dlgActions button[value="apply"]'); if (ap) ap.disabled = !SMART.some(s => pick[s.k]);
+  };
+  for (const s of SMART) {
+    const l = el('label', 'switch'); const sp = el('span', null, s.label); sp.appendChild(el('small', 'fine', info[s.k]));
+    const i = el('input'); i.type = 'checkbox'; i.checked = !!pick[s.k]; i.dataset.k = s.k;
+    i.addEventListener('change', () => { pick[s.k] = i.checked; upd(); });
+    l.append(sp, i); list.appendChild(l);
+  }
+  const body = [intro, list, sum];
+  if (MODE === 'mont' && !M.v1Auto) body.push(el('p', 'fine', 'Você mexeu no V1 à mão. Se mudar o que é cortado, o V1 é refeito com os cortes novos (dá para desfazer).'));
+  const actions = [{ label: 'Cancelar', value: 'cancel', ghost: true }];
+  if (any) actions.push({ label: 'Voltar ao original', value: 'orig' });
+  actions.push({ label: any ? 'Aplicar mudanças' : 'Aplicar', value: 'apply', primary: true });
+  const pr = openModal('Edição inteligente', body, actions, false);
+  upd();
+  const r = await pr;
+  if (r === 'apply') { smartPick = Object.assign({}, pick); store.set('cs:smartPick', smartPick); applySmart(pick); }
+  else if (r === 'orig') applySmart(smartNone(), { orig: true });
+}
+function applySmart(f, o = {}) {
+  const before = smartNow();
+  if (SMART.every(s => !!before[s.k] === !!f[s.k])) { if (!o.quiet) toast(o.orig ? 'O vídeo já está como foi gravado.' : 'Já estava assim: nada mudou.', 1800); return; }
+  const cutsChanged = SMART.some(s => s.cut && !!before[s.k] !== !!f[s.k]);
+  const outBefore = MODE === 'mont' ? seqEnd() : sumRanges(st.ranges);
+  const what = o.orig ? 'voltar ao original' : 'edição inteligente';
+  if (MODE === 'mont') { pushUndo(false, what); M.undo[M.undo.length - 1].smart = before; }
+  else pushLooks(what);
+  setSmart(f);
+  computeRemoval(); renderClips(); syncControls(); saveLooks();
+  if (MODE === 'mont') { if (cutsChanged) rebuildV1(true, true); else changed(); M.dirty = true; }
+  saveProject(); updateSmartUI(); updateStats(); dirty = true;
+  if (!o.quiet) {
+    const dl = outBefore - (MODE === 'mont' ? seqEnd() : sumRanges(st.ranges));
+    toastAction(o.orig ? 'Voltou ao vídeo como foi gravado.' : `Edição inteligente aplicada${dl > 0.05 ? `: saíram ${fmtT(dl)}` : ''}.`, 'Desfazer', MODE === 'mont' ? undo : undoLooks, 9000);
+  }
+}
+$('#smartBtn').addEventListener('click', openSmart);
 
 /* small in-app dialogs (window.prompt does not exist in the desktop app) */
 function openModal(title, body, actions, focusInput = true) {
@@ -3667,7 +3799,7 @@ function renderKits(sel) {
 }
 async function saveKits() { await idb.putKV('kits', kits); }
 function kitFromCurrent(name) {
-  const style = Object.assign({}, st.style); delete style.preset;
+  const style = Object.assign({}, st.style); delete style.preset; delete style.on;
   const b = Object.assign({}, st.brand);
   const fonts = [];
   return { name, v: 1, style, brand: b, fonts };
@@ -3675,7 +3807,7 @@ function kitFromCurrent(name) {
 async function applyKit(k) {
   if (!k) return;
   for (const f of k.fonts || []) if (f.data && !customFonts.includes(f.name)) { const bin = Uint8Array.from(atob(f.data), c => c.charCodeAt(0)); await addCustomFont(f.name, bin.buffer); idb.put({ name: f.name, data: bin.buffer }); }
-  Object.assign(st.style, STYLE_BASE, k.style, { preset: null });
+  Object.assign(st.style, STYLE_BASE, k.style, { preset: null, on: st.style.on }); // o kit muda o visual; ligar a legenda é com a pessoa
   const b = Object.assign({}, k.brand); const logo = b.logo; delete b.logo; Object.assign(st.brand, b);
   await setLogo(logo || null);
   fillFontSelect(); await ensureFont(st.style.font, st.style.weight);
@@ -3986,9 +4118,13 @@ function pushUndo(cap, what) {
   if (M.undo.length > 80) M.undo.shift();
   M.redo = []; updUndoBtns();
 }
-function applySnap(s) { M.clips = JSON.parse(s.clips); M.hook = s.hook; if (s.v1Auto != null) M.v1Auto = s.v1Auto; if (s.segs) restoreSegs(s.segs); M.sel.clear(); M.selCap = null; M.gap = null; changed(); updateV1Notes(); }
-function undo() { const s = M.undo.pop(); if (!s) { toast('Nada para desfazer.', 1200); return; } M.redo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what }); applySnap(s); toast(s.what ? `Desfeito: ${s.what}.` : 'Desfeito.', 1400); }
-function redo() { const s = M.redo.pop(); if (!s) return; M.undo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what }); applySnap(s); toast(s.what ? `Refeito: ${s.what}.` : 'Refeito.', 1400); }
+function applySnap(s) {
+  M.clips = JSON.parse(s.clips); M.hook = s.hook; if (s.v1Auto != null) M.v1Auto = s.v1Auto; if (s.segs) restoreSegs(s.segs);
+  if (s.smart) { setSmart(s.smart); computeRemoval(); renderClips(); syncControls(); saveLooks(); saveProject(); updateSmartUI(); }
+  M.sel.clear(); M.selCap = null; M.gap = null; changed(); updateV1Notes();
+}
+function undo() { const s = M.undo.pop(); if (!s) { toast('Nada para desfazer.', 1200); return; } M.redo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Desfeito: ${s.what}.` : 'Desfeito.', 1400); }
+function redo() { const s = M.redo.pop(); if (!s) return; M.undo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Refeito: ${s.what}.` : 'Refeito.', 1400); }
 function updUndoBtns() { const u = $('#tUndo'), r = $('#tRedo'); if (u) u.disabled = !M.undo.length; if (r) r.disabled = !M.redo.length; }
 
 /* ---------- sequence building ---------- */
@@ -4229,14 +4365,14 @@ function srcToT(s, list) {
   for (const c of v) { if (s >= c.in - 1e-6 && s < c.out) return c.tl + (s - c.in); if (c.in > s && (!next || c.in < next.in)) next = c; }
   return next ? next.tl : null;
 }
-function rebuildV1(fromUser) {
+function rebuildV1(fromUser, silent) {
   const cl = curClip(); if (!cl) return;
   const rs = rangesFor(cl);
   const sig = rs.map(r => r[0].toFixed(3) + '-' + r[1].toFixed(3)).join('|');
   const old = trackClips('V1');
   const oldSig = old.filter(c => c.media === 'm0').map(c => c.in.toFixed(3) + '-' + c.out.toFixed(3)).join('|');
   if (!fromUser && sig === oldSig) return;
-  pushUndo(false, 'refazer o vídeo principal');
+  if (!silent) pushUndo(false, 'refazer o vídeo principal');
   const props = ['scale', 'px', 'py', 'vol', 'opacity'];
   let tl = 0;
   const nv = rs.map(r => {
@@ -4259,7 +4395,7 @@ function rebuildV1(fromUser) {
   M.clips = M.clips.filter(k => k.track !== 'V1').concat(nv);
   M.v1Auto = true; M.sel.clear(); M.gap = null;
   changed(); updateV1Notes();
-  if (fromUser) toast('Limpeza reaplicada no V1. Dá para desfazer.', 2200);
+  if (fromUser && !silent) toast('Limpeza reaplicada no V1. Dá para desfazer.', 2200);
 }
 function onCleanupChanged() {
   if (MODE !== 'mont') return;
@@ -4657,8 +4793,9 @@ function drawTLBase() {
   for (const p of M.pages) {
     const x0 = X(p.start), x1 = X(Math.max(p.end, p.start + 0.1)); if (x1 < 0 || x0 > tlW) continue;
     const { bx, bw, by, bh } = blockBox(x0, x1, cy, chh);
-    g.fillStyle = M.trk.C1.hide ? '#3A2733' : TCOL.C1[0]; g.fillRect(bx, by, bw, bh);
-    g.fillStyle = M.trk.C1.hide ? '#46303E' : TCOL.C1[1]; g.fillRect(bx, by, bw, 2);
+    const capOff = M.trk.C1.hide || !st.style.on; // legenda desligada: blocos apagados, como a trilha escondida
+    g.fillStyle = capOff ? '#3A2733' : TCOL.C1[0]; g.fillRect(bx, by, bw, bh);
+    g.fillStyle = capOff ? '#46303E' : TCOL.C1[1]; g.fillRect(bx, by, bw, 2);
     if (bw > 14) { g.save(); g.beginPath(); g.rect(bx + 3, by, bw - 6, bh); g.clip(); g.fillStyle = TCOL.C1[2]; g.font = '500 10.5px ' + UIF; g.fillText(p.words.map(w => w.w).join(' '), bx + 4, by + bh / 2 + 1); g.restore(); }
     if (M.selCap != null && p.words.some(w => w.ref === M.selCap)) sel.push([x0, x1, cy, chh, true]);
   }
@@ -5116,14 +5253,19 @@ function renderEC() {
   }
   // nothing selected: sequence settings
   add(ecEl('h4', null, 'Edição inteligente'));
-  const sw = (label, path) => { const l = ecEl('label', 'switch'); l.append(ecEl('span', null, label)); const i = document.createElement('input'); i.type = 'checkbox'; i.checked = !!getPath(path); i.addEventListener('change', () => { setPath(path, i.checked); onChange(path); }); l.appendChild(i); return l; };
-  add(sw('Cortar silêncios', 'cuts.silence'), sw('Cortar vícios (ahn, hum…)', 'cuts.fillers'), sw('Cortar takes repetidos', 'cuts.takes'), sw('Legendas dinâmicas', 'style.on'), sw('Zoom alternado nos cortes', 'fmt.autoZoom'), sw('Gancho na tela no início', 'fmt.hook'));
-  if (!M.v1Auto) { const n = ecEl('div', 'v1note'); n.append(ecEl('span', null, 'O V1 foi editado à mão. Mudar a limpeza não refaz o V1 sozinho.')); const b = ecEl('button', 'btn', 'Reaplicar limpeza no V1'); b.onclick = () => rebuildV1(true); n.appendChild(b); add(n); }
-  else add(ecEl('p', 'fine', 'Enquanto você não mexer no V1 à mão, a limpeza e o que você cortar na aba Texto refazem a linha do tempo na hora.'));
+  const sOn = smartAny();
+  add(ecEl('p', 'fine', sOn ? 'Aplicada neste vídeo. Ligue ou desligue cada parte aqui.' : 'Ainda não aplicada: o vídeo está como foi gravado. Nada entra sem você mandar.'));
+  const sb = ecEl('button', sOn ? 'btn block' : 'btn primary block', sOn ? 'Mudar ou voltar ao original…' : 'Aplicar edição inteligente…'); sb.type = 'button'; sb.id = 'ecSmart'; sb.onclick = openSmart; add(sb);
+  if (sOn) {
+    const sw = (label, path) => { const l = ecEl('label', 'switch'); l.append(ecEl('span', null, label)); const i = document.createElement('input'); i.type = 'checkbox'; i.checked = !!getPath(path); i.addEventListener('change', () => { setPath(path, i.checked); onChange(path); }); l.appendChild(i); return l; };
+    add(...SMART.map(s => sw(s.label, s.path)));
+    if (!M.v1Auto) { const n = ecEl('div', 'v1note'); n.append(ecEl('span', null, 'O V1 foi editado à mão. Mudar a limpeza não refaz o V1 sozinho.')); const b = ecEl('button', 'btn', 'Reaplicar limpeza no V1'); b.onclick = () => rebuildV1(true); n.appendChild(b); add(n); }
+    else add(ecEl('p', 'fine', 'Enquanto você não mexer no V1 à mão, a limpeza e o que você cortar na aba Texto refazem a linha do tempo na hora.'));
+  }
   add(ecEl('h4', null, 'Sequência'));
   const kv = ecEl('dl', 'kv');
   const v1 = trackClips('V1').length, v2 = trackClips('V2').length, v3 = trackClips('V3').length, a2 = trackClips('A2').length;
-  [['Duração', fmtTC(seqEnd(), fps)], ['Clipes no V1', v1], ['B-roll e textos', v2 + v3], ['Música', a2], ['Legendas', M.pages.length]].forEach(([a, b]) => { kv.append(ecEl('dt', null, a), ecEl('dd', null, String(b))); });
+  [['Duração', fmtTC(seqEnd(), fps)], ['Clipes no V1', v1], ['B-roll e textos', v2 + v3], ['Música', a2], ['Legendas', st.style.on ? M.pages.length : 'desligadas']].forEach(([a, b]) => { kv.append(ecEl('dt', null, a), ecEl('dd', null, String(b))); });
   add(kv);
   const hf = ecEl('div', 'field'); const hl = ecEl('label', null, 'Gancho na tela'); const hi = document.createElement('input'); hi.type = 'text'; hi.value = M.hook; hi.placeholder = 'Aparece nos primeiros segundos';
   hi.addEventListener('keydown', e => e.stopPropagation());
@@ -5205,6 +5347,7 @@ function setMode(m) {
     show('scrMont');
     $('#seqName').textContent = c.title || 'Sequência';
     loadMontage(c.id);
+    if (M.v1Auto) rebuildV1(false, true); // a limpeza pode ter mudado na tela de Cortes
     renderHeads(); renderBin();
     requestAnimationFrame(() => { sizeTL(); zoomFit(); sizeCanvas(PREVIEW_SCALE); fitCanvasCSS(); syncAll(false); dirty = true; });
     activateTab('clip');
@@ -5299,7 +5442,7 @@ function buildMontEDL(fps) {
 })();
 window.addEventListener('resize', () => { fitCanvasCSS(); sizeTimeline(); });
 new ResizeObserver(() => { document.documentElement.style.setProperty('--toph', $('.top').offsetHeight + 'px'); }).observe($('.top'));
-window.__cs = { st, M, MEDIA, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
+window.__cs = { st, M, MEDIA, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
 })();
 </script>
 </body>
