@@ -2,7 +2,7 @@
   "name": "corte-seco",
   "productName": "Corte Seco",
   "version": "1.0.0",
-  "description": "Editor de vídeo automático: cortes, legendas virais e edição inteligente, tudo no seu computador.",
+  "description": "Editor de vídeo: cortes, legendas virais e edição inteligente que você aplica, tudo no seu computador.",
   "main": "main.js",
   "author": "Zheus",
   "license": "UNLICENSED",

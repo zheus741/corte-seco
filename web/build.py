@@ -24,7 +24,7 @@ meta = '''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Corte Seco">
 <meta property="og:title" content="Corte Seco">
-<meta property="og:description" content="Solte o vídeo. Saem os cortes. Edição automática para Reels, no seu computador.">
+<meta property="og:description" content="Solte o vídeo. Saem os cortes. Edição inteligente para Reels, aplicada quando você quiser, no seu computador.">
 <meta property="og:image" content="icons/og.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -42,7 +42,7 @@ og = Image.new('RGB', (1200, 630), (11, 11, 12)); m = full.convert('RGB').resize
 # manifest
 manifest = {
   "name": "Corte Seco", "short_name": "Corte Seco", "id": "/", "start_url": "/", "scope": "/",
-  "description": "Solte o vídeo, saem os cortes: edição automática para Reels, no seu computador.",
+  "description": "Solte o vídeo, saem os cortes: edição inteligente para Reels, aplicada quando você quiser, no seu computador.",
   "lang": "pt-BR", "display": "standalone", 
   "background_color": "#0B0B0C", "theme_color": "#111113", "categories": ["photo", "productivity", "utilities"],
   "icons": [
