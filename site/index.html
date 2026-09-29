@@ -296,6 +296,9 @@ details.more[open]>summary{margin-bottom:10px}
 .col-head span{font-family:var(--mono);font-size:12px;color:var(--mute)}
 .ai-box{padding:0 16px 12px;display:grid;gap:8px;border-bottom:1px solid var(--line)}
 .ai-box .row{flex-wrap:nowrap}
+.find-box{padding-top:12px}
+.find-row select{flex:1;min-width:0}
+.find-row .btn{flex:none}
 .clip-list{overflow:auto;flex:1;min-height:0}
 .clip{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:12px 14px 12px 16px;border-bottom:1px solid var(--line);cursor:pointer;position:relative}
 .clip:hover{background:#1A1A1D}
@@ -382,6 +385,9 @@ details.more[open]>summary{margin-bottom:10px}
 .w input{font:inherit;width:auto;min-width:3ch;padding:0 3px;border:1px solid var(--amber);background:var(--ground);border-radius:0}
 
 .export-card{border:1px solid var(--line);border-radius:0;padding:14px;display:grid;gap:10px;background:var(--raise)}
+.srt-row{display:grid;gap:6px;justify-items:start}
+.srt-row .linkbtn{font-size:12px;color:var(--mute)}
+.srt-row .linkbtn:hover{color:var(--amber)}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
 .kv dt{color:var(--mute)} .kv dd{margin:0;font-family:var(--mono);font-size:12.5px;text-align:right}
 .bar{height:6px;background:var(--line);border-radius:0;overflow:hidden}
@@ -596,10 +602,14 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
         <div class="field" id="optLenField">
           <label for="optLen">Duração dos cortes</label>
           <select id="optLen">
-            <option value="15-30">15 a 30 s</option>
-            <option value="30-60" selected>30 a 60 s</option>
+            <option value="15-30" selected>Até 30 s</option>
+            <option value="30-60">30 a 60 s</option>
             <option value="60-90">60 a 90 s</option>
           </select>
+        </div>
+        <div class="field">
+          <label for="optFind">O que você quer cortar? <small class="fine">opcional</small></label>
+          <input type="text" id="optFind" maxlength="120" placeholder="Ex.: quando fala da SULTS · melhores gols">
         </div>
         <div class="field">
           <span class="lbl">Já tem a legenda?</span>
@@ -666,9 +676,16 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
   <h1 class="sr-only">Cortes do vídeo</h1>
   <aside class="col clips">
     <div class="col-head"><h2>Cortes</h2><span id="clipCount">0</span></div>
-    <div class="ai-box">
-      <button class="btn ai block" id="aiBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.9L19 9.5l-5.2 1.7L12 16l-1.8-4.8L5 9.5l5.2-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Encontrar melhores cortes com IA</span></button>
-      <p class="fine" id="aiNote">Envia só o texto da transcrição ao Claude. O vídeo continua aqui.</p>
+    <div class="ai-box find-box">
+      <label class="lbl" for="findQ">O que você quer cortar?</label>
+      <input type="text" id="findQ" maxlength="120" placeholder="Ex.: quando fala da SULTS · melhores gols" autocomplete="off">
+      <div class="row find-row">
+        <select id="findLen" aria-label="Duração dos cortes"><option value="15-30">Até 30 s</option><option value="30-60">30 a 60 s</option><option value="60-90">60 a 90 s</option></select>
+        <button class="btn primary" id="findBtn" type="button">Achar cortes</button>
+      </div>
+      <p class="fine" id="findNote">Procura sem internet: palavras na fala e picos de som (torcida, narração, risada). Em branco, os melhores trechos.</p>
+      <button class="btn ai block" id="aiBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.9L19 9.5l-5.2 1.7L12 16l-1.8-4.8L5 9.5l5.2-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Achar com a IA do Claude</span></button>
+      <p class="fine" id="aiNote">Para pedidos mais abertos. Só o texto da transcrição vai para o Claude; o vídeo fica aqui.</p>
     </div>
     <div class="clip-list" id="clipList"></div>
   </aside>
@@ -869,6 +886,10 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
           </div>
           <button class="btn primary block" id="expBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 12l6 6 6-6M5 20h14"/></svg><span id="expBtnTxt">Exportar vídeo</span></button>
           <button class="btn block" id="expAllBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg><span id="expAllTxt">Exportar todos os cortes</span></button>
+          <div class="srt-row">
+            <button class="btn block" id="srtBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><rect x="3" y="5" width="18" height="14"/><path d="M7 11h4M13 11h4M7 15h7M16 15h1"/></svg><span id="srtBtnTxt">Exportar legenda (.srt)</span></button>
+            <button type="button" class="linkbtn" id="srtFullBtn">ou a transcrição do vídeo original inteiro (.srt)</button>
+          </div>
           <div id="expProg" hidden class="field"><div class="bar"><i id="expBar"></i></div><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="fine mono" id="expTxt">0%</span><button class="btn ghost" id="expCancel">Cancelar</button></div></div>
           <label class="switch" id="expPackRow"><span>Junto: legenda .srt, capa e texto do post</span><input type="checkbox" id="expPack" checked></label>
           <div class="field" id="postField"><label for="postTxt">Texto do post <button type="button" class="linkbtn" id="postReset">refazer</button></label><textarea id="postTxt" rows="5" spellcheck="true"></textarea></div>
@@ -1088,7 +1109,7 @@ const st = {
   file: null, url: null, dur: 0, vw: 0, vh: 0,
   env: null, segs: [], words: [], lang: 'pt', model: 'base',
   clips: [], cur: null, sel: null,
-  opts: { lang: 'pt', model: 'base', clipLen: '30-60', goal: 'cuts' },
+  opts: { lang: 'pt', model: 'base', clipLen: '15-30', goal: 'cuts' },
   cuts: { silence: true, thr: null, lvlD: 0, minSil: 0.45, pad: 0.08, fillers: true, fillerList: 'ahn, ãh, hã, hum, humm, hmm, éé, ééé, eee, uh, uhm, um', takes: true },
   style: Object.assign({ preset: 'impacto' }, STYLE_BASE, PRESETS.impacto),
   fmt: { aspect: '9:16', fit: 'crop', bg: '#0E0F11', x: 0.5, y: 0.5, zoom: 1, autoZoom: true, zoomAmt: 1.12, hook: true, hookDur: 3, progress: false, autoFrame: true },
@@ -1190,7 +1211,9 @@ syncModelSeg();
 initDeskModels();
 $('#optModel').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; st.opts.model = b.dataset.v; syncModelSeg(); syncSetSummary(); store.set('cs:opts', st.opts); });
 $('#optLang').addEventListener('change', e => { st.opts.lang = e.target.value; syncSetSummary(); store.set('cs:opts', st.opts); });
-$('#optLen').addEventListener('change', e => { st.opts.clipLen = e.target.value; syncSetSummary(); store.set('cs:opts', st.opts); });
+$('#optLen').addEventListener('change', e => { st.opts.clipLen = e.target.value; $('#findLen').value = st.opts.clipLen; syncSetSummary(); store.set('cs:opts', st.opts); });
+$('#optFind').addEventListener('input', () => { syncSetSummary(); $('#findQ').value = $('#optFind').value; });
+$('#optFind').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
 let srtText = null;
 $('#srtIn').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -1282,7 +1305,8 @@ function syncSetSummary() {
   const lang = ($('#optLang').selectedOptions[0] || {}).textContent || '';
   const mb = $(`#optModel button[data-v="${st.opts.model}"]`);
   const len = ($('#optLen').selectedOptions[0] || {}).textContent || '';
-  $('#setSummary').textContent = `${lang} · transcrição ${mb ? mb.textContent.toLowerCase() : ''} · cortes de ${len}${srtText ? ' · legenda do .srt' : ''}`;
+  const q = ($('#optFind') && $('#optFind').value.trim()) || '';
+  $('#setSummary').textContent = `${lang} · transcrição ${mb ? mb.textContent.toLowerCase() : ''} · cortes ${/^até/i.test(len) ? len.toLowerCase() : 'de ' + len}${q ? ` · procurando “${q.length > 28 ? q.slice(0, 27) + '…' : q}”` : ''}${srtText ? ' · legenda do .srt' : ''}`;
 }
 $('#setToggle').addEventListener('click', e => { const box = $('#optsBox'); box.hidden = !box.hidden; e.currentTarget.setAttribute('aria-expanded', String(!box.hidden)); e.currentTarget.textContent = box.hidden ? 'Ajustar' : 'Fechar ajustes'; });
 let pendingGoal = null;
@@ -1467,20 +1491,24 @@ async function startAnalysis(file, force) {
   if (!restored) { setSmart(smartNone()); st.lt.on = false; } // abre como foi gravado: a edição inteligente só entra quando a pessoa aplica
   computeRemoval();
   const goalEdit = st.opts.goal === 'edit';
+  const findQ0 = ($('#optFind').value || '').trim(); let found = null;
   if (!st.clips.length) {
-    st.clips = [fullClip(), ...localSuggest()];
+    if (findQ0 && !goalEdit) { const r = localFind(findQ0); found = r.clips.length; if (found) st.clips = [fullClip(), ...r.clips]; }
+    if (!st.clips.length) st.clips = [fullClip(), ...localSuggest()];
     st.cur = (st.clips[1] || st.clips[0]).id;
   }
+  if (findQ0) $('#findQ').value = findQ0;
   if (goalEdit) { st.cur = 'full'; if (!st.clips.find(c => c.id === 'full')) st.clips.unshift(fullClip()); }
   refreshClip();
-  { const pv = smartSecs(smartPick, fullClip()); stage('cuts', 'done', goalEdit ? (pv > 0.05 ? `${fmtT(pv)} de pausas e vícios marcados` : 'pronto') : `${st.clips.length - 1} sugestões`); }
+  { const pv = smartSecs(smartPick, fullClip()); stage('cuts', 'done', goalEdit ? (pv > 0.05 ? `${fmtT(pv)} de pausas e vícios marcados` : 'pronto') : found ? `${found} para “${findQ0}”` : `${st.clips.length - 1} sugestões`); }
   work = null;
   saveProject();
   openEditor();
   if (goalEdit) setMode('mont');
   setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
   if (restored) toast('Continuando de onde você parou.', 2400);
-  else if (!Q.running) toastAction(goalEdit ? 'Pronto. O vídeo abriu como foi gravado: nada foi cortado ainda.' : 'Pronto. Os cortes abriram como foram gravados: nada foi limpo ainda.', 'Edição inteligente…', openSmart, 12000);
+  else if (!Q.running && findQ0 && !goalEdit && found === 0) toast(`Não achei “${findQ0}” na fala nem no som: ficaram os melhores trechos. Dá para buscar de novo na coluna Cortes.`, 9000);
+  else if (!Q.running) toastAction(goalEdit ? 'Pronto. O vídeo abriu como foi gravado: nada foi cortado ainda.' : found ? `Pronto. ${found} ${found === 1 ? 'corte' : 'cortes'} para “${findQ0}”. Nada foi limpo ainda.` : 'Pronto. Os cortes abriram como foram gravados: nada foi limpo ainda.', 'Edição inteligente…', openSmart, 12000);
   return true;
 }
 
@@ -1909,13 +1937,190 @@ function localSuggest() {
     picked.push(c);
   }
   return picked.map(p => {
-    const b = clipBounds(p.i, p.j);
+    const b = clipBounds(p.i, p.j); b.end = capEnd(b.start, b.end, mx);
     const first = (segs[p.i].text.match(/^[^.!?]+[.!?]?/) || [''])[0].trim();
     const hook = first.split(/\s+/).length <= 7 ? first.replace(/[.,;:]+$/, '') : '';
     return { id: newId(), title: firstWords(segs[p.i].text, 8), hook, start: b.start, end: b.end, score: Math.round(clamp(p.sc, 20, 89)), src: 'auto', why: 'Escolhido pelo ritmo da fala e por começar com uma frase forte.' };
   });
 }
 
+/* ---------------- "o que você quer cortar?": busca local ---------------- */
+/* Olha o que é falado (palavras, com tolerância a erro de transcrição) e o som (picos de torcida,
+   narração empolgada, risada). Não enxerga a imagem: um gol sem narração nem torcida passa batido. */
+const FIND_STOP = new Set(('a o as os um uma uns umas de da do das dos d em na no nas nos num numa que quando onde como sobre fala falam falando falou falar '
+  + 'dizer diz disse momento momentos parte partes trecho trechos corte cortes video videos e ou com sem para pra pro pros por pelo pela pelos pelas mais '
+  + 'melhor melhores tudo todo toda todos todas isso esse essa esses essas este esta aquele aquela aquilo sabe assim vai vao etc exemplo ex tipo quero queria '
+  + 'quer achar acha mostrar mostra aparece aparecem tem ter sao ser foi era the and of about me meu minha seu sua dele dela ele ela eles elas nos voce voces '
+  + 'lance lances jogada jogadas hora vez vezes coisa coisas gente cara bem bom boa ai la aqui ali ja so tambem muito muita').split(' '));
+const FIND_LEX = [
+  { re: /\bgo+l|golac|golass/, re2: /^go+l+(ac|ass)?(o|os|s)?$/, label: 'gol', excite: true },
+  { re: /(bola|bolas|cesta|cestas|arremesso|arremessos|chute|chutes)\s+de\s+(3|tres)\b|\b(3|tres)\s+pontos|\bde\s+tres\b|\btriplo|bola\s+de\s+3/, phrases: [['de', 'tres'], ['tres', 'pontos'], ['3', 'pontos'], ['de', '3'], ['triplo']], label: 'bola de 3', excite: true },
+  { re: /enterrad|\btoco\b|\bdefesa|penalt|\bfalta\b|\bcesta|\bponto|vitoria|virada|campea|comemor|\bace\b|\bsaque|\bbloqueio|\bsmash|\bnocaute/, excite: true },
+  { re: /melhor|highlight|emoc|vibr|torcida|explod|empolg|lance|jogada|grito|festa|risad|engracad|piada|zoeira|polemic|briga|discuss|reacao|reage/, excite: true }
+];
+function levDist(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]; let rowMin = i;
+    for (let j = 1; j <= b.length; j++) { cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); rowMin = Math.min(rowMin, cur[j]); }
+    if (rowMin > max) return max + 1; prev = cur;
+  }
+  return prev[b.length];
+}
+function termHit(t, w) {
+  if (!w) return false;
+  if (w === t) return true;
+  if (t.length >= 4 && w.startsWith(t) && w.length - t.length <= 3) return true;   // sults → sults', plurais
+  if (w.length >= 3 && t.startsWith(w) && t.length - w.length <= 1) return true;    // gols → gol
+  const max = t.length >= 7 ? 2 : t.length >= 4 ? 1 : 0;
+  return max > 0 && levDist(t, w, max) <= max;                                         // erro de transcrição: sultz, salts
+}
+function parseFind(q) {
+  const nq = q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const P = { q, terms: [], lex: [], excite: false };
+  for (const L of FIND_LEX) if (L.re.test(nq)) { if (L.re2 || L.phrases) P.lex.push(L); if (L.excite) P.excite = true; }
+  const words = nq.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  for (const w of words) {
+    if (FIND_STOP.has(w) || /^\d+$/.test(w) || w.length < 3) continue;
+    if (P.lex.some(L => L.re2 && L.re2.test(w))) continue;            // já coberto pelo léxico (gol, gols…)
+    if (P.lex.some(L => L.phrases) && /^(bola|bolas|tres|pontos|triplo|cesta|cestas)$/.test(w)) continue;
+    if (!P.terms.includes(w)) P.terms.push(w);
+  }
+  return P;
+}
+/* picos de som: volume de 1 s bem acima do nível ao redor (±15 s) */
+function excitePeaks() {
+  const env = st.env; if (!env || env.length < 500) return [];
+  const B = 10, n = Math.floor(env.length / B), b = new Float32Array(n);
+  for (let k = 0; k < n; k++) { let sp = 0; for (let i = 0; i < B; i++) sp += Math.pow(10, env[k * B + i] / 10); b[k] = 10 * Math.log10(sp / B + 1e-12); }
+  const sm = new Float32Array(n);
+  { let acc = 0; const W = 5; const lin = Array.from(b, x => Math.pow(10, x / 10)); for (let k = 0; k < n; k++) { acc += lin[k]; if (k >= W) acc -= lin[k - W]; sm[k] = 10 * Math.log10(acc / Math.min(k + 1, W) + 1e-12); } }
+  const base = new Float32Array(n), R = 75;
+  for (let k = 0; k < n; k += 5) { const arr = Array.from(b.subarray(Math.max(0, k - R), Math.min(n, k + R))).sort((x, y) => x - y); const med = arr[Math.floor(arr.length * 0.5)]; for (let q = k; q < Math.min(n, k + 5); q++) base[q] = med; }
+  const e = new Float32Array(n); for (let k = 0; k < n; k++) e[k] = sm[k] - base[k];
+  const sorted = Array.from(e).sort((x, y) => x - y), thr = clamp(sorted[Math.floor(sorted.length * 0.9)], 6, 10); // 6 a 10 dB acima do som ao redor
+  const peaks = [];
+  for (let k = 0; k < n;) {
+    if (e[k] > thr) { let j = k, mx = e[k], area = 0; while (j < n && e[j] > thr - 3) { mx = Math.max(mx, e[j]); area += (e[j] - (thr - 3)) * 0.2; j++; } if ((j - k) * 0.2 >= 0.8) peaks.push({ a: k * 0.2, z: j * 0.2, peak: mx, area }); k = j; }
+    else k++;
+  }
+  // a single roar that dips for a moment is still one moment
+  const merged = [];
+  for (const pk of peaks) { const l = merged[merged.length - 1]; if (l && pk.a - l.z < 2.5) { l.z = pk.z; l.peak = Math.max(l.peak, pk.peak); l.area += pk.area; } else merged.push(Object.assign({}, pk)); }
+  return merged;
+}
+function segIndexAt(t) { const S = st.segs; let lo = 0, hi = S.length - 1, ans = 0; while (lo <= hi) { const m = (lo + hi) >> 1; if (S[m].start <= t) { ans = m; lo = m + 1; } else hi = m - 1; } return ans; }
+/* nunca passa da duração escolhida: corta no fim de uma palavra, de preferência no fim de uma frase */
+function capEnd(start, end, mx) {
+  if (end - start <= mx + 0.05) return end;
+  const lim = start + mx - 0.12; let best = null, bestSent = null;
+  for (const w of st.words) { if (w.start < start) continue; if (w.end > lim) break; best = w.end; if (/[.!?…]$/.test(w.w) && w.end - start >= mx * 0.6) bestSent = w.end; }
+  return Math.min(start + mx, (bestSent || best || lim) + 0.12);
+}
+/* janela que começa no trecho i e vai até a última frase que cabe */
+function windowFrom(i, mn, mx, cover) {
+  const S = st.segs, s0 = Math.max(0, S[i].start - 0.12);
+  let best = -1, any = i;
+  for (let j = i; j < S.length; j++) {
+    const d = S[j].end + 0.15 - s0;
+    if (d > mx) break;
+    any = j;
+    if (d >= mn && S[j].end >= (cover || 0) && /[.!?…]$/.test(S[j].text.trim())) best = j;
+  }
+  const j = best >= 0 ? best : any;
+  const end = Math.min(st.dur || S[j].end + 1, S[j].end + 0.15);
+  return { start: s0, end: capEnd(s0, end, mx) };
+}
+function localFind(q, len) {
+  const [mn, mx] = len || lenRange(), P = parseFind(q);
+  const W = st.words, nw = W.map(w => norm(w.w));
+  // 1) onde a fala bate com o pedido
+  const hits = [];
+  for (let i = 0; i < W.length; i++) {
+    const w = nw[i]; if (!w) continue;
+    let hit = null;
+    for (const t of P.terms) if (termHit(t, w) || (t.length >= 5 && i + 1 < W.length && termHit(t, w + nw[i + 1]))) { hit = t; break; }
+    if (!hit) for (const L of P.lex) {
+      if (L.re2 && L.re2.test(w)) { hit = L.label; break; }
+      if (L.phrases && L.phrases.some(ph => ph.every((x, k) => nw[i + k] === x))) { hit = L.label; break; }
+    }
+    if (hit) hits.push({ i, t: W[i].start, word: W[i].w.replace(/[^\p{L}\p{N}]+$/u, ''), key: hit });
+  }
+  const peaks = P.excite ? excitePeaks() : [];
+  const cands = [];
+  // 2) cortes a partir das falas
+  if (st.segs.length) {
+    const used = new Set();
+    for (const h of hits) {
+      if (used.has(h.i)) continue;
+      const si = segIndexAt(h.t);
+      const win = windowFrom(si, mn, mx, W[h.i].end);
+      const inside = hits.filter(x => x.t >= win.start && x.t < win.end);
+      inside.forEach(x => used.add(x.i));
+      const loud = peaks.some(pk => pk.z > win.start && pk.a < win.end);
+      const keys = new Set(inside.map(x => x.key));
+      cands.push({ start: win.start, end: win.end, score: Math.min(97, 52 + 9 * Math.min(4, inside.length) + 6 * (keys.size - 1) + (loud ? 12 : 0)), title: firstWords(st.segs[si].text, 8), why: `Fala de “${h.word}”${inside.length > 1 ? ` (${inside.length} vezes)` : ''}${loud ? ' e o som sobe aqui' : ''}.`, kind: 'fala' });
+    }
+  }
+  // 3) cortes a partir do som (lances): a jogada vem antes do grito
+  if (P.excite) {
+    const target = Math.min(mx, Math.max(mn, (mn + mx) / 2 + 3));
+    peaks.forEach((pk, pi) => {
+      const post = Math.min(6, target * 0.25), prev = peaks[pi - 1], next = peaks[pi + 1];
+      let end = Math.min(st.dur, pk.z + post, next ? next.a - 0.5 : Infinity), start = Math.max(0, end - target);
+      const lo = prev && pk.a - (prev.z + 1) >= Math.min(mn, 8) ? prev.z + 1 : 0, hi = next ? next.a - 0.5 : st.dur;
+      start = Math.max(start, lo);   // cada lance no seu corte
+      if (st.segs.length) {   // não começa nem termina no meio de uma frase da narração
+        const sStart = st.segs.find(sg => Math.abs(sg.start - start) <= 2 && sg.start - 0.12 >= lo); if (sStart) start = Math.max(0, sStart.start - 0.12);
+        const sEnd = st.segs.find(sg => Math.abs(sg.end - end) <= 2 && sg.end - start <= mx && sg.end + 0.15 <= hi); if (sEnd) end = Math.min(st.dur, sEnd.end + 0.15);
+      }
+      end = Math.min(end, start + mx);
+      const near = hits.filter(h => h.t >= pk.a - 12 && h.t <= pk.z + 3);
+      if (end - start >= Math.min(mn, 6)) cands.push({ start, end, score: Math.min(96, 44 + Math.min(30, pk.area * 1.4 + (pk.peak - 6) * 1.5) + (near.length ? 22 : 0)), title: near.length ? `“${near[0].word}” aos ${fmtT(pk.a)}` : `Lance aos ${fmtT(pk.a)}`, why: near.length ? `A fala cita “${near[0].word}” e o som explode logo depois: provável lance.` : 'O som explode aqui (torcida, narração ou risada): provável momento forte.', kind: 'som', peak: pk.a });
+    });
+  }
+  // 4) os melhores, sem sobrepor
+  cands.sort((a, b) => b.score - a.score);
+  const maxN = Math.max(3, Math.min(10, Math.floor((st.dur || 60) / (mx * 1.5))));
+  const picked = [];
+  for (const c of cands) {
+    if (picked.length >= maxN) break;
+    if (c.end - c.start < Math.min(mn, 6)) continue;
+    if (picked.some(p => Math.min(p.end, c.end) - Math.max(p.start, c.start) > 0.4 * Math.min(p.end - p.start, c.end - c.start))) continue;
+    picked.push(c);
+  }
+  return { P, hits: hits.length, peaks: peaks.length, clips: picked.map(c => ({ id: newId(), title: c.title, hook: '', start: +c.start.toFixed(3), end: +c.end.toFixed(3), score: Math.round(c.score), src: 'busca', why: c.why, q })) };
+}
+/* troca as sugestões (as automáticas, da busca e da IA) pelos cortes novos; os feitos à mão ficam */
+function applyFound(got, what) {
+  pushLooks(what);
+  const full = st.clips.find(c => c.src === 'full') || fullClip();
+  st.clips = [full, ...got, ...st.clips.filter(c => c.src === 'manual')];
+  selectClip(got[0].id);
+}
+function findCuts() {
+  if (!st.segs.length && !st.env) return;
+  st.opts.clipLen = $('#findLen').value; $('#optLen').value = st.opts.clipLen; store.set('cs:opts', st.opts); syncSetSummary();
+  const q = $('#findQ').value.trim();
+  const [mn, mx] = lenRange(), lenTxt = mx <= 30 ? 'até 30 s' : `de ${mn} a ${mx} s`;
+  if (!q) {
+    const got = localSuggest(); if (!got.length) { toast('Não coube nenhum corte com essa duração neste vídeo.'); return; }
+    applyFound(got, 'achar cortes');
+    toastAction(`${got.length} ${got.length === 1 ? 'corte' : 'cortes'} ${lenTxt}.`, 'Desfazer', undoLooks, 8000); return;
+  }
+  const r = localFind(q);
+  if (!r.clips.length) {
+    const hint = r.P.terms.length ? `Não achei “${r.P.terms.join('”, “')}” na fala. Veja na aba Texto como a palavra foi escrita e procure por ela` : 'Não achei momentos assim neste vídeo';
+    toast(`${hint}${r.P.excite && !r.peaks ? '. O som também não tem picos fortes' : ''}.`, 7000); return;
+  }
+  applyFound(r.clips, `busca “${q}”`);
+  toastAction(`${r.clips.length} ${r.clips.length === 1 ? 'corte' : 'cortes'} para “${q}”, ${lenTxt}.`, 'Desfazer', undoLooks, 9000);
+}
+$('#findBtn').addEventListener('click', findCuts);
+$('#findQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findCuts(); } });
+$('#findLen').value = st.opts.clipLen;
+$('#findLen').addEventListener('change', e => { st.opts.clipLen = e.target.value; $('#optLen').value = st.opts.clipLen; store.set('cs:opts', st.opts); syncSetSummary(); });
 function renderClips() {
   const list = $('#clipList'); list.innerHTML = '';
   $('#clipCount').textContent = `${st.clips.length - 1} ${st.clips.length === 2 ? 'sugestão' : 'sugestões'}`;
@@ -1933,7 +2138,8 @@ function renderClips() {
     if (c.hook) { const hk = document.createElement('p'); hk.className = 'hk'; hk.textContent = '“' + c.hook + '”'; body.appendChild(hk); }
     const meta = document.createElement('div'); meta.className = 'meta';
     const tg = document.createElement('span'); tg.className = 'tag' + (c.src === 'ai' ? ' ai' : c.src === 'manual' ? ' man' : '');
-    tg.textContent = { ai: 'IA', auto: 'sugerido', manual: 'manual', full: 'original' }[c.src] || c.src;
+    tg.textContent = { ai: 'IA', auto: 'sugerido', manual: 'manual', full: 'original', busca: 'busca' }[c.src] || c.src;
+    if (c.q) tg.title = `Busca: ${c.q}`;
     const d = document.createElement('span'); d.className = 'mono'; d.textContent = c.src === 'full' ? (c.end - c.start - outD > 0.05 ? `${fmtT(c.end - c.start)} → ${fmtT(outD)} ${smartAny() ? 'sem pausas' : 'com seus cortes'}` : `${fmtT(c.end - c.start)} · como foi gravado`) : `${fmtT(outD)} · de ${fmtT(c.start)} a ${fmtT(c.end)}`;
     meta.append(tg, d); body.appendChild(meta);
     if (c.why) { const y = document.createElement('p'); y.className = 'why'; y.textContent = c.why; body.appendChild(y); }
@@ -2109,21 +2315,22 @@ if (SITE) {
 function updAiBtn() {
   sampleP.then(async s => {
     const b = $('#aiBtn');
-    if (!s) { b.hidden = true; $('#aiNote').textContent = 'Sugestões automáticas feitas aqui mesmo, pelo ritmo e pelas frases de impacto.'; return; }
+    if (!s) { b.hidden = true; $('#aiNote').hidden = true; return; }
     if (!s.desk) return;
     const has = !!(await SETTINGS.get()).claudeKey;
     b.classList.toggle('ai', has); b.classList.toggle('ghost', !has);
-    b.querySelector('span').textContent = has ? 'Encontrar melhores cortes com IA' : 'Cortes com IA (opcional)';
-    $('#aiNote').textContent = has ? 'Usa a sua chave do Claude. Só o texto da transcrição sai daqui.' : 'Os cortes da lista já foram escolhidos aqui, sem internet. A IA do Claude é opcional: precisa de uma chave em Configurações.';
+    b.querySelector('span').textContent = has ? 'Achar com a IA do Claude' : 'IA do Claude (opcional)';
+    $('#aiNote').textContent = has ? 'Para pedidos mais abertos. Só o texto da transcrição sai daqui.' : 'Opcional, para pedidos mais abertos. Precisa de uma chave em Configurações.';
   });
 }
 updAiBtn();
 dlP.then(d => { if (!d && !DESK) $('#dlNote').textContent = 'Nesta visualização não dá para baixar arquivos. Abra o Corte Seco pelo link no claude.ai.'; });
 
-function transcriptForAI() {
-  let lines = st.segs.map((s, i) => `[${i}|${fmtT(s.start)}] ${s.text}`);
+function transcriptForAI(peaks) {
+  const loud = s => (peaks || []).some(pk => pk.z > s.start && pk.a < s.end + 1.5) ? '|!' : '';
+  let lines = st.segs.map((s, i) => `[${i}|${fmtT(s.start)}${loud(s)}] ${s.text}`);
   let body = lines.join('\n');
-  if (body.length > 52000) { lines = st.segs.map((s, i) => `[${i}|${fmtT(s.start)}] ${s.text.slice(0, 140)}`); body = lines.join('\n'); }
+  if (body.length > 52000) { lines = st.segs.map((s, i) => `[${i}|${fmtT(s.start)}${loud(s)}] ${s.text.slice(0, 140)}`); body = lines.join('\n'); }
   if (body.length > 52000) body = body.slice(0, 52000);
   return body;
 }
@@ -2134,12 +2341,21 @@ async function aiSuggest() {
   const btn = $('#aiBtn'), label = btn.querySelector('span');
   const old = label.textContent;
   btn.disabled = true; label.innerHTML = '<span class="spin"></span> Lendo a transcrição…';
+  if ($('#findLen')) st.opts.clipLen = $('#findLen').value;
   const [mn, mx] = lenRange();
+  const q = ($('#findQ') ? $('#findQ').value : '').trim();
+  const peaks = excitePeaks();
+  const ask = q ? `
+Pedido de quem está editando: "${q.replace(/"/g, "'")}".
+Escolha SÓ trechos que atendem a esse pedido: um assunto ou nome citado (atenção a erros de transcrição do nome), um tipo de momento, um lance de jogo narrado...
+Se nenhum trecho atender ao pedido, responda {"clips":[]}.
+` : '';
   const prompt = `Você é editor de vídeos curtos (Reels, TikTok, Shorts), especialista em retenção, no estilo do OpusClip.
 Abaixo está a transcrição de um vídeo em trechos numerados, no formato [número|início] texto. Duração total: ${fmtT(st.dur)}.
-
-Escolha de 3 a 7 cortes para Reels. Regras:
-- Cada corte é um trecho contínuo de ${mn} a ${mx} segundos que faça sentido sozinho, sem depender do que veio antes.
+Um "!" depois do tempo marca trechos em que o som sobe muito (torcida, narração empolgada, risadas): em jogos, costuma ser um lance importante.
+${ask}
+Escolha ${q ? 'até 8' : 'de 3 a 7'} cortes para Reels. Regras:
+- Cada corte é um trecho contínuo de ${mn} a ${mx} segundos (nunca mais que ${mx}) que faça sentido sozinho, sem depender do que veio antes.
 - Comece numa frase que prenda nos primeiros 3 segundos e termine numa ideia completa.
 - Cortes não podem se sobrepor.
 - Dê uma nota de potencial viral de 0 a 100 e seja exigente: 90+ só para trechos realmente fortes.
@@ -2153,7 +2369,7 @@ Responda só com JSON, neste formato:
 start e end são os números dos trechos (inclusive).
 
 Transcrição:
-${transcriptForAI()}`;
+${transcriptForAI(peaks)}`;
   try {
     const data = await sample.json(prompt, { modelTier: 'default', onText: () => { label.innerHTML = '<span class="spin"></span> Escolhendo os cortes…'; } });
     const arr = Array.isArray(data) ? data : (data && data.clips) || [];
@@ -2161,20 +2377,20 @@ ${transcriptForAI()}`;
     for (const k of arr) {
       let i = parseInt(k.start, 10), j = parseInt(k.end, 10);
       if (!(i >= 0 && j >= i && j < st.segs.length)) continue;
-      const b = clipBounds(i, j);
-      got.push({ id: newId(), title: String(k.title || firstWords(st.segs[i].text, 8)).slice(0, 90), hook: String(k.hook || '').slice(0, 60), start: b.start, end: b.end, score: clamp(parseInt(k.score, 10) || 50, 0, 100), src: 'ai', why: String(k.why || '').slice(0, 200), post: k.post ? String(k.post).slice(0, 1200) : undefined, tags: k.hashtags ? String(k.hashtags).slice(0, 200) : undefined });
+      while (j > i && st.segs[j].end - st.segs[i].start > mx) j--;
+      const b = clipBounds(i, j); b.end = capEnd(b.start, b.end, mx);
+      got.push({ id: newId(), q: q || undefined, title: String(k.title || firstWords(st.segs[i].text, 8)).slice(0, 90), hook: String(k.hook || '').slice(0, 60), start: b.start, end: b.end, score: clamp(parseInt(k.score, 10) || 50, 0, 100), src: 'ai', why: String(k.why || '').slice(0, 200), post: k.post ? String(k.post).slice(0, 1200) : undefined, tags: k.hashtags ? String(k.hashtags).slice(0, 200) : undefined });
     }
-    if (!got.length) throw { code: 'empty' };
+    if (!got.length) throw { code: q ? 'none' : 'empty' };
     got.sort((a, b) => b.score - a.score);
-    st.clips = [st.clips.find(c => c.src === 'full') || fullClip(), ...got, ...st.clips.filter(c => c.src === 'manual')];
-    st.cur = got[0].id;
-    toast(got.length === 1 ? '1 corte sugerido pela IA.' : `${got.length} cortes sugeridos pela IA.`);
-    selectClip(st.cur);
+    applyFound(got, q ? `IA: “${q}”` : 'cortes da IA');
+    toastAction(`${got.length} ${got.length === 1 ? 'corte' : 'cortes'} da IA${q ? ` para “${q}”` : ''}.`, 'Desfazer', undoLooks, 9000);
   } catch (e) {
     const code = e && e.code;
     if (code === 'no_key' || code === 'bad_key') { toast(code === 'bad_key' ? 'A chave do Claude não foi aceita. Confira em Configurações.' : 'Coloque sua chave do Claude em Configurações para usar a IA.', 6000); if (DESK) openSettings(); }
     else if (code === 'not_granted' || code === 'declined') toast('Sem permissão para usar a IA. Os cortes automáticos continuam valendo.');
     else if (code === 'rate_limited') toast('Muitos pedidos agora. Tente de novo em instantes.');
+    else if (code === 'none') toast(`A IA não achou nada sobre “${q}” neste vídeo.`, 5000);
     else if (code === 'empty' || code === 'invalid_json') toast('A IA não devolveu cortes válidos. Tente de novo.');
     else toast('Não consegui falar com a IA agora.');
   } finally {
@@ -3129,6 +3345,7 @@ function updateExportCard() {
   const cuts = st.clips.filter(k => k.src !== 'full').length;
   $('#expAllBtn').hidden = MODE === 'mont' || cuts < 2;
   $('#expAllTxt').textContent = `Exportar os ${cuts} cortes${n > 1 ? ` em ${n} formatos` : ''}`;
+  $('#srtBtnTxt').textContent = MODE === 'mont' ? 'Exportar legenda da edição (.srt)' : c.src === 'full' ? 'Exportar legenda do vídeo (.srt)' : 'Exportar legenda deste corte (.srt)';
   $('#postField').hidden = !pack;
   if (pack && document.activeElement !== $('#postTxt')) $('#postTxt').value = c.postEdit != null ? c.postEdit : postText(c).trim();
   renderLastExport();
@@ -3216,17 +3433,68 @@ async function finishExport() {
   await saveFile(`${slug(e.c.title)}.${ext}`, blob);
 }
 
-function buildSRT(c) {
-  const out = []; let n = 1;
-  const save = st.ranges; st.ranges = rangesFor(c);
-  for (const p of st.pages) {
-    const a = outAt(p.start), b = outAt(Math.min(p.until, p.end + 0.4));
-    if (b - a < 0.05) continue;
-    out.push(`${n++}\n${fmtSRT(a)} --> ${fmtSRT(b)}\n${p.words.map(w => w.w).join(' ')}\n`);
+/* .srt padrão: frases de até 2 linhas de ~42 caracteres, que é o que YouTube, Instagram, Premiere e CapCut esperam.
+   ws: [{w, a, b}] já no tempo do vídeo exportado */
+function twoLines(t) {
+  if (t.length <= 42) return t;
+  const mid = t.length / 2; let best = -1;
+  for (let i = 0; i < t.length; i++) if (t[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+  return best > 0 ? t.slice(0, best) + '\n' + t.slice(best + 1) : t;
+}
+function srtFromWords(ws) {
+  const cues = []; let cur = [];
+  const chars = arr => arr.reduce((n, w) => n + w.w.length + 1, -1);
+  for (const w of ws) {
+    const last = cur[cur.length - 1];
+    if (last && (w.a - last.b > 0.8 || chars(cur) + 1 + w.w.length > 84 || w.b - cur[0].a > 6.5 || (/[.!?…]$/.test(last.w) && chars(cur) >= 18))) { cues.push(cur); cur = []; }
+    cur.push(w);
   }
-  st.ranges = save;
+  if (cur.length) cues.push(cur);
+  const out = [];
+  cues.forEach((c, i) => {
+    const a = c[0].a, nx = cues[i + 1];
+    let b = Math.max(c[c.length - 1].b + 0.25, a + 0.8);
+    if (nx) b = Math.min(b, nx[0].a - 0.02);
+    if (b - a < 0.3) b = a + 0.3;
+    out.push(`${out.length + 1}\n${fmtSRT(a)} --> ${fmtSRT(b)}\n${twoLines(c.map(w => w.w).join(' '))}\n`);
+  });
   return out.join('\n');
 }
+/* legenda de um corte, com os tempos do vídeo exportado (sem as pausas que saíram) */
+function buildSRT(c) {
+  const save = st.ranges; st.ranges = rangesFor(c);
+  const ws = [];
+  for (const w of st.words) {
+    if (w.end <= c.start || w.start >= c.end || w.del || w.nocap || !w.w || st.autoWord.has(w.i)) continue;
+    const a = outAt(Math.max(w.start, c.start)), b = outAt(Math.min(w.end, c.end));
+    if (b - a < 0.02) continue;
+    ws.push({ w: w.w, a, b });
+  }
+  st.ranges = save;
+  return srtFromWords(ws);
+}
+/* transcrição do vídeo original inteiro, nos tempos do arquivo gravado (sem "ahn" e "hum") */
+function buildFullSRT() {
+  const fs = fillerSet();
+  return srtFromWords(st.words.filter(w => w.w && !w.del && !w.nocap && !fs.has(normKeepAccent(w.w))).map(w => ({ w: w.w, a: w.start, b: w.end })));
+}
+async function saveSrt(name, data) {
+  const r = await saveFile(name, data);
+  if (r === 'ext') { const r2 = await saveFile(name + '.txt', data); if (r2 === 'ok') toast('Este navegador não aceitou .srt aqui: salvei como .txt. É só renomear para .srt.', 6000); }
+}
+$('#srtBtn').addEventListener('click', async () => {
+  if (MODE === 'mont') {
+    const srt = buildMontSRT(); if (!srt.trim()) { toast('Não tem fala na edição para legendar.'); return; }
+    await saveSrt(`${slug($('#seqName').textContent || 'edicao')}.srt`, srt); return;
+  }
+  const c = curClip(); if (!c) return;
+  const srt = buildSRT(c); if (!srt.trim()) { toast('Esse corte não tem fala para legendar.'); return; }
+  await saveSrt(`${slug(c.title)}.srt`, srt);
+});
+$('#srtFullBtn').addEventListener('click', async () => {
+  if (!st.words.length) { toast('Não tem transcrição neste vídeo.'); return; }
+  await saveSrt(`${slug(st.file ? st.file.name.replace(/\.[^.]+$/, '') : 'video')}-transcricao.srt`, buildFullSRT());
+});
 function buildEDL(c, fps) {
   const rs = rangesFor(c); let rec = 0;
   const L = [`TITLE: ${(c.title || 'Corte').replace(/[^\x20-\x7E]/g, '').slice(0, 60) || 'Corte'}`, 'FCM: NON-DROP FRAME', ''];
@@ -5647,13 +5915,10 @@ async function exportMontageRT() {
   setMontIcon();
 }
 function buildMontSRT() {
-  const out = []; let n = 1;
-  for (const p of M.pages) {
-    const a = p.start, b = Math.min(p.until, p.end + 0.4);
-    if (b - a < 0.05) continue;
-    out.push(`${n++}\n${fmtSRT(a)} --> ${fmtSRT(b)}\n${p.words.map(w => w.w).join(' ')}\n`);
-  }
-  return out.join('\n');
+  const ws = [];
+  for (const p of M.pages) for (const w of p.words) if (w.w && w.end - w.start > 0.01) ws.push({ w: w.w, a: w.start, b: w.end });
+  ws.sort((x, y) => x.a - y.a);
+  return srtFromWords(ws);
 }
 function buildMontEDL(fps) {
   const title = ($('#seqName').textContent || 'Sequencia').replace(/[^\x20-\x7E]/g, '').slice(0, 60) || 'Sequencia';
