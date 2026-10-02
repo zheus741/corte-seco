@@ -30,6 +30,16 @@ Vários vídeos numa edição só (pode soltar uma música junto):
 Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
 A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
 
+## Abrir o editor (projeto livre)
+Na tela inicial, **Abrir o editor** abre a linha do tempo vazia, como num editor tradicional, sem soltar nada antes.
+- Importe vídeos, fotos e música (botão, arrastando, ou ⌘I / Ctrl+I). Com a linha do tempo vazia, tudo entra na ordem do
+  nome: vídeos e fotos no V1, música no A2. Depois, arraste da Mídia ou toque em + (entra entre os clipes, sem apagar nada).
+- Cada vídeo é transcrito sozinho, em segundo plano, assim que entra; o andamento aparece na Mídia.
+- A **Edição inteligente** vale para tudo o que está no V1: tira pausas, vícios e takes repetidos dos vídeos com fala e põe
+  legenda (da fala de cada vídeo), zoom e gancho. Vídeo sem fala (paisagem, jogo), foto e música ficam como estão; o que você
+  cortar à mão não volta; vídeo posto depois já entra limpo. "Voltar ao original" devolve os trechos inteiros.
+- Fica salvo como "Projeto livre" em "Continuar editando".
+
 ## Transições, velocidade e cor (na Edição)
 - **Transição nos cortes:** Zoom, Chicote ou Flash. Acontece no próprio corte (0,2 s antes e depois), sem sobrepor
   clipes. Clique num clipe do V1 para escolher a dele, ou, sem nada selecionado, aplique em todos os cortes.

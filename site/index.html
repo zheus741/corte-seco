@@ -207,6 +207,22 @@ details.more[open]>summary{margin-bottom:10px}
 .mod .m-go{position:absolute;right:14px;top:16px;width:18px;height:18px;color:var(--dim);transition:transform .15s,color .15s}
 .mod:hover .m-go,.mod:focus-visible .m-go{color:var(--amber);transform:translateX(3px)}
 .home.dragging .mod{border-style:dashed}
+.hh-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 28px;flex-wrap:wrap}
+.blank-cta{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;width:min(100%,370px);padding:15px 16px;text-align:left;border:1px solid rgba(244,185,66,.55);background:linear-gradient(180deg,#17150F,#111110);color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,background .15s,transform .18s;animation:modIn .5s cubic-bezier(.2,.7,.2,1) backwards}
+.blank-cta:hover,.blank-cta:focus-visible,.blank-cta.over{border-color:var(--amber);background:#1E1A10;transform:translateY(-2px)}
+.blank-cta:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.blank-cta.over{box-shadow:0 0 0 1px var(--amber) inset}
+.home.dragging .blank-cta{border-style:dashed}
+.blank-cta .m-ico{background:var(--amber);color:var(--amber-ink)}
+.blank-cta b{display:block;font-size:16.5px;font-weight:700;line-height:1.2;margin-bottom:3px}
+.blank-cta .bp{display:block;color:var(--mute);font-size:13px;line-height:1.42}
+.blank-cta .m-go{width:18px;height:18px;color:var(--amber);transition:transform .15s}
+.blank-cta:hover .m-go,.blank-cta:focus-visible .m-go{transform:translateX(3px)}
+@media (max-width:760px){ .blank-cta{width:100%} }
+.mi-blank .pl{transform-box:fill-box;transform-origin:center}
+:is(.blank-cta:hover,.blank-cta:focus-visible,.me-box) .mi-blank .pl{animation:plusI 1.6s ease-in-out infinite}
+@keyframes plusI{0%,100%{transform:none}45%{transform:rotate(90deg) scale(1.12)}}
+@media (prefers-reduced-motion:reduce){ .mi-blank .pl{animation:none!important} }
 @media (max-width:980px){ .mods{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:520px){ .mods{grid-template-columns:1fr} .mod{min-height:0;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;padding-right:38px} .mod .m-ico{grid-row:1/3;margin-bottom:0} .mod .m-go{top:50%;transform:translateY(-50%)} .mod:hover .m-go{transform:translate(3px,-50%)} }
 /* module icons: a short loop on hover (and on the open step) */
@@ -536,7 +552,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 .bin-actions .btn{padding:8px 6px;font-size:12px;border:0;border-radius:0;background:var(--raise);white-space:nowrap}
 .bin-actions .btn:hover{background:var(--raise2)}
 .bin-list{overflow:auto;flex:1;min-height:0;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px 8px;align-content:start}
-.bitem{position:relative;display:grid;gap:5px;min-width:0;cursor:grab}
+.bitem{position:relative;display:grid;gap:5px;min-width:0;cursor:grab;align-content:start}
 .bthumb{--k:#2F6BDB;position:relative;width:100%;aspect-ratio:16/9;background:#000 center/cover no-repeat;display:grid;place-items:center;color:var(--mute);outline:1px solid var(--line);outline-offset:0}
 .bthumb::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--k)}
 .bthumb.k-audio{--k:#23965A;background-color:#0E1A13}
@@ -552,7 +568,20 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 @media (hover:none){ .bitem .add{opacity:1} }
 .bin-note{padding:8px 12px 12px;border-top:1px solid var(--line)}
 .program{background:#000}
-.mon-slot{flex:1;min-height:0;display:flex;padding:0;background:#000}
+.mon-slot{position:relative;flex:1;min-height:0;display:flex;padding:0;background:#000}
+.mont-empty{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 38%,#1A1710 0,#0B0B0C 72%);overflow:auto}
+.mont-empty.over{outline:2px dashed var(--amber);outline-offset:-12px}
+.me-box{display:grid;justify-items:center;gap:10px;max-width:430px;text-align:center}
+.me-box .m-ico{width:56px;height:56px;background:var(--amber);color:var(--amber-ink)}
+.me-box .m-ico svg{width:28px;height:28px}
+.me-box h2{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(24px,2.4vw,34px);line-height:1;letter-spacing:.01em}
+.me-box p{color:var(--ink2);font-size:14px;line-height:1.5}
+.me-box .fine{font-size:12.5px;color:var(--mute)}
+.me-imp{position:relative;overflow:hidden;margin-top:6px;padding:10px 22px}
+.me-imp input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.bstat{display:block;font:500 10.5px var(--mono);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:-2px}
+.bstat.run{color:var(--amber)} .bstat.bad{color:#E5776B}
+.bthumb .bprog{position:absolute;left:0;bottom:0;height:3px;background:var(--amber);z-index:1;transition:width .3s}
 .mon-slot .viewport{flex:1;min-height:200px;border-bottom:0}
 .mtransport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:5px 12px;border-top:1px solid #000;background:#111113}
 .mt-btns{display:flex;align-items:center;gap:2px}
@@ -643,7 +672,14 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
     <header class="home-head">
       <p class="eyebrow hero-eyebrow"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#logoMark"/></svg><span id="heroEyebrow">Corte Seco</span></p>
       <h1>O que vamos <span class="slice" data-t="editar hoje?">editar hoje?</span></h1>
-      <p class="lede" id="heroLede">Escolha um módulo e solte o vídeo. Tudo roda no seu computador: o vídeo não vai para a internet.</p>
+      <div class="hh-row">
+        <p class="lede" id="heroLede">Escolha um módulo e solte o vídeo, ou abra o editor e monte do seu jeito. Tudo roda no seu computador: o vídeo não vai para a internet.</p>
+        <button type="button" class="blank-cta" id="blankBtn">
+          <span class="m-ico" aria-hidden="true"><svg class="mi mi-blank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 15h7v5H3zM13 15h8v5h-8z"/><path class="pl" d="M12 3v8M8 7h8"/></svg></span>
+          <span><b>Abrir o editor</b><span class="bp">Começa vazio, como um editor tradicional. Importe, monte e use a edição inteligente quando quiser.</span></span>
+          <svg class="m-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
     </header>
     <section class="mod-group" aria-labelledby="mgOne">
       <h2 id="mgOne">Um vídeo</h2>
@@ -1041,11 +1077,19 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
       <button class="btn" id="addLt" title="Nome e cargo na parte de baixo da tela, com entrada animada">+ Lower third</button>
     </div>
     <div class="bin-list" id="binList"></div>
-    <p class="fine bin-note">Vídeos de apoio, fotos e música. Arraste para a linha do tempo, ou use + / clique duplo para inserir no cursor.</p>
+    <p class="fine bin-note" id="binNote">Vídeos de apoio, fotos e música. Arraste para a linha do tempo, ou use + / clique duplo para inserir no cursor.</p>
   </aside>
   <div class="panel program">
     <div class="ph"><h3>Prévia</h3><span id="seqName"></span></div>
-    <div class="mon-slot" id="monSlot"></div>
+    <div class="mon-slot" id="monSlot"><div class="mont-empty" id="montEmpty" hidden>
+      <div class="me-box">
+        <span class="m-ico" aria-hidden="true"><svg class="mi mi-blank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 15h7v5H3zM13 15h8v5h-8z"/><path class="pl" d="M12 3v8M8 7h8"/></svg></span>
+        <h2>Comece pela mídia</h2>
+        <p id="meText">Importe vídeos, fotos e música. Os vídeos entram na linha do tempo na ordem do nome e já começam a ser transcritos para a legenda e a edição inteligente.</p>
+        <label class="btn primary me-imp">Importar mídia<input type="file" id="emptyIn" multiple accept="video/*,image/*,audio/*,.mov,.mp4,.m4v,.webm,.mkv,.mp3,.wav,.m4a,.aac,.ogg,.flac"></label>
+        <p class="fine">ou arraste os arquivos para cá</p>
+      </div>
+    </div></div>
     <div class="mtransport">
       <div class="mtc" id="mTC">00:00:00:00 <span>/ 00:00:00:00</span></div>
       <div class="mt-btns">
@@ -1278,11 +1322,13 @@ function show(id) {
 }
 function setFileInfo() {
   const el = $('#fileInfo');
-  if (!st.file) { el.innerHTML = ''; return; }
+  const lv = st.multi && st.multi.mode === 'livre';
+  if (!st.file && !lv) { el.innerHTML = ''; return; }
   el.innerHTML = '';
-  const b = document.createElement('b'); b.textContent = st.file.name;
+  const b = document.createElement('b'); b.textContent = lv ? MULTI_NAMES.livre : st.file.name;
   const m = document.createElement('span'); m.className = 'mono';
-  m.textContent = [st.dur ? fmtT(st.dur) : '', st.vw ? `${st.vw}×${st.vh}` : ''].filter(Boolean).join(' · ');
+  m.textContent = lv ? (st.multi.n ? `${st.multi.n} ${st.multi.n === 1 ? 'vídeo' : 'vídeos'}` : 'vazio') : [st.dur ? fmtT(st.dur) : '', st.vw ? `${st.vw}×${st.vh}` : ''].filter(Boolean).join(' · ');
+  if (!st.file) { el.append(b, m); return; }
   const sv = document.createElement('span'); sv.className = 'save-state'; sv.id = 'saveState'; sv.title = `Tudo é salvo sozinho ${HERE}. Para voltar, abra de novo pela tela inicial.`;
   el.append(b, m, sv);
 }
@@ -1368,7 +1414,7 @@ async function touchRecent(extra) {
   if (!st.file || (!st.segs.length && !st.multi)) return;
   const k = st.multi ? 'multi:' + st.multi.key : recentKey(st.file), prev = recents.find(r => r.k === k) || {};
   const path = (DESK && (st.file.__path || DESK.files.pathOf(st.file))) || prev.path || '';
-  const r = Object.assign({}, prev, { k, name: st.file.name, size: st.file.size, dur: st.dur, goal: st.opts.goal, mode: typeof MODE !== 'undefined' ? MODE : 'cuts', at: Date.now(), path, handle: st.file.__handle || prev.handle || null, cuts: st.clips.filter(c => c.src !== 'full').length }, st.multi ? { multi: { key: st.multi.key, main: st.file.name, n: st.multi.n }, name: `${MULTI_NAMES[st.multi.mode] || 'Montagem'} · ${st.multi.n} vídeos`, goal: 'edit', mode: 'mont' } : {}, extra || {});
+  const r = Object.assign({}, prev, { k, name: st.file.name, size: st.file.size, dur: st.dur, goal: st.opts.goal, mode: typeof MODE !== 'undefined' ? MODE : 'cuts', at: Date.now(), path, handle: st.file.__handle || prev.handle || null, cuts: st.clips.filter(c => c.src !== 'full').length }, st.multi ? { multi: { key: st.multi.key, main: st.file.name, n: st.multi.n, mode: st.multi.mode }, name: `${MULTI_NAMES[st.multi.mode] || 'Montagem'} · ${st.multi.n} vídeos`, goal: 'edit', mode: 'mont' } : {}, extra || {});
   recents = [r, ...recents.filter(x => x.k !== k)].slice(0, 12);
   await idb.putKV('recents', recents); renderRecents();
 }
@@ -1378,7 +1424,7 @@ function renderRecents() {
   for (const r of recents.slice(0, 4)) {
     const b = document.createElement('div'); b.className = 'rec'; b.tabIndex = 0; b.style.setProperty('--i', box.childElementCount); b.setAttribute('role', 'button'); b.setAttribute('aria-label', `Continuar ${r.name}`);
     const t = document.createElement('div'); t.className = 'rt'; if (r.thumb) t.style.backgroundImage = `url("${r.thumb}")`;
-    const tag = document.createElement('span'); tag.className = 'rtag'; tag.textContent = r.multi ? 'Montagem' : r.mode === 'mont' || r.goal === 'edit' ? 'Edição' : 'Cortes';
+    const tag = document.createElement('span'); tag.className = 'rtag'; tag.textContent = r.multi ? (r.multi.mode === 'livre' ? 'Projeto' : 'Montagem') : r.mode === 'mont' || r.goal === 'edit' ? 'Edição' : 'Cortes';
     const du = document.createElement('span'); du.className = 'bdur'; du.textContent = fmtT(r.dur || 0);
     t.append(tag, du);
     const nm = document.createElement('b'); nm.textContent = r.name;
@@ -1650,11 +1696,12 @@ function withHandles(e, fn) {
   Promise.all(hp).then(hs => { files.forEach((f, i) => { if (hs[i] && hs[i].kind === 'file') f.__handle = hs[i]; }); fn(files); }, () => fn(files));
 }
 async function goHome() { if (exporting) { toast('Espere a exportação terminar.'); return; }
-  if (work && !$('#scrWork').hidden) { const p = document.createElement('p'); p.textContent = 'A análise deste vídeo para, e o que foi feito até agora se perde. Voltar para o início mesmo assim?'; if ((await openModal('Parar a análise?', p, [{ label: 'Continuar analisando', value: 'stay', primary: true }, { label: 'Parar e voltar', value: 'go' }])) !== 'go') return; } if ($('#scrStart').hidden === false) { if (curMod) closeMod(); return; } closeMod(); const had = st.segs.length > 0; if (had) touchRecent(); cancelWork(); pause(); resetAll(); show('scrStart'); if (had) toast('Projeto salvo. Ele está em “Continuar editando”.', 2600); }
+  if (work && !$('#scrWork').hidden) { const p = document.createElement('p'); p.textContent = 'A análise deste vídeo para, e o que foi feito até agora se perde. Voltar para o início mesmo assim?'; if ((await openModal('Parar a análise?', p, [{ label: 'Continuar analisando', value: 'stay', primary: true }, { label: 'Parar e voltar', value: 'go' }])) !== 'go') return; } if ($('#scrStart').hidden === false) { if (curMod) closeMod(); return; } closeMod(); const had = st.segs.length > 0 || !!(st.multi && st.file); if (had) touchRecent(); cancelWork(); pause(); resetAll(); show('scrStart'); if (had) toast('Projeto salvo. Ele está em “Continuar editando”.', 2600); }
 $('#newBtn').addEventListener('click', goHome);
 $('#brandHome').addEventListener('click', goHome);
 
 function resetAll() {
+  livreStop();
   if (typeof MODE !== 'undefined' && MODE === 'mont') {
     montPause(); releaseActive(); MODE = 'cuts';
     $('#scrEdit .stage').prepend($('#viewport')); $('#scrEdit').appendChild($('#montRight .inspector') || $('.inspector'));
@@ -1678,6 +1725,7 @@ function resetAll() {
 const vid = $('#vid');
 let work = null; // {cancelled, workers}
 function stage(name, state, det) {
+  if (name === 'model' && state === 'on' && det && LV && LV.busy && LV.cur) { const m = MEDIA.get(LV.cur); if (m && m.anal) { m.anal.say = det; binStat(LV.cur); } } // projeto livre: baixando o modelo aparece na Mídia
   const li = $(`#stages li[data-s="${name}"]`); if (!li) return;
   li.classList.toggle('on', state === 'on'); li.classList.toggle('done', state === 'done');
   if (det != null) li.querySelector('.det').textContent = det;
@@ -1833,6 +1881,7 @@ async function startAnalysis(file, force) {
   saveProject();
   openEditor();
   if (goalEdit || st.multi) setMode('mont');
+  if (livre()) livreResume();
   if (pre && pre.captions && !myWork.cancelled) {
     if (pre.style) await applyCapStyle(pre.style);
     applySmart(Object.assign(smartNow(), { captions: true }), { quiet: true });
@@ -2184,11 +2233,12 @@ function mergeIntervals(list) {
   return out;
 }
 function fillerSet() { return new Set(st.cuts.fillerList.split(',').map(s => normKeepAccent(s.trim())).filter(Boolean)); }
-function findTakes() {
+function findTakes(segs) {
+  segs = segs || st.segs;
   const res = new Set();
   const ws = s => s.words.map(w => norm(w.w)).filter(Boolean);
-  for (let i = 0; i + 1 < st.segs.length; i++) {
-    const a = st.segs[i], b = st.segs[i + 1];
+  for (let i = 0; i + 1 < segs.length; i++) {
+    const a = segs[i], b = segs[i + 1];
     if (b.start - a.end > 4) continue;
     const A = ws(a), B = ws(b);
     if (A.length < 3 || B.length < 3) continue;
@@ -2201,14 +2251,22 @@ function findTakes() {
   return res;
 }
 /* what would be removed with these switches (f = {silence, fillers, takes}); words cut by hand always go */
-function removalFor(f) {
+function snapEnv(env, t, dir) { // move a cut edge to the quietest point nearby, on this envelope
+  if (!env) return t;
+  let best = t, bv = Infinity;
+  for (let d = -0.08; d <= 0.0801; d += 0.02) { const x = t + d * (dir || 1), i = Math.floor(x / 0.02); const v = i >= 0 && i < env.length ? env[i] : -100; if (v < bv) { bv = v; best = x; } }
+  return best;
+}
+/* src: a fala e o som de outro vídeo ({env, words, segs}); sem src, o vídeo principal */
+function removalFor(f, src) {
+  const ENV = src ? src.env : st.env, WORDS = src ? src.words || [] : st.words, SEGS = src ? src.segs || [] : st.segs;
   const list = [];
   const kinds = { sil: 0, fill: 0, take: 0, del: 0 };
   const autoWord = new Set();
-  const takeSegs = f.takes ? findTakes() : new Set();
-  if (f.silence && st.env) {
-    const thr = curThr();
-    const env = st.env, minF = Math.max(1, Math.round(st.cuts.minSil / 0.02));
+  const takeSegs = f.takes ? findTakes(SEGS) : new Set();
+  if (f.silence && ENV) {
+    const thr = src ? (st.cuts.thr ?? (envThr(ENV) + (st.cuts.lvlD || 0))) : curThr();
+    const env = ENV, minF = Math.max(1, Math.round(st.cuts.minSil / 0.02));
     let i = 0;
     while (i < env.length) {
       if (env[i] < thr) {
@@ -2220,8 +2278,8 @@ function removalFor(f) {
   }
   const fs = f.fillers ? fillerSet() : new Set();
   let run = null;
-  const pushRun = () => { if (run) { list.push([snap(run[0], -1), snap(run[1], 1)]); run = null; } };
-  for (const w of st.words) {
+  const pushRun = () => { if (run) { list.push([snapEnv(ENV, run[0], -1), snapEnv(ENV, run[1], 1)]); run = null; } };
+  for (const w of WORDS) {
     let why = null;
     if (w.del) why = 'del';
     else if (takeSegs.has(w.seg)) why = 'take';
@@ -2233,7 +2291,7 @@ function removalFor(f) {
     } else pushRun();
   }
   pushRun();
-  for (const i of takeSegs) { const a = st.segs[i], b = st.segs[i + 1]; if (b) list.push([a.start, b.start]); }
+  for (const i of takeSegs) { const a = SEGS[i], b = SEGS[i + 1]; if (b) list.push([a.start, b.start]); }
   return { removed: mergeIntervals(list), kinds, autoWord, takeSegs };
 }
 function computeRemoval() {
@@ -2646,7 +2704,8 @@ function updateStats() {
   if (smartAny()) $('#stats').innerHTML = `De <b>${fmtT(orig)}</b> para <b>${fmtT(out)}</b> · ${cuts} ${cuts === 1 ? 'corte' : 'cortes'} de pausa e fala${st.style.on ? ` · ${st.pages.length} legendas` : ''}`;
   else $('#stats').innerHTML = (orig - out > 0.05 ? `De <b>${fmtT(orig)}</b> para <b>${fmtT(out)}</b> com o que você cortou` : `<b>${fmtT(orig)}</b> como foi gravado`) + ' · edição inteligente não aplicada';
   const k = st.removedKinds;
-  if (cutOn) $('#cleanStats').innerHTML = `No vídeo todo: <b>${k.sil}</b> pausas, <b>${k.fill}</b> vícios, <b>${k.del}</b> palavras cortadas à mão${st.cuts.takes ? `, <b>${st.takeSegs.size}</b> takes repetidos` : ''}. Saem <b>${fmtT(sumRanges(st.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>.`;
+  if (livre()) { const a = livreKinds(cutOn ? st.cuts : { silence: true, fillers: true, takes: true }), sm = livreSmartSecs(st.cuts); $('#cleanStats').innerHTML = cutOn ? `Nos vídeos da linha do tempo: <b>${a.kinds.sil}</b> pausas, <b>${a.kinds.fill}</b> vícios${st.cuts.takes ? `, <b>${a.takes}</b> takes repetidos` : ''}. Saem <b>${fmtT(Math.max(0, sm.orig - sm.out))}</b>.` : `Nos vídeos da linha do tempo há <b>${a.kinds.sil}</b> pausas, <b>${a.kinds.fill}</b> vícios e <b>${a.takes}</b> ${a.takes === 1 ? 'take repetido' : 'takes repetidos'}. Ligue abaixo o que quer cortar, ou use a Edição inteligente no alto.`; }
+  else if (cutOn) $('#cleanStats').innerHTML = `No vídeo todo: <b>${k.sil}</b> pausas, <b>${k.fill}</b> vícios, <b>${k.del}</b> palavras cortadas à mão${st.cuts.takes ? `, <b>${st.takeSegs.size}</b> takes repetidos` : ''}. Saem <b>${fmtT(sumRanges(st.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>.`;
   else { const pv = removalFor({ silence: true, fillers: true, takes: true }), kk = pv.kinds; $('#cleanStats').innerHTML = `${k.del ? `Por enquanto só saem as ${k.del} palavras que você cortou à mão.` : 'Nada cortado ainda.'} No vídeo todo há <b>${kk.sil}</b> pausas, <b>${kk.fill}</b> vícios e <b>${pv.takeSegs.size}</b> ${pv.takeSegs.size === 1 ? 'take repetido' : 'takes repetidos'} (<b>${fmtT(sumRanges(pv.removed.map(r => [Math.max(0, r[0]), Math.min(st.dur, r[1])])))}</b>). Ligue abaixo o que quer cortar, ou use a Edição inteligente no alto.`; }
   $('#takesNote').textContent = st.cuts.takes ? `${st.takeSegs.size} ${st.takeSegs.size === 1 ? 'take repetido encontrado' : 'takes repetidos encontrados'}. Fica só a última versão de cada frase.` : 'Quando você repete uma frase, fica só a última versão.';
   updateExportCard();
@@ -5112,12 +5171,12 @@ function updateSmartUI() {
   updateSmartUI.any = n > 0;
 }
 function smartInfo() {
-  const pv = removalFor({ silence: true, fillers: true, takes: true }), k = pv.kinds, tk = pv.takeSegs.size;
+  const lv = livre(), pv = lv ? livreKinds({ silence: true, fillers: true, takes: true }) : removalFor({ silence: true, fillers: true, takes: true }), k = pv.kinds, tk = lv ? pv.takes : pv.takeSegs.size;
   const pl = (n, a, b) => `${n} ${n === 1 ? a : b}`;
   const pr = st.style.preset, lab = pr && PRESETS[pr] ? PRESETS[pr].label : pr && String(pr).startsWith('u:') ? String(pr).slice(2) : null;
   const hook = MODE === 'mont' ? M.hook : (curClip() || {}).hook;
   return {
-    silence: k.sil ? `${pl(k.sil, 'pausa encontrada', 'pausas encontradas')} no vídeo` : 'nenhuma pausa longa encontrada',
+    silence: k.sil ? `${pl(k.sil, 'pausa encontrada', 'pausas encontradas')} ${lv ? 'nos vídeos' : 'no vídeo'}` : 'nenhuma pausa longa encontrada',
     fillers: k.fill ? pl(k.fill, '“ahn”, “hum” ou parecido encontrado', '“ahn”, “hum” e parecidos encontrados') : 'nenhum “ahn” ou “hum” encontrado',
     takes: tk ? `${pl(tk, 'frase repetida', 'frases repetidas')}: fica a última versão` : 'nenhuma frase repetida encontrada',
     captions: `estilo ${lab ? '“' + lab + '”' : 'atual'}; troque na aba Legenda`,
@@ -5127,7 +5186,8 @@ function smartInfo() {
 }
 async function openSmart() {
   if (exporting) { toast('Espere a exportação terminar.'); return; }
-  if (!st.segs.length && !st.dur) return;
+  if (livre() && !trackClips('V1').length) { toast('Coloque um vídeo na linha do tempo primeiro: importe ou arraste da Mídia.', 3500); return; }
+  if (!st.segs.length && !st.dur && !livre()) return;
   if ($('#dlg').open) return;
   pause(); if (MODE === 'mont') montPause();
   const any = smartAny(), pick = Object.assign({}, any ? smartNow() : smartPick);
@@ -5139,8 +5199,9 @@ async function openSmart() {
   const sum = el('p', 'smart-sum');
   const upd = () => {
     if (multiFixed()) { const ap = $('#dlgActions button[value="apply"]'); if (ap) ap.disabled = !SMART.some(s => pick[s.k]); return; }
-    const orig = c.end - c.start, out = orig - smartSecs(pick, c);
-    sum.innerHTML = `${c.src === 'full' ? 'Vídeo inteiro' : 'Este corte'}: <b>${fmtT(orig)}</b> → <b>${fmtT(out)}</b>${orig - out > 0.05 ? ` <span class="fine">(saem ${fmtT(orig - out)})</span>` : ' <span class="fine">(nada é cortado)</span>'}`;
+    const lsec = livre() ? livreSmartSecs(pick) : null;
+    const orig = lsec ? lsec.orig : c.end - c.start, out = lsec ? lsec.out : orig - smartSecs(pick, c);
+    sum.innerHTML = `${lsec ? 'Vídeos com fala no V1' : c.src === 'full' ? 'Vídeo inteiro' : 'Este corte'}: <b>${fmtT(orig)}</b> → <b>${fmtT(out)}</b>${orig - out > 0.05 ? ` <span class="fine">(saem ${fmtT(orig - out)})</span>` : ' <span class="fine">(nada é cortado)</span>'}`;
     const ap = $('#dlgActions button[value="apply"]'); if (ap) ap.disabled = !SMART.some(s => pick[s.k]);
   };
   for (const s of SMART) {
@@ -5151,7 +5212,8 @@ async function openSmart() {
     l.append(sp, i); list.appendChild(l);
   }
   const body = multiFixed() ? [intro, list, el('p', 'fine', 'Nesta montagem os trechos já foram escolhidos sem as pausas: aqui entram legenda, zoom e gancho.')] : [intro, list, sum];
-  if (MODE === 'mont' && !M.v1Auto) body.push(el('p', 'fine', 'Você mexeu no V1 à mão. Se mudar o que é cortado, o V1 é refeito com os cortes novos (dá para desfazer).'));
+  if (livre()) { const pend = livrePending(); body.push(el('p', 'fine', 'Vale para os vídeos com fala que estão no V1. Fotos, vídeos sem fala e o que está nas outras trilhas ficam como estão.' + (pend ? ` ${pend} ${pend === 1 ? 'vídeo ainda está' : 'vídeos ainda estão'} sendo transcrito${pend === 1 ? '' : 's'}: a edição entra ${pend === 1 ? 'nele' : 'neles'} quando terminar.` : ''))); }
+  else if (MODE === 'mont' && !M.v1Auto) body.push(el('p', 'fine', 'Você mexeu no V1 à mão. Se mudar o que é cortado, o V1 é refeito com os cortes novos (dá para desfazer).'));
   const actions = [{ label: 'Cancelar', value: 'cancel', ghost: true }];
   if (any) actions.push({ label: 'Voltar ao original', value: 'orig' });
   actions.push({ label: any ? 'Aplicar mudanças' : 'Aplicar', value: 'apply', primary: true });
@@ -5491,9 +5553,16 @@ function mediaKindOfFile(f) {
 }
 async function importMedia(files, opts = {}) {
   const added = []; let relinked = 0;
+  const lv = livre();
+  if (lv && !opts.quiet) files = [...files].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { numeric: true }));
   for (const f of files) {
     const kind = mediaKindOfFile(f);
     if (!kind) { toast(`“${f.name}” não é vídeo, imagem nem áudio.`); continue; }
+    if (lv && st.file && f.name === st.file.name && f.size === st.file.size) { if (!opts.quiet) toast(`“${f.name}” já está na lista de mídia.`); continue; }
+    if (lv && !st.file && kind === 'video') { // projeto livre: o primeiro vídeo vira o principal do projeto
+      try { added.push(await livreMain(f)); } catch (e) { toast(`Não consegui abrir “${f.name}” ${HERE}. Tente exportar em MP4 (H.264).`); }
+      continue;
+    }
     const again = [...MEDIA.values()].find(x => !x.main && x.name === f.name && x.file && x.file.size === f.size);
     if (again) { if (!opts.quiet) toast(`“${f.name}” já está na lista de mídia.`); continue; }
     const miss = [...OFFLINE.values()].find(o => o.name === f.name && (!o.size || o.size === f.size)) || [...OFFLINE.values()].find(o => o.name === f.name);
@@ -5517,6 +5586,7 @@ async function importMedia(files, opts = {}) {
     if (MX_PENDING.has(m.id)) { m.ax = axFromSaved(MX_PENDING.get(m.id), m.id); MX_PENDING.delete(m.id); mxCacheGet(f).then(c => { if (c && m.ax) { m.ax.env = m.ax.env || c.env || null; m.ax.vis = m.ax.vis || c.vis || null; if (!m.env && m.ax.env) m.env = m.ax.env; M.dirty = true; } }); }
   }
   renderBin();
+  if (lv && livreAdded(added, opts)) return added;
   if (relinked) { changed(true); toast(`${relinked} ${relinked === 1 ? 'arquivo reconectado' : 'arquivos reconectados'} na edição.`); }
   else if (added.length && !opts.quiet) toast(`${added.length} ${added.length === 1 ? 'arquivo importado' : 'arquivos importados'}. Arraste para a linha do tempo ou toque em +.`);
   return added;
@@ -5595,6 +5665,7 @@ function changed(skipEC) {
   updUndoBtns();
   saveMontSoon();
   if (MODE === 'mont') updateExportCard();
+  syncEmpty();
 }
 
 /* ---------- captions on the sequence (anchored to the spoken words) ---------- */
@@ -5675,7 +5746,7 @@ function overwrite(track, a, b, except) {
 }
 function splitClip(c, t) {
   if (t <= c.tl + 0.03 || t >= cend(c) - 0.03) return null;
-  if (c.track === 'V1') M.v1Auto = false;
+  if (c.track === 'V1') v1Manual([c.id]);
   const k = Object.assign({}, c, { id: nid() });
   const off = (t - c.tl) * spd(c);
   c.out = c.in + off; k.in = c.in + off; k.tl = t; c.fadeOut = 0; k.fadeIn = 0; k.tr = null;
@@ -5707,7 +5778,7 @@ function deleteSel() {
   if (!M.sel.size) return;
   const before = v1Gaps().length, n = M.sel.size;
   pushUndo(false, n > 1 ? `apagar ${n} clipes` : 'apagar clipe');
-  if (M.clips.some(c => M.sel.has(c.id) && c.track === 'V1')) M.v1Auto = false;
+  if (M.clips.some(c => M.sel.has(c.id) && c.track === 'V1')) v1Manual([...M.sel]);
   M.clips = M.clips.filter(c => !M.sel.has(c.id) || M.trk[c.track].lock);
   M.sel.clear(); changed(); updateV1Notes();
   const gaps = v1Gaps(); const end = seqEnd();
@@ -5719,7 +5790,7 @@ function rippleDeleteSel() {
   if (!M.sel.size) { toast('Selecione um clipe ou um buraco.', 1600); return; }
   pushUndo(false, 'apagar e juntar');
   const del = M.clips.filter(c => M.sel.has(c.id) && !M.trk[c.track].lock).sort((a, b) => b.tl - a.tl);
-  if (del.some(c => c.track === 'V1')) M.v1Auto = false;
+  if (del.some(c => c.track === 'V1')) v1Manual(del.map(c => c.id));
   for (const c of del) { M.clips = M.clips.filter(k => k !== c); shiftAfter(cend(c), -cdur(c), c.track === 'V1' ? null : c.track); }
   M.sel.clear(); changed();
 }
@@ -5750,7 +5821,7 @@ function rippleTrimTo(which) {
     const oldEnd = cend(c); c.out -= d; shiftAfter(oldEnd, -d);
   }
   M.clips = M.clips.filter(k => cdur(k) >= 0.02);
-  M.v1Auto = false;
+  v1Manual([c.id]);
   changed(); updateV1Notes();
 }
 function editPoints() { const s = new Set([0]); for (const c of M.clips) { s.add(+c.tl.toFixed(3)); s.add(+cend(c).toFixed(3)); } return [...s].sort((a, b) => a - b); }
@@ -5758,6 +5829,7 @@ function prevEdit() { const p = editPoints().filter(x => x < M.T - 0.01); return
 function nextEdit() { const p = editPoints().find(x => x > M.T + 0.01); return p != null ? p : seqEnd(); }
 function insertMedia(mid, track, at) {
   const m = MEDIA.get(mid); if (!m) return;
+  if (livre() && (m.kind === 'video' || m.kind === 'image') && (!track || track === 'V1')) { const c = livreInsert(mid, at); if (c) { if (M.clips.includes(c)) M.sel = new Set([c.id]); changed(); activateTab('clip'); } return; }
   if (!track) track = m.kind === 'audio' ? 'A2' : (mid === 'm0' ? 'V1' : 'V2');
   const tr = TRACKS.find(t => t.id === track);
   if (!tr.accepts.includes(m.kind)) track = m.kind === 'audio' ? 'A2' : 'V2';
@@ -5827,8 +5899,9 @@ function srcToT(s, list) {
   for (const c of v) { if (s >= c.in - 1e-6 && s < c.out) return tAtSrc(c, s); if (c.in > s && (!next || c.in < next.in)) next = c; }
   return next ? next.tl : null;
 }
-const multiFixed = () => !!(st.multi && st.multi.mode !== 'apoio');
+const multiFixed = () => !!(st.multi && st.multi.mode !== 'apoio' && st.multi.mode !== 'livre');
 function rebuildV1(fromUser, silent) {
+  if (livre()) { livreClean(fromUser, silent); return; }
   if (multiFixed()) return;
   const cl = curClip(); if (!cl) return;
   const rs = rangesFor(cl);
@@ -5863,11 +5936,12 @@ function rebuildV1(fromUser, silent) {
 }
 function onCleanupChanged() {
   if (MODE !== 'mont') return;
+  if (livre()) { livreClean(false); return; }
   if (M.v1Auto) rebuildV1(false);
   updateV1Notes();
 }
 function updateV1Notes() {
-  const show = MODE === 'mont' && !M.v1Auto && !multiFixed();
+  const show = MODE === 'mont' && !M.v1Auto && !multiFixed() && !livre();
   $$('[data-v1note]').forEach(n => { n.hidden = !show; });
 }
 
@@ -6563,11 +6637,11 @@ const tlUpM = () => {
   const k = tdrag; tdrag = null; M.snapLine = null;
   if (k.kind === 'move' && k.moved) {
     const ids = new Set(k.orig.keys());
-    for (const [id, o] of k.orig) { const c = M.clips.find(x => x.id === id); if (o.track === 'V1' || (c && c.track === 'V1')) M.v1Auto = false; }
+    if ([...k.orig].some(([id, o]) => { const c = M.clips.find(x => x.id === id); return o.track === 'V1' || (c && c.track === 'V1'); })) v1Manual(null);
     updateV1Notes();
     for (const id of ids) { const c = M.clips.find(x => x.id === id); if (c) overwrite(c.track, c.tl, cend(c), ids); }
     changed();
-  } else if (k.kind === 'trim' && k.pushed) { if (k.clip.track === 'V1') { M.v1Auto = false; updateV1Notes(); } changed(); }
+  } else if (k.kind === 'trim' && k.pushed) { if (k.clip.track === 'V1') { v1Manual([k.clip.id]); updateV1Notes(); } changed(); }
   else if ((k.kind === 'capMove' || k.kind === 'capTrim') && k.pushed) capChanged();
   M.dirty = true;
 };
@@ -6584,7 +6658,7 @@ tlc.addEventListener('drop', async e => {
   const at = snapTo(h.t, snapCandidates(new Set())).t;
   if (id && id.startsWith('media:')) { insertMedia(id.slice(6), h.zone === 'track' ? h.tr : null, at); return; }
   const files = [...(e.dataTransfer.files || [])];
-  if (files.length) { const added = await importMedia(files); let t = at; for (const m of added) { insertMedia(m.id, h.zone === 'track' ? h.tr : null, t); const c = M.clips[M.clips.length - 1]; if (c) t = cend(c); } }
+  if (files.length) { const added = await importMedia(files, { place: false }); let t = at; for (const m of added) { insertMedia(m.id, h.zone === 'track' ? h.tr : null, t); const c = M.clips[M.clips.length - 1]; if (c) t = cend(c); } }
 });
 
 function setTool(t) { M.tool = t; $$('#tlTools [data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t))); }
@@ -6632,22 +6706,26 @@ function renderBin() {
   $('#binCount').textContent = `${items.length} ${items.length === 1 ? 'item' : 'itens'}`;
   for (const m of items) {
     if (m.kind === 'audio') audioThumb(m);
-    const el = document.createElement('div'); el.className = 'bitem'; el.draggable = true;
-    el.title = (m.main ? 'Vídeo principal' : m.name) + ' — arraste para a linha do tempo';
+    const lv = livre(), main = m.main && !lv;
+    const el = document.createElement('div'); el.className = 'bitem'; el.draggable = true; el.dataset.mid = m.id;
+    el.title = (main ? 'Vídeo principal' : m.name) + ' — arraste para a linha do tempo';
     el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', 'media:' + m.id); e.dataTransfer.effectAllowed = 'copy'; });
     el.addEventListener('dblclick', () => insertMedia(m.id, null, M.T));
     const th = document.createElement('div'); th.className = 'bthumb k-' + m.kind;
     if (m.thumb) th.style.backgroundImage = `url("${m.thumb}")`;
     else if (m.kind === 'audio') th.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
     if (m.dur && isFinite(m.dur)) { const du = document.createElement('span'); du.className = 'bdur'; du.textContent = fmtT(m.dur); th.appendChild(du); }
-    const add = document.createElement('button'); add.className = 'tbtn add'; add.title = 'Inserir no cursor'; add.setAttribute('aria-label', 'Inserir ' + (m.main ? 'vídeo principal' : m.name) + ' no cursor');
+    const add = document.createElement('button'); add.className = 'tbtn add'; add.title = lv && m.kind !== 'audio' ? 'Pôr na linha do tempo (no cursor, entre os clipes)' : 'Inserir no cursor'; add.setAttribute('aria-label', (lv && m.kind !== 'audio' ? 'Pôr na linha do tempo: ' : 'Inserir ') + (main ? 'vídeo principal' : m.name) + (lv && m.kind !== 'audio' ? '' : ' no cursor'));
     add.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 5v14M5 12h14"/></svg>';
     add.onclick = () => insertMedia(m.id, null, M.T);
     th.appendChild(add);
-    const b = document.createElement('b'); b.textContent = m.main ? 'Vídeo principal' : m.name;
+    const b = document.createElement('b'); b.textContent = main ? 'Vídeo principal' : m.name;
     el.append(th, b);
+    if (lv && m.kind === 'video') { const sx = document.createElement('span'); sx.className = 'bstat'; el.appendChild(sx); const pg = document.createElement('i'); pg.className = 'bprog'; th.appendChild(pg); }
     list.appendChild(el);
+    if (lv) binStat(m.id);
   }
+  if (livre()) { const pend = LV.q.length; $('#binCount').textContent = `${items.length} ${items.length === 1 ? 'item' : 'itens'}${pend ? ` · transcrevendo ${pend}` : ''}`; }
 }
 $('#mediaIn').addEventListener('change', async e => { const f = [...e.target.files]; e.target.value = ''; if (f.length) await importMedia(f); });
 $('#binPanel').addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')) { e.preventDefault(); } });
@@ -6907,7 +6985,11 @@ function renderEC() {
     return;
   }
   // nothing selected: sequence settings
-  if (st.multi) {
+  if (livre()) {
+    add(ecEl('h4', null, MULTI_NAMES.livre));
+    const ln = ecEl('p', 'fine', livreNote()); ln.id = 'ecLivre'; add(ln);
+    const ib = ecEl('button', 'btn block', 'Importar mídia…'); ib.type = 'button'; ib.id = 'ecImport'; ib.title = 'Importar (⌘I)'; ib.onclick = () => $('#mediaIn').click(); add(ib);
+  } else if (st.multi) {
     add(ecEl('h4', null, MULTI_NAMES[st.multi.mode] || 'Montagem'));
     add(ecEl('p', 'fine', `${st.multi.n} vídeos${st.multi.musicName ? ` · música: ${st.multi.musicName}` : ''}${st.multi.q ? ` · procurando “${st.multi.q}”` : ''}. Os vídeos já foram analisados: montar de novo é rápido.`));
     const rb2 = ecEl('button', 'btn block', 'Montar de novo…'); rb2.type = 'button'; rb2.id = 'ecRemont'; rb2.onclick = remontMulti; add(rb2);
@@ -6935,13 +7017,14 @@ function renderEC() {
     }
   }
   add(ecEl('h4', null, 'Edição inteligente'));
-  const sOn = smartAny();
-  add(ecEl('p', 'fine', sOn ? 'Aplicada neste vídeo. Ligue ou desligue cada parte aqui.' : 'Ainda não aplicada: o vídeo está como foi gravado. Nada entra sem você mandar.'));
-  const sb = ecEl('button', sOn ? 'btn block' : 'btn primary block', sOn ? 'Mudar ou voltar ao original…' : 'Aplicar edição inteligente…'); sb.type = 'button'; sb.id = 'ecSmart'; sb.onclick = openSmart; add(sb);
+  const sOn = smartAny(), lvEmpty = livre() && !trackClips('V1').length;
+  add(ecEl('p', 'fine', lvEmpty ? 'Quando houver vídeo com fala na linha do tempo, ela corta pausas e vícios e põe legenda, zoom e gancho.' : sOn ? `Aplicada ${livre() ? 'nos vídeos' : 'neste vídeo'}. Ligue ou desligue cada parte aqui.` : `Ainda não aplicada: ${livre() ? 'os vídeos estão' : 'o vídeo está'} como ${livre() ? 'foram gravados' : 'foi gravado'}. Nada entra sem você mandar.`));
+  const sb = ecEl('button', sOn ? 'btn block' : 'btn primary block', sOn ? 'Mudar ou voltar ao original…' : 'Aplicar edição inteligente…'); sb.type = 'button'; sb.id = 'ecSmart'; sb.onclick = openSmart; sb.hidden = lvEmpty; add(sb);
   if (sOn) {
     const sw = (label, path) => { const l = ecEl('label', 'switch'); l.append(ecEl('span', null, label)); const i = document.createElement('input'); i.type = 'checkbox'; i.checked = !!getPath(path); i.addEventListener('change', () => { setPath(path, i.checked); onChange(path); }); l.appendChild(i); return l; };
     add(...SMART.filter(s => !(s.cut && multiFixed())).map(s => sw(s.label, s.path)));
     if (multiFixed()) {}
+    else if (livre()) add(ecEl('p', 'fine', 'Vale para os vídeos com fala do V1, inclusive os que você puser depois. O que você cortar à mão fica como está.'));
     else if (!M.v1Auto) { const n = ecEl('div', 'v1note'); n.append(ecEl('span', null, 'O V1 foi editado à mão. Mudar a limpeza não refaz o V1 sozinho.')); const b = ecEl('button', 'btn', 'Reaplicar limpeza no V1'); b.onclick = () => rebuildV1(true); n.appendChild(b); add(n); }
     else add(ecEl('p', 'fine', 'Enquanto você não mexer no V1 à mão, a limpeza e o que você cortar na aba Texto refazem a linha do tempo na hora.'));
   }
@@ -6989,6 +7072,7 @@ function montKey(e) {
   else if (mod && k.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
   else if (mod && k.toLowerCase() === 'y') { e.preventDefault(); redo(); }
   else if (mod && k.toLowerCase() === 'k') { e.preventDefault(); if (e.shiftKey) splitAllAt(M.T); else splitSmart(M.T); }
+  else if (mod && k.toLowerCase() === 'i') { e.preventDefault(); $('#mediaIn').click(); }
   else if (mod) return;
   else if (k === 'v' || k === 'V') setTool('select');
   else if (k === 'c' || k === 'C') setTool('razor');
@@ -7018,10 +7102,10 @@ function setMode(m) {
   if (m === 'cuts' && st.multi && MODE === 'mont') return;
   if (exporting && m !== MODE) { toast('Espere a exportação terminar para trocar de modo.'); syncModeSeg(); return; }
   if (exporting || m === MODE) return;
-  if (!st.segs.length && !st.dur) return;
+  if (!st.segs.length && !st.dur && !livre()) return;
   pause(); montPause();
   if (m === 'mont') {
-    ensureMainMedia();
+    if (st.url) ensureMainMedia();
     const c = curClip();
     if (!montages[c.id]) buildMontageFrom(c);
     MODE = 'mont';
@@ -7127,7 +7211,7 @@ new ResizeObserver(() => { document.documentElement.style.setProperty('--toph', 
 /* ================= montagem com vários vídeos ================= */
 /* Quatro jeitos de juntar vídeos numa edição só. Cada vídeo é analisado uma vez (som, fala quando
    precisa, qualidade da imagem e rostos) e a análise fica guardada: montar de novo é instantâneo. */
-const MULTI_NAMES = { lances: 'Melhores lances', after: 'Aftermovie', apoio: 'Fala com imagens de apoio', depo: 'Depoimentos', pod: 'Podcast com várias câmeras' };
+const MULTI_NAMES = { livre: 'Projeto livre', lances: 'Melhores lances', after: 'Aftermovie', apoio: 'Fala com imagens de apoio', depo: 'Depoimentos', pod: 'Podcast com várias câmeras' };
 const MULTI_DESC = {
   lances: 'Jogos e eventos: acha os gritos da torcida e a narração e junta os lances.',
   after: 'Vídeos de celular de um evento, cortados no ritmo da música.',
@@ -7805,10 +7889,315 @@ function updateMultiUI() {
   if (multi) $('#modeSeg').hidden = true;
   const hideTx = multi && st.multi.mode !== 'apoio';
   const tc = $('#tabs button[data-t="clean"]'), tt = $('#tabs button[data-t="text"]');
-  if (MODE === 'mont' && tc && tt) { tc.hidden = hideTx; tt.hidden = hideTx && st.multi.mode !== 'pod'; }
+  if (MODE === 'mont' && tc && tt) { tc.hidden = hideTx && !livre(); tt.hidden = hideTx && st.multi.mode !== 'pod'; }
 }
 
-window.__cs = { st, M, MEDIA, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
+/* ---- Projeto livre: o editor abre vazio, como um editor tradicional. A pessoa importa, monta na linha do tempo
+   e usa a edição inteligente quando quiser. Cada vídeo é transcrito sozinho, em segundo plano, assim que entra. ---- */
+function livre() { return !!(st.multi && st.multi.mode === 'livre'); }
+var LV = { q: [], busy: false, job: null };
+async function openBlank(files) {
+  if (exporting) { toast('Espere a exportação terminar.'); return; }
+  if (curMod) closeMod();
+  cancelWork(); pause(); resetAll();
+  st.multi = { key: 'cs:multi:' + Date.now().toString(36), mode: 'livre', n: 0, vids: [] };
+  st.clips = [fullClip(), { id: 'multi', title: MULTI_NAMES.livre, hook: '', start: 0, end: 0, score: null, src: 'multi', why: '' }]; st.cur = 'multi';
+  setSmart(smartNone()); st.lt.on = false; computeRemoval();
+  montages = { multi: { clips: [], hook: '', T: 0, v1Auto: true } };
+  openEditor(); setMode('mont'); setFileInfo(); renderBin(); syncEmpty();
+  if (files && files.length) await importMedia(files);
+  else setTimeout(() => { if (!$('#montEmpty').hidden) $('#emptyIn').focus(); }, 60);
+}
+async function livreMain(f) { // o primeiro vídeo importado vira o vídeo principal do projeto (é por ele que o projeto reabre)
+  st.file = f; st.url = URL.createObjectURL(f); st.model = st.opts.model;
+  try { await loadVideoMeta(st.url); }
+  catch (e) { URL.revokeObjectURL(st.url); st.file = null; st.url = null; throw e; }
+  st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight;
+  const fc = st.clips.find(c => c.id === 'full'); if (fc) fc.end = st.dur;
+  const m = ensureMainMedia();
+  setTimeout(() => { if (st.file === f) { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); } }, 1500);
+  return m;
+}
+function livreAdded(added, opts) { // depois de importar: lista de vídeos, fila de transcrição e, com a linha do tempo vazia, já monta
+  for (const m of added) if (m.kind === 'video') {
+    if (!st.multi.vids.some(v => v.mid === m.id)) st.multi.vids.push({ mid: m.id, name: m.name });
+    if (!livreDone(m)) livreQueue(m.id);
+  }
+  st.multi.n = st.multi.vids.length; setFileInfo();
+  if (opts.quiet || opts.place === false || !added.length) return false;
+  const empty = !trackClips('V1').length;
+  if (!empty) return false;
+  livrePlace(added);
+  const nv = added.filter(m => m.kind === 'video').length, ni = added.filter(m => m.kind === 'image').length, na = added.filter(m => m.kind === 'audio').length;
+  const what = [nv ? `${nv} ${nv === 1 ? 'vídeo' : 'vídeos'}` : '', ni ? `${ni} ${ni === 1 ? 'foto' : 'fotos'}` : '', na ? 'a música' : ''].filter(Boolean).join(', ');
+  toastAction(`${what[0].toUpperCase() + what.slice(1)} na linha do tempo.${nv ? ' Os vídeos estão sendo transcritos: a legenda e a edição inteligente ficam prontas logo.' : ''}`, 'Edição inteligente…', openSmart, 10000);
+  return true;
+}
+function livrePlace(list) { // fotos e vídeos no fim do V1, na ordem; a música no A2
+  const vis = list.filter(m => m.kind === 'video' || m.kind === 'image'), aud = list.filter(m => m.kind === 'audio');
+  if (vis.length) {
+    pushUndo(false, 'pôr na linha do tempo');
+    for (const m of vis) livreInsert(m.id, 1e9, { noUndo: true });
+    M.sel.clear(); changed(); zoomFit(); seekM(0);
+  }
+  for (const m of aud) insertMedia(m.id, 'A2', trackClips('A2').length ? M.T : 0);
+  if (aud.length) { M.sel.clear(); changed(); }
+}
+function livreInsert(mid, at, o = {}) { // entra entre os clipes do V1 (no ponto de corte mais perto), empurrando o resto: nada é apagado
+  const m = MEDIA.get(mid); if (!m) return null;
+  if (M.trk.V1.lock) { toast('A trilha Vídeo (V1) está travada.'); return null; }
+  const v = trackClips('V1'), end = v.length ? cend(v[v.length - 1]) : 0;
+  let T = at != null ? at : M.T;
+  if (!v.length || T >= end - 0.05) T = end;
+  else { const c = clipAt('V1', T); if (c) T = T - c.tl < cdur(c) / 2 ? c.tl : cend(c); }
+  const dur = m.kind === 'image' ? 3 : m.dur;
+  if (!(dur > 0.05)) return null;
+  if (!o.noUndo) pushUndo(false, 'pôr na linha do tempo');
+  if (T < end - 0.01) shiftAfter(T, dur);
+  const c = { id: nid(), track: 'V1', media: mid, tl: T, in: 0, out: dur, scale: 1, px: 0, py: 0, opacity: 1, vol: 1, fadeIn: 0, fadeOut: 0, kb: m.kind === 'image' };
+  M.clips.push(c);
+  if (m.kind === 'video' && cutsOn()) livreClean(false, true, sp => sp.pieces.includes(c));
+  return c;
+}
+const cutsOn = () => !!(st.cuts.silence || st.cuts.fillers || st.cuts.takes);
+function livreDone(m) { return m.id === 'm0' ? !!(m.analyzed || st.segs.length) : !!(m.ax && Array.isArray(m.ax.segs)); }
+function livrePending() { let n = 0; for (const m of MEDIA.values()) if (m.kind === 'video' && (LV.q.includes(m.id))) n++; return n; }
+
+/* ---- transcrição em segundo plano, um vídeo por vez ---- */
+function livreQueue(mid) {
+  if (!LV.q.includes(mid)) LV.q.push(mid);
+  const m = MEDIA.get(mid); if (m && !(m.anal && m.anal.st === 'run')) m.anal = { st: 'queue', p: 0 };
+  binStat(mid); livreRun();
+}
+function livreStop() {
+  if (!LV) return;
+  const j = LV.job;
+  if (j) { j.cancelled = true; (j.workers || []).forEach(w => { try { w.terminate(); } catch (e) {} }); if (DESK && deskModels) DESK.asr.cancel().catch(() => {}); }
+  LV.q = []; LV.job = null; LV.busy = false;
+}
+async function livreRun() {
+  if (LV.busy) return;
+  LV.busy = true;
+  const job = LV.job = { cancelled: false, workers: [] };
+  try {
+    while (LV.q.length && !job.cancelled && LV.job === job) {
+      const mid = LV.q[0], m = MEDIA.get(mid);
+      if (!m || !m.file || m.kind !== 'video') { LV.q.shift(); continue; }
+      m.anal = { st: 'run', p: 0 }; LV.cur = mid; binStat(mid); renderBinCount();
+      const ui = { key: 'lv', say: () => {}, progress: x => { if (m.anal && m.anal.st === 'run') { m.anal.p = x; binStat(mid); } } };
+      let ax = null;
+      try { ax = await analyzeSource(m.file, mid, { asr: true }, ui, job); } catch (e) { ax = null; }
+      if (job.cancelled || LV.job !== job) return;
+      LV.q.shift(); LV.cur = null;
+      if (MEDIA.get(mid) !== m) continue; // o projeto mudou no meio
+      if (!ax) { m.anal = { st: 'fail' }; binStat(mid); renderBinCount(); continue; }
+      if (mid === 'm0') { st.env = ax.env; m.env = ax.env; setSegments(axToSave(ax).segs || []); st.reframe = ax.rf || null; m.ax = { env: ax.env, vis: ax.vis, rf: ax.rf }; m.analyzed = true; computeRemoval(); }
+      else { m.ax = ax; m.env = ax.env; }
+      m.anal = null;
+      livreAnalyzed(mid);
+    }
+  } finally { if (LV.job === job) { LV.busy = false; LV.job = null; } }
+}
+function livreAnalyzed(mid) {
+  const m = MEDIA.get(mid); if (!m) return;
+  binStat(mid); renderBinCount();
+  if (MODE !== 'mont') return;
+  const onV1 = trackClips('V1').some(c => c.media === mid), nw = (wordsOf(mid) || []).length;
+  const cut = onV1 && cutsOn() && livreClean(false, false, sp => sp.media === mid);
+  if (!cut) changed(M.sel.size > 0 || M.selCap != null); // a legenda deste vídeo entra na hora
+  else if (M.sel.size || M.selCap != null) renderEC();
+  saveProject();
+  if (cut) toastAction(`“${m.name}” transcrito: a edição inteligente entrou nele.`, 'Desfazer', undo, 8000);
+  else if (onV1 && nw && st.style.on) toast(`“${m.name}” transcrito: a legenda entrou.`, 3000);
+  else if (!LV.q.length) toast(nw ? 'Vídeos transcritos: a legenda e a edição inteligente já valem para todos.' : `“${m.name}” não tem fala: ele fica como está.`, 3500);
+}
+function livreResume() { // reabriu o projeto: o que ainda não foi transcrito volta para a fila
+  if (!st.multi.vids) st.multi.vids = [];
+  if (st.file && !st.segs.length) livreQueue('m0'); else { const m0 = MEDIA.get('m0'); if (m0) m0.analyzed = true; }
+  for (const m of MEDIA.values()) if (m.kind === 'video' && m.id !== 'm0' && !livreDone(m)) livreQueue(m.id);
+  st.multi.n = st.multi.vids.length; setFileInfo(); renderBin();
+}
+function anaText(m) {
+  const a = m.anal;
+  if (a && a.st === 'queue') return ['na fila para transcrever', ''];
+  if (a && a.st === 'run') { const p = a.p || 0; return [p < 0.1 ? (a.say || 'lendo o áudio…') : p < 0.7 ? `transcrevendo ${Math.round((p - 0.1) / 0.6 * 100)}%` : 'olhando as imagens…', 'run']; }
+  if (a && a.st === 'fail') return ['não deu para transcrever', 'bad'];
+  if (!livreDone(m)) return ['', ''];
+  const n = (m.id === 'm0' ? st.segs : m.ax.segs || []).length;
+  return [n ? `${n} ${n === 1 ? 'frase' : 'frases'}` : 'sem fala', ''];
+}
+function binStat(mid) {
+  const el = document.querySelector(`#binList .bitem[data-mid="${mid}"]`), m = MEDIA.get(mid); if (!el || !m) return;
+  const sx = el.querySelector('.bstat'), pg = el.querySelector('.bprog'); if (!sx) return;
+  const [t, cls] = anaText(m); sx.textContent = t; sx.className = 'bstat' + (cls ? ' ' + cls : '');
+  if (pg) pg.style.width = m.anal && m.anal.st === 'run' ? Math.round((m.anal.p || 0) * 100) + '%' : '0';
+}
+function renderBinCount() {
+  if (!livre()) return; const n = MEDIA.size, pend = livrePending();
+  $('#binCount').textContent = `${n} ${n === 1 ? 'item' : 'itens'}${pend ? ` · transcrevendo ${pend}` : ''}`;
+  const ln = $('#ecLivre'); if (ln) ln.textContent = livreNote();
+}
+function livreNote() {
+  const nv = st.multi.vids.length, pend = livrePending();
+  return nv ? `${nv} ${nv === 1 ? 'vídeo' : 'vídeos'} no projeto${pend ? ` · transcrevendo ${pend}` : ' · todos transcritos'}. A legenda e a edição inteligente valem para os vídeos com fala que estiverem no V1.` : 'Importe vídeos, fotos e música. Os vídeos são transcritos assim que entram, para a legenda e a edição inteligente.';
+}
+
+/* ---- edição inteligente nos vídeos do V1: cada trecho que a pessoa pôs vira os pedaços com fala ---- */
+const LC_CACHE = new Map();
+function srcOf(mid) {
+  if (mid === 'm0') { const m0 = MEDIA.get('m0'); return st.env || st.segs.length || (m0 && m0.analyzed) ? { env: st.env, words: st.words, segs: st.segs } : null; }
+  const m = MEDIA.get(mid); if (!m || !m.ax || !Array.isArray(m.ax.segs)) return null;
+  return { env: m.ax.env || m.env || null, words: m.ax.words || [], segs: m.ax.segs || [] };
+}
+function removalOf(mid, f) {
+  const S = srcOf(mid); if (!S) return null;
+  const sig = [f.silence, f.fillers, f.takes, st.cuts.thr, st.cuts.lvlD, st.cuts.minSil, st.cuts.pad, st.cuts.fillerList, S.words.length, S.env ? S.env.length : 0, mid === 'm0' ? st.words.reduce((a, w) => a + (w.del ? 1 : 0), 0) : 0].join('|');
+  const c = LC_CACHE.get(mid); if (c && c.sig === sig && c.S === S.words) return c.r;
+  const r = removalFor({ silence: !!f.silence, fillers: !!f.fillers, takes: !!f.takes }, S);
+  LC_CACHE.set(mid, { sig, S: S.words, r }); return r;
+}
+function livreSpans() { // pedaços seguidos do mesmo trecho original voltam a ser um trecho só
+  const spans = [];
+  for (const c of trackClips('V1')) {
+    const last = spans[spans.length - 1];
+    if (c.lc && last && last.g === c.lc.g && last.media === c.media) { last.pieces.push(c); continue; }
+    spans.push({ g: c.lc ? c.lc.g : null, media: c.media, in: c.lc ? c.lc.in : c.in, out: c.lc ? c.lc.out : c.out, pieces: [c] });
+  }
+  return spans;
+}
+function speechy(sp) { // trecho com fala de verdade (não só uma palavra solta no meio da torcida ou da música)
+  const m = MEDIA.get(sp.media); if (!m || m.kind !== 'video' || !srcOf(sp.media)) return false;
+  const W = wordsOf(sp.media) || []; let n = 0, cov = 0;
+  for (let i = W.length ? wordIdxIn(W, sp.in) : 0; i < W.length && W[i].start < sp.out; i++) { const a = Math.max(sp.in, W[i].start), b = Math.min(sp.out, W[i].end); if (b > a) { n++; cov += b - a; } }
+  return n >= 3 && cov >= 0.35 * (sp.out - sp.in);
+}
+function livreRanges(sp, f) {
+  const whole = [[sp.in, sp.out]];
+  if (!f || !(f.silence || f.fillers || f.takes)) return whole;
+  if (!speechy(sp)) return whole; // sem fala (paisagem, jogo, foto, música): fica como está
+  const r = removalOf(sp.media, f); if (!r) return whole;
+  const rs = rangesFor({ start: sp.in, end: sp.out }, r.removed);
+  return rs.length ? rs : whole;
+}
+function livreSmartSecs(f) {
+  let orig = 0, out = 0;
+  for (const sp of livreSpans()) { const k = spd(sp.pieces[0]); orig += (sp.out - sp.in) / k; out += sumRanges(livreRanges(sp, f)) / k; }
+  return { orig, out };
+}
+function livreKinds(f) {
+  const kinds = { sil: 0, fill: 0, take: 0, del: 0 }; let takes = 0;
+  for (const mid of new Set(livreSpans().filter(speechy).map(sp => sp.media))) {
+    const r = removalOf(mid, f); if (!r) continue;
+    for (const k of Object.keys(kinds)) kinds[k] += r.kinds[k] || 0; takes += r.takeSegs.size;
+  }
+  return { kinds, takes };
+}
+function v1Manual(ids) { // a pessoa mexeu no V1 à mão: esses pedaços deixam de ser refeitos pela limpeza
+  M.v1Auto = false;
+  if (!livre()) return;
+  const set = ids ? new Set(ids) : null, gs = new Set();
+  for (const c of M.clips) if (c.track === 'V1' && c.lc && (!set || set.has(c.id))) gs.add(c.lc.g);
+  for (const c of M.clips) if (c.lc && gs.has(c.lc.g)) delete c.lc;
+}
+function livreClean(fromUser, silent, only) {
+  const f = { silence: !!st.cuts.silence, fillers: !!st.cuts.fillers, takes: !!st.cuts.takes };
+  const spans = livreSpans(); if (!spans.length) return false;
+  let any = false;
+  const plan = spans.map(sp => {
+    if (only && !only(sp)) return { sp, keep: true };
+    const rs = livreRanges(sp, f);
+    const same = rs.length === sp.pieces.length && rs.every((r, i) => Math.abs(r[0] - sp.pieces[i].in) < 1e-3 && Math.abs(r[1] - sp.pieces[i].out) < 1e-3);
+    if (same) return { sp, keep: true };
+    any = true; return { sp, rs };
+  });
+  if (!any) return false;
+  if (!silent) pushUndo(false, 'edição inteligente nos vídeos');
+  const geo = new Map(trackClips('V1').map(c => [c.id, { tl: c.tl, in: c.in, out: c.out, k: spd(c) }]));
+  const oldEnd = seqEndV1();
+  const marks = [], nv = []; let delta = 0;
+  for (const p of plan) {
+    const sp = p.sp, a = geo.get(sp.pieces[0].id).tl, last = sp.pieces[sp.pieces.length - 1], b = cend(last);
+    if (p.keep) { marks.push({ a, b, shift: delta, keep: true, sp }); for (const c of sp.pieces) { c.tl -= delta; nv.push(c); } continue; }
+    const base = sp.pieces[0], g = sp.g || nid(), pieces = [];
+    let t = a - delta;
+    for (const r of p.rs) {
+      const k = Object.assign({}, base, { id: nid(), tl: t, in: r[0], out: r[1], fadeIn: 0, fadeOut: 0, lc: { in: sp.in, out: sp.out, g } });
+      let best = null, bo = 0;
+      for (const o of sp.pieces) { const ov = Math.min(o.out, r[1]) - Math.max(o.in, r[0]); if (ov > bo) { bo = ov; best = o; } }
+      for (const pp of ['scale', 'px', 'py', 'vol', 'opacity', 'speed', 'col', 'tr']) { if (best && best[pp] != null) k[pp] = best[pp]; }
+      if (best && best.tr == null) delete k.tr;
+      pieces.push(k); t += cdur(k);
+    }
+    pieces[0].fadeIn = base.fadeIn || 0; pieces[pieces.length - 1].fadeOut = last.fadeOut || 0;
+    if (base.tr) pieces[0].tr = base.tr; else delete pieces[0].tr;
+    marks.push({ a, b, shift: delta, sp, pieces, gone: (b - a) - (t - (a - delta)) });
+    delta += (b - a) - (t - (a - delta));
+    nv.push(...pieces);
+  }
+  // o que está nas outras trilhas acompanha a fala
+  const mapT = T => {
+    let before = 0;
+    for (const mk of marks) {
+      if (T >= mk.b - 1e-6) { before = mk.shift + (mk.keep ? 0 : mk.gone); continue; }
+      if (T < mk.a - 1e-6) return T - mk.shift;
+      if (mk.keep) return T - mk.shift;
+      const o = mk.sp.pieces.map(c => geo.get(c.id)).find(x => T >= x.tl - 1e-6 && T < x.tl + (x.out - x.in) / x.k - 1e-6);
+      if (!o) return T - mk.shift;
+      const s = o.in + (T - o.tl) * o.k;
+      for (const k of mk.pieces) { if (s < k.in) return k.tl; if (s < k.out) return k.tl + (s - k.in) / spd(k); }
+      const lp = mk.pieces[mk.pieces.length - 1]; return cend(lp);
+    }
+    return T - before;
+  };
+  for (const c of M.clips) if (c.track !== 'V1' && c.track !== 'A2' && !M.trk[c.track].lock) c.tl = Math.max(0, mapT(c.tl));
+  // a música fica onde está e acaba junto com o vídeo
+  const newEnd = nv.reduce((x, k) => Math.max(x, cend(k)), 0), drop = new Set();
+  if (!M.trk.A2.lock) for (const c of M.clips) {
+    if (c.track !== 'A2') continue;
+    const m = MEDIA.get(c.media), e0 = cend(c);
+    if (c.tl >= newEnd - 0.2) { if (e0 >= oldEnd - 0.05 || c.tl >= oldEnd - 0.2) drop.add(c.id); continue; }
+    if (e0 > newEnd) c.out = c.in + (newEnd - c.tl) * spd(c);
+    else if (newEnd > oldEnd + 0.05 && Math.abs(e0 - oldEnd) < 0.06 && m && isFinite(m.dur)) c.out = Math.min(m.dur, c.out + (newEnd - oldEnd) * spd(c));
+  }
+  M.clips = M.clips.filter(k => k.track !== 'V1' && !drop.has(k.id)).concat(nv);
+  M.v1Auto = true; M.sel = new Set([...M.sel].filter(id => M.clips.some(c => c.id === id))); M.gap = null;
+  changed(); updateV1Notes();
+  if (fromUser && !silent) toast('Edição inteligente refeita nos vídeos. Dá para desfazer.', 2200);
+  return true;
+}
+function seqEndV1() { let e = 0; for (const c of M.clips) if (c.track === 'V1') e = Math.max(e, cend(c)); return e; }
+
+/* ---- tela vazia: o primeiro passo é importar ---- */
+function syncEmpty() {
+  const box = $('#montEmpty'); if (!box) return;
+  const show = MODE === 'mont' && livre() && !M.clips.length;
+  box.hidden = !show;
+  const note = $('#binNote'); if (note) note.textContent = livre() ? 'Arraste para a linha do tempo, ou toque em + para pôr no cursor, entre os clipes. Vídeos e fotos entram no V1; música no A2.' : 'Vídeos de apoio, fotos e música. Arraste para a linha do tempo, ou use + / clique duplo para inserir no cursor.';
+  if (show) $('#meText').textContent = MEDIA.size ? 'Arraste o que você importou (na coluna Mídia) para a linha do tempo, ou importe mais.' : 'Importe vídeos, fotos e música. Os vídeos entram na linha do tempo na ordem do nome e já começam a ser transcritos para a legenda e a edição inteligente.';
+}
+$('#emptyIn').addEventListener('change', async e => { const f = [...e.target.files]; e.target.value = ''; if (f.length) await importMedia(f); });
+{
+  const me = $('#montEmpty');
+  me.addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')) { e.preventDefault(); me.classList.add('over'); } });
+  me.addEventListener('dragleave', e => { if (!me.contains(e.relatedTarget)) me.classList.remove('over'); });
+  me.addEventListener('drop', async e => { me.classList.remove('over'); const f = [...(e.dataTransfer.files || [])]; if (f.length) { e.preventDefault(); await importMedia(f); } });
+  // soltar arquivos em qualquer outro lugar do editor: no projeto livre, entram no fim da linha do tempo
+  document.addEventListener('dragover', e => { if (MODE === 'mont' && !$('#scrMont').hidden && [...(e.dataTransfer.types || [])].includes('Files')) e.preventDefault(); });
+  document.addEventListener('drop', async e => {
+    if (MODE !== 'mont' || $('#scrMont').hidden || e.defaultPrevented) return;
+    const f = [...(e.dataTransfer.files || [])]; if (!f.length) return;
+    e.preventDefault();
+    const added = await importMedia(f, { place: false });
+    if (livre() && added.length) { livrePlace(added); toast(`${added.length} ${added.length === 1 ? 'arquivo entrou' : 'arquivos entraram'} no fim da linha do tempo.`, 3000); }
+  });
+  const bb = $('#blankBtn');
+  bb.addEventListener('click', () => openBlank());
+  bb.addEventListener('dragover', e => { e.preventDefault(); bb.classList.add('over'); });
+  bb.addEventListener('dragleave', e => { if (!bb.contains(e.relatedTarget)) bb.classList.remove('over'); });
+  bb.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); bb.classList.remove('over'); endHomeDrag(); withHandles(e, fs => openBlank(fs)); });
+}
+
+window.__cs = { st, M, MEDIA, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
 })();
 </script>
 </body>
