@@ -7,6 +7,16 @@ com a sua marca. Exporta mais rápido que o tempo real. O vídeo não sai do com
 O vídeo sempre abre como foi gravado: a edição inteligente só entra quando você clica em **Edição inteligente**
 (no alto da tela), escolhe o que entra e aplica. Dá para desfazer ou voltar ao original a qualquer momento.
 
+## Juntar vários vídeos
+Na tela inicial, "Juntar vários vídeos" (pode soltar uma música junto) monta uma edição só, de quatro jeitos:
+- **Melhores lances:** acha os gritos da torcida e a narração (e as palavras de "O que procurar") e junta os lances.
+- **Aftermovie:** escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem de gravação.
+- **Fala com imagens de apoio:** o vídeo de quem fala fica inteiro, com cenas dos outros por cima, sem som.
+- **Depoimentos:** transcreve todos e junta as melhores frases de cada pessoa, alternando quem fala, com o nome de cada uma.
+
+Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
+A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
+
 ## Versão web
 **https://corte-seco.vercel.app** — abra no Chrome ou no Edge (no Mac ou no Windows). Tudo roda no navegador: o vídeo não é enviado para lugar nenhum.
 - Para ter um ícone no Dock: menu do Chrome → "Instalar Corte Seco". Depois da primeira visita, abre até sem internet.

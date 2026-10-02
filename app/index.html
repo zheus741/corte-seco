@@ -187,6 +187,22 @@ details.more[open]>summary{margin-bottom:10px}
 .goal.over{transform:translateY(-2px);box-shadow:0 0 0 1px var(--amber) inset}
 .goal:focus-within{outline:2px solid var(--amber);outline-offset:2px}
 .goals.dragging .goal{border-style:dashed}
+.goal.wide{grid-column:1/-1;min-height:0;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 16px}
+.goal.wide .g-ico{margin-bottom:0}
+.goal.wide .g-txt{display:grid;gap:4px}
+.goal.wide .g-cta{margin-top:0;padding-top:0;white-space:nowrap}
+@media (max-width:760px){ .goal.wide{grid-template-columns:auto minmax(0,1fr)} .goal.wide .g-cta{grid-column:1/-1} }
+.mm{display:grid;gap:12px}
+.mm-modes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mm-mode{display:grid;gap:3px;align-content:start;text-align:left;padding:10px 12px;border:1px solid var(--line2);background:var(--well);color:var(--mute);border-radius:0;font-size:12.5px;line-height:1.35}
+.mm-mode b{color:var(--ink);font-size:14px}
+.mm-mode:hover{border-color:#4a4c52}
+.mm-mode[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber);background:var(--raise)}
+.mm-names{display:grid;gap:6px}
+.mm-name{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:8px;align-items:center}
+.mm-name .fine{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-note{border-left:2px solid var(--amber);padding-left:10px}
+@media (max-width:520px){ .mm-modes{grid-template-columns:1fr} .mm-name{grid-template-columns:1fr} }
 .setline{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink2)}
 .setline #setSummary{font-family:var(--mono);font-size:12px;color:var(--ink2)}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px 20px;align-items:start;padding:16px;border:1px solid var(--line);background:var(--panel)}
@@ -561,6 +577,12 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
           <b>Limpar o vídeo inteiro</b>
           <span class="gp">Vídeo gravado para um post. Abre inteiro na linha do tempo; pausas, vícios e legenda saem num clique, quando você quiser.</span>
           <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte o vídeo aqui ou clique</span>
+        </label>
+        <label class="goal wide" data-v="multi" id="dropMulti">
+          <input type="file" multiple accept="video/*,audio/*,.mov,.mp4,.webm,.mkv,.m4v,.mp3,.wav,.m4a,.aac" data-goal="multi" aria-label="Juntar vários vídeos: escolher os vídeos e, se quiser, uma música">
+          <span class="g-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 8h8v8H3zM13 8h8v8h-8z"/><path d="M7 4h10M7 20h10"/></svg></span>
+          <span class="g-txt"><b>Juntar vários vídeos</b><span class="gp">Melhores lances, aftermovie no ritmo da música, depoimentos ou fala com imagens de apoio. Pode soltar uma música junto.</span></span>
+          <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte os vídeos aqui ou clique</span>
         </label>
       </div>
       <input type="file" id="fileIn" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" hidden>
@@ -1137,7 +1159,7 @@ function show(id) {
   $('#modeSeg').hidden = !(id === 'scrEdit' || id === 'scrMont');
   $('#topExport').hidden = !(id === 'scrEdit' || id === 'scrMont');
   $('#smartBtn').hidden = !(id === 'scrEdit' || id === 'scrMont');
-  if (id === 'scrEdit' || id === 'scrMont') updateSmartUI();
+  if (id === 'scrEdit' || id === 'scrMont') { updateSmartUI(); updateMultiUI(); }
 }
 function setFileInfo() {
   const el = $('#fileInfo');
@@ -1227,10 +1249,10 @@ function recentThumb() {
   try { if (vid.readyState < 2 || !st.vw) return null; const c = document.createElement('canvas'); c.width = 320; c.height = 180; const g = c.getContext('2d'); const k = Math.max(320 / st.vw, 180 / st.vh); g.drawImage(vid, (320 - st.vw * k) / 2, (180 - st.vh * k) / 2, st.vw * k, st.vh * k); return c.toDataURL('image/jpeg', 0.72); } catch (e) { return null; }
 }
 async function touchRecent(extra) {
-  if (!st.file || !st.segs.length) return;
-  const k = recentKey(st.file), prev = recents.find(r => r.k === k) || {};
+  if (!st.file || (!st.segs.length && !st.multi)) return;
+  const k = st.multi ? 'multi:' + st.multi.key : recentKey(st.file), prev = recents.find(r => r.k === k) || {};
   const path = (DESK && (st.file.__path || DESK.files.pathOf(st.file))) || prev.path || '';
-  const r = Object.assign({}, prev, { k, name: st.file.name, size: st.file.size, dur: st.dur, goal: st.opts.goal, mode: typeof MODE !== 'undefined' ? MODE : 'cuts', at: Date.now(), path, handle: st.file.__handle || prev.handle || null, cuts: st.clips.filter(c => c.src !== 'full').length }, extra || {});
+  const r = Object.assign({}, prev, { k, name: st.file.name, size: st.file.size, dur: st.dur, goal: st.opts.goal, mode: typeof MODE !== 'undefined' ? MODE : 'cuts', at: Date.now(), path, handle: st.file.__handle || prev.handle || null, cuts: st.clips.filter(c => c.src !== 'full').length }, st.multi ? { multi: { key: st.multi.key, main: st.file.name, n: st.multi.n }, name: `${MULTI_NAMES[st.multi.mode] || 'Montagem'} · ${st.multi.n} vídeos`, goal: 'edit', mode: 'mont' } : {}, extra || {});
   recents = [r, ...recents.filter(x => x.k !== k)].slice(0, 12);
   await idb.putKV('recents', recents); renderRecents();
 }
@@ -1240,7 +1262,7 @@ function renderRecents() {
   for (const r of recents.slice(0, 4)) {
     const b = document.createElement('div'); b.className = 'rec'; b.tabIndex = 0; b.setAttribute('role', 'button'); b.setAttribute('aria-label', `Continuar ${r.name}`);
     const t = document.createElement('div'); t.className = 'rt'; if (r.thumb) t.style.backgroundImage = `url("${r.thumb}")`;
-    const tag = document.createElement('span'); tag.className = 'rtag'; tag.textContent = r.mode === 'mont' || r.goal === 'edit' ? 'Edição' : 'Cortes';
+    const tag = document.createElement('span'); tag.className = 'rtag'; tag.textContent = r.multi ? 'Montagem' : r.mode === 'mont' || r.goal === 'edit' ? 'Edição' : 'Cortes';
     const du = document.createElement('span'); du.className = 'bdur'; du.textContent = fmtT(r.dur || 0);
     t.append(tag, du);
     const nm = document.createElement('b'); nm.textContent = r.name;
@@ -1254,8 +1276,10 @@ function renderRecents() {
     box.appendChild(b);
   }
 }
+let REOPEN = null; // {key, name}: reopening a multi-video edit through its main video
 async function openRecent(r) {
-  st.opts.goal = r.goal || 'cuts'; store.set('cs:opts', st.opts);
+  if (r.multi) { REOPEN = { key: r.multi.key, name: r.multi.main }; r = Object.assign({}, r, { name: r.multi.main }); }
+  else { REOPEN = null; st.opts.goal = r.goal || 'cuts'; store.set('cs:opts', st.opts); }
   if (SITE && r.handle) {
     try {
       let p = await r.handle.queryPermission({ mode: 'read' }); if (p !== 'granted') p = await r.handle.requestPermission({ mode: 'read' });
@@ -1296,6 +1320,7 @@ $('#setToggle').addEventListener('click', e => { const box = $('#optsBox'); box.
 let pendingGoal = null;
 const isVideoFile = x => /^(video|audio)\//.test(x.type) || /\.(mov|mp4|m4v|webm|mkv)$/i.test(x.name);
 function onPicked(files, goal) {
+  if (goal === 'multi') { startMulti(files); return; }
   if (goal) { st.opts.goal = goal; store.set('cs:opts', st.opts); }
   const fs = files.filter(isVideoFile);
   if (!fs.length) { if (files.length) toast('Solte um arquivo de vídeo (MP4, MOV ou WebM).'); return; }
@@ -1303,7 +1328,7 @@ function onPicked(files, goal) {
 }
 for (const card of $$('#goalSeg .goal')) {
   const inp = card.querySelector('input');
-  card.addEventListener('pointerdown', () => { st.opts.goal = card.dataset.v; store.set('cs:opts', st.opts); });
+  card.addEventListener('pointerdown', () => { if (card.dataset.v === 'multi') return; st.opts.goal = card.dataset.v; store.set('cs:opts', st.opts); });
   inp.addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; onPicked(fs, card.dataset.v); });
   card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('over'); });
   card.addEventListener('dragleave', e => { if (!card.contains(e.relatedTarget)) card.classList.remove('over'); });
@@ -1340,7 +1365,8 @@ function resetAll() {
   if (typeof montages !== 'undefined') { montages = {}; OFFLINE = new Map(); M.clips = []; M.key = null; for (const [id, m] of MEDIA) { if (id !== 'm0') { m.els.forEach(el => { el.pause(); el.remove(); }); URL.revokeObjectURL(m.url); } } MEDIA.clear(); }
   if (st.url) URL.revokeObjectURL(st.url);
   vid.removeAttribute('src'); vid.load();
-  Object.assign(st, { file: null, url: null, dur: 0, vw: 0, vh: 0, env: null, segs: [], words: [], clips: [], cur: null, sel: null, removed: [], ranges: [], pages: [], reframe: null });
+  Object.assign(st, { file: null, url: null, dur: 0, vw: 0, vh: 0, env: null, segs: [], words: [], clips: [], cur: null, sel: null, removed: [], ranges: [], pages: [], reframe: null, multi: null });
+  if (typeof MX_PENDING !== 'undefined') MX_PENDING = new Map();
   if (typeof rfJob !== 'undefined' && rfJob) rfJob.cancel = true;
   setFileInfo();
 }
@@ -1421,8 +1447,10 @@ async function decodeAudioBuffer(file) {
 
 function projectKey(file, model) { return `cs:proj:${file.name}:${file.size}:${model}`; }
 
+const STAGES_HTML = $('#stages').innerHTML;
 async function startAnalysis(file, force) {
   cancelWork(); pause();
+  $('#stages').innerHTML = STAGES_HTML;
   resetAll();
   st.file = file; st.url = URL.createObjectURL(file); st.model = st.opts.model;
   work = { cancelled: false, workers: [] };
@@ -1450,15 +1478,16 @@ async function startAnalysis(file, force) {
   st.env = WhisperCore.envelope(pcm, 16000);
   stage('audio', 'done', fmtT(pcm.length / 16000));
 
-  const key = projectKey(file, st.opts.model);
+  const reo = REOPEN && REOPEN.name === file.name ? REOPEN : null; REOPEN = null;
+  const key = reo ? reo.key : projectKey(file, st.opts.model);
   const loadP = async k => (await idb.getProj(k)) || store.get(k, null);
   let saved = !force && await loadP(key), restored = false;
-  if (!force && !saved) for (const alt of ['turbo', 'small', 'base', 'tiny']) { if (alt === st.opts.model) continue; const other = await loadP(projectKey(file, alt)); if (other) { saved = other; st.model = alt; break; } }
+  if (!force && !saved && !reo) for (const alt of ['turbo', 'small', 'base', 'tiny']) { if (alt === st.opts.model) continue; const other = await loadP(projectKey(file, alt)); if (other) { saved = other; st.model = alt; break; } }
   if (srtText) {
     stage('model', 'done', 'legenda importada'); stage('asr', 'done', 'do arquivo .srt');
     setSegments(parseSRT(srtText));
     srtText = null; $('#srtName').textContent = 'Opcional. Pula a transcrição.';
-  } else if (saved && saved.segs && saved.segs.length) {
+  } else if (saved && ((saved.segs && saved.segs.length) || saved.multi)) {
     stage('model', 'done', 'já transcrito antes'); stage('asr', 'done', DESK ? 'recuperado deste computador' : 'recuperado deste navegador');
     restoreProject(saved); restored = true;
   } else {
@@ -1488,7 +1517,7 @@ async function startAnalysis(file, force) {
   work = null;
   saveProject();
   openEditor();
-  if (goalEdit) setMode('mont');
+  if (goalEdit || st.multi) setMode('mont');
   setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
   if (restored) toast('Continuando de onde você parou.', 2400);
   else if (!Q.running && findQ0 && !goalEdit && found === 0) toast(`Não achei “${findQ0}” na fala nem no som: ficaram os melhores trechos. Dá para buscar de novo na coluna Cortes.`, 9000);
@@ -1626,8 +1655,8 @@ async function asrEngine(name, myWork) {
   };
 }
 
-async function runASR(pcm, myWork) {
-  const name = st.opts.model;
+async function runASR(pcm, myWork, o = {}) {
+  const name = st.opts.model, SK = o.stageKey || 'asr', DUR = o.dur || st.dur;
   stage('model', 'on');
   const E = await asrEngine(name, myWork);
   if (myWork.cancelled) return;
@@ -1637,7 +1666,7 @@ async function runASR(pcm, myWork) {
   let next = 0, flushed = 0, doneSec = 0;
   const t0 = performance.now();
   let lang = st.opts.lang;
-  stage('asr', 'on', '0%');
+  stage(SK, 'on', (o.label || '') + '0%');
   const live = $('#live');
   const all = [];
   const flush = () => {
@@ -1660,10 +1689,10 @@ async function runASR(pcm, myWork) {
     const f = doneSec / speechTotal;
     const el = (performance.now() - t0) / 1000;
     const eta = f > 0.03 ? el / f - el : null;
-    stage('asr', 'on', `${Math.round(f * 100)}%` + (eta != null ? ` · falta ~${fmtT(Math.max(1, eta))}` : ''));
-    $('#workMeter').style.width = (25 + f * 72).toFixed(1) + '%';
+    stage(SK, 'on', (o.label || '') + `${Math.round(f * 100)}%` + (eta != null ? ` · falta ~${fmtT(Math.max(1, eta))}` : ''));
+    if (o.onProgress) o.onProgress(f); else $('#workMeter').style.width = (25 + f * 72).toFixed(1) + '%';
     const lastEnd = flushed > 0 ? chunks[flushed - 1].end : 0;
-    $('#workClock').innerHTML = `${fmtClock(lastEnd)} <small>/ ${fmtClock(st.dur)}</small>`;
+    $('#workClock').innerHTML = `${fmtClock(lastEnd)} <small>/ ${fmtClock(DUR)}</small>`;
   };
   const take = (i, r) => { results[i] = r; doneSec += chunks[i].end - chunks[i].start; flush(); progress(); };
   const sub = (i) => pcm.slice(Math.floor(chunks[i].start * 16000), Math.min(pcm.length, Math.floor(chunks[i].end * 16000)));
@@ -1683,9 +1712,24 @@ async function runASR(pcm, myWork) {
     await Promise.all(E.slots.map(async sl => { let v; try { v = await sl; } catch (e) { return; } if (v == null) return; return loop(sl); }));
   } finally { E.done(); }
   if (myWork.cancelled) return;
-  stage('asr', 'done', `${all.length} frases · ${fmtT((performance.now() - t0) / 1000)}`);
+  if (o.collect) return all;
+  stage(SK, 'done', `${all.length} frases · ${fmtT((performance.now() - t0) / 1000)}`);
   st.model = name;
   setSegments(all);
+}
+/* transcript of a video that is not the main one: same word objects, kept with that video */
+function buildWords(segs, env, mid) {
+  const keep = st.env; st.env = env || null;
+  try {
+    const out = { segs: [], words: [] };
+    segs.forEach((s, si) => {
+      const seg = { i: si, start: s.start, end: s.end, text: s.text, words: [] };
+      const ws = s.words && s.words.length ? s.words : alignWords(s);
+      for (const w of ws) { const word = { i: out.words.length, w: w.w, start: +w.start.toFixed(3), end: +w.end.toFixed(3), del: false, nocap: !!w.nocap, seg: si, emph: w.emph, mid }; seg.words.push(word); out.words.push(word); }
+      out.segs.push(seg);
+    });
+    return out;
+  } finally { st.env = keep; }
 }
 
 function parseSRT(text) {
@@ -1742,13 +1786,14 @@ let saveT = 0;
 function saveProject() {
   clearTimeout(saveT);
   saveT = setTimeout(() => {
-    if (!st.file || !st.segs.length) return;
+    if (!st.file || (!st.segs.length && !st.multi)) return;
     const data = {
       v: 1, lang: st.lang,
       segs: st.segs.map(s => ({ start: s.start, end: s.end, text: s.text, words: s.words.map(w => ({ w: w.w, start: w.start, end: w.end, del: w.del || undefined, nocap: w.nocap || undefined, emph: w.emph })) })),
-      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow(), lt: { on: !!st.lt.on }
+      clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow(), lt: { on: !!st.lt.on },
+      multi: st.multi || undefined, mx: st.multi ? mxForProject() : undefined
     };
-    const key = projectKey(st.file, st.model);
+    const key = st.multi ? st.multi.key : projectKey(st.file, st.model);
     idb.putProj(key, data).then(ok => { if (!ok) store.set(key, data); else { try { localStorage.removeItem(key); } catch (e) {} } markSaved(); });
     touchRecent();
   }, 600);
@@ -1764,6 +1809,8 @@ function restoreProject(d) {
   // projetos de antes desta versão foram abertos com a limpeza já aplicada: continuam como estavam
   setSmart(d.smart && typeof d.smart === 'object' ? d.smart : smartPick);
   st.lt.on = !!(d.lt && d.lt.on);
+  st.multi = d.multi && d.multi.key ? d.multi : null;
+  MX_PENDING = new Map(Object.entries(d.mx || {}));
   OFFLINE = new Map((d.media || []).filter(x => x && x.id).map(x => [x.id, x]));
   relinkOffline();
 }
@@ -1775,6 +1822,7 @@ function autoThr() {
   const f = WhisperCore.percentile(st.env, 0.08), p = WhisperCore.percentile(st.env, 0.97);
   return Math.round(clamp(f + (p - f) * 0.3, -66, -24));
 }
+function envThr(env) { if (!env || !env.length) return -45; const f = WhisperCore.percentile(env, 0.08), p = WhisperCore.percentile(env, 0.97); return Math.round(clamp(f + (p - f) * 0.3, -66, -24)); }
 function curThr() { return st.cuts.thr ?? (autoThr() + (st.cuts.lvlD || 0)); }
 const CUT_LEVELS = { leve: { d: -6, minSil: 0.7, pad: 0.12, note: 'Leve: só as pausas longas saem. Fica mais natural.' }, normal: { d: 0, minSil: 0.45, pad: 0.08, note: 'Normal: tira as pausas que se notam.' }, forte: { d: 7, minSil: 0.25, pad: 0.04, note: 'Forte: ritmo de Reels, quase sem respiro entre as frases.' } };
 function curLevel() { for (const [k, L] of Object.entries(CUT_LEVELS)) if (st.cuts.thr == null && (st.cuts.lvlD || 0) === L.d && Math.abs(st.cuts.minSil - L.minSil) < 1e-6 && Math.abs(st.cuts.pad - L.pad) < 1e-6) return k; return null; }
@@ -1974,8 +2022,8 @@ function parseFind(q) {
   return P;
 }
 /* picos de som: volume de 1 s bem acima do nível ao redor (±15 s) */
-function excitePeaks() {
-  const env = st.env; if (!env || env.length < 500) return [];
+function excitePeaks(envArg) {
+  const env = envArg || st.env; if (!env || env.length < 500) return [];
   const B = 10, n = Math.floor(env.length / B), b = new Float32Array(n);
   for (let k = 0; k < n; k++) { let sp = 0; for (let i = 0; i < B; i++) sp += Math.pow(10, env[k * B + i] / 10); b[k] = 10 * Math.log10(sp / B + 1e-12); }
   const sm = new Float32Array(n);
@@ -2016,13 +2064,11 @@ function windowFrom(i, mn, mx, cover) {
   const end = Math.min(st.dur || S[j].end + 1, S[j].end + 0.15);
   return { start: s0, end: capEnd(s0, end, mx) };
 }
-function localFind(q, len) {
-  const [mn, mx] = len || lenRange(), P = parseFind(q);
-  const W = st.words, nw = W.map(w => norm(w.w));
-  // 1) onde a fala bate com o pedido
-  const hits = [];
+/* palavras da fala que batem com o pedido (P = parseFind) */
+function findHits(W, P) {
+  const nw = W.map(w => norm(w.w)), hits = [];
   for (let i = 0; i < W.length; i++) {
-    const w = nw[i]; if (!w) continue;
+    const w = nw[i]; if (!w || W[i].del) continue;
     let hit = null;
     for (const t of P.terms) if (termHit(t, w) || (t.length >= 5 && i + 1 < W.length && termHit(t, w + nw[i + 1]))) { hit = t; break; }
     if (!hit) for (const L of P.lex) {
@@ -2031,6 +2077,13 @@ function localFind(q, len) {
     }
     if (hit) hits.push({ i, t: W[i].start, word: W[i].w.replace(/[^\p{L}\p{N}]+$/u, ''), key: hit });
   }
+  return hits;
+}
+function localFind(q, len) {
+  const [mn, mx] = len || lenRange(), P = parseFind(q);
+  const W = st.words;
+  // 1) onde a fala bate com o pedido
+  const hits = findHits(W, P);
   const peaks = P.excite ? excitePeaks() : [];
   const cands = [];
   // 2) cortes a partir das falas
@@ -2619,7 +2672,7 @@ const EMPH_WORDS = new Set(('dinheiro grana lucro lucros faturamento receita mil
   'atencao cuidado perigo resultado resultados rapido agora hoje zero primeiro primeira unico unica simples facil dificil dobro triplo metade tudo nada ninguem todos todo ' +
   'verdade mentira problema problemas solucao sucesso fracasso crescer crescimento escalar vender venda vendas cliente clientes lucrar economizar proibido obrigatorio ' +
   'urgente incrivel absurdo chocante gigante enorme maximo minimo real reais porcento').split(' '));
-function srcWord(w) { return w.ref != null ? st.words[w.ref] || w : w; }
+function srcWord(w) { return w.ref != null ? refWord(w.ref) || w : w; }
 function isEmph(w, S) {
   const src = srcWord(w);
   if (src.emph === true) return true;
@@ -2628,7 +2681,7 @@ function isEmph(w, S) {
   if (/\d/.test(raw) || /R\$|%|US\$/.test(raw)) return true;
   if (EMPH_WORDS.has(norm(raw))) return true;
   if (/^\p{Lu}{2,}/u.test(raw.replace(/[^\p{L}]/gu, '')) && raw.replace(/[^\p{L}]/gu, '').length >= 3) return true; // SIGLAS, MARCAS
-  const prev = src.i > 0 ? st.words[src.i - 1] : null;
+  const arr = src.mid ? wordsOf(src.mid) || [] : st.words, prev = src.i > 0 ? arr[src.i - 1] : null;
   if (/^\p{Lu}/u.test(raw) && prev && prev.seg === src.seg && !/[.!?:]$/.test(prev.w)) return true; // nome próprio no meio da frase
   return false;
 }
@@ -3766,14 +3819,14 @@ async function exportVideo(opts = {}) {
   const aspects = selectedAspects();
   let ids = opts.all && MODE !== 'mont' ? st.clips.filter(c => c.src !== 'full').map(c => c.id) : [MODE === 'mont' ? null : st.cur];
   if (!ids.length) ids = [st.cur];
-  const videoBase = slug(st.file ? st.file.name.replace(/\.[^.]+$/, '') : 'video');
+  const videoBase = st.multi ? slug(MULTI_NAMES[st.multi.mode] || 'montagem') : slug(st.file ? st.file.name.replace(/\.[^.]+$/, '') : 'video');
   const results = []; let failed = null;
   const total = ids.length * aspects.length; let idx = 0;
   try {
     for (const id of ids) {
       if (id && id !== st.cur) { st.cur = id; refreshClip(true); renderClips(); }
       const c = curClip();
-      const base = MODE === 'mont' ? `${videoBase}-editado` : slug(c.title);
+      const base = MODE === 'mont' ? (st.multi ? videoBase : `${videoBase}-editado`) : slug(c.title);
       for (const a of aspects) {
         idx++;
         if (st.fmt.aspect !== a) { st.fmt.aspect = a; }
@@ -3838,7 +3891,7 @@ async function exportPack(c, aspect, videoBase, first) {
   }
 }
 async function exportMontPack(c, aspect, videoBase, first) {
-  const base = `${videoBase}-editado`, tag = selectedAspects().length > 1 ? '-' + aspect.replace(':', 'x') : '';
+  const base = st.multi ? videoBase : `${videoBase}-editado`, tag = selectedAspects().length > 1 ? '-' + aspect.replace(':', 'x') : '';
   const files = [];
   if (first) { files.push({ name: `${base}.srt`, data: buildMontSRT() }); files.push({ name: `${base}-post.txt`, data: postText(c) }); }
   let cover = null;
@@ -3884,9 +3937,10 @@ async function setLogo(dataURL, silent) {
   dirty = true; if (typeof M !== 'undefined') M.dirty = true;
 }
 /* ---- automatic reframe: the crop follows the main face ---- */
-function autoFX(t, W, dw) {
-  if (!st.fmt.autoFrame || !st.reframe || !st.reframe.segs || !st.reframe.segs.length || !(dw > W + 1)) return null;
-  const S = st.reframe.segs; let lo = 0, hi = S.length - 1, k = 0;
+function autoFX(t, W, dw, rf) {
+  rf = rf || st.reframe;
+  if (!st.fmt.autoFrame || !rf || !rf.segs || !rf.segs.length || !(dw > W + 1)) return null;
+  const S = rf.segs; let lo = 0, hi = S.length - 1, k = 0;
   while (lo <= hi) { const m = (lo + hi) >> 1; if (S[m].a <= t) { k = m; lo = m + 1; } else hi = m - 1; }
   const cx = S[k].cx, cw = W / dw;
   const left = clamp(cx - cw / 2, 0, 1 - cw);
@@ -3909,7 +3963,7 @@ async function faceWorker() {
   faceW = { detect: (rgba) => new Promise((res, rej) => { const id = ++seq; pend.set(id, { res, rej }); w.postMessage({ type: 'detect', id, rgba: rgba.buffer }, [rgba.buffer]); }) };
   return faceW;
 }
-async function faceScan(file, onP, cancelled) {
+async function faceScan(file, onP, cancelled, o = {}) {
   const MB = await loadMB();
   const input = new MB.Input({ source: new MB.BlobSource(file), formats: MB.ALL_FORMATS });
   const vt = await input.getPrimaryVideoTrack(); if (!vt || !(await vt.canDecode())) throw new Error('decode');
@@ -3922,15 +3976,24 @@ async function faceScan(file, onP, cancelled) {
   if (gap <= 2.5) { let last = -9; for (const k of keys) if (k - last >= 0.45) { ts.push(Math.max(0, k)); last = k; } } // key frames only: fast
   else for (let t = 0; t < dur; t += 1) ts.push(t);
   const sink = new MB.CanvasSink(vt, { width: 320, height: 240, fit: 'fill', poolSize: 2 });
-  const fw = await faceWorker();
-  const out = []; let i = 0;
+  let fw = null; try { fw = await faceWorker(); } catch (e) { if (!o.stats) throw e; }
+  const out = []; let i = 0, prevG = null;
   for await (const wc of sink.canvasesAtTimestamps(ts)) {
     const t = ts[i++];
     if (cancelled()) break;
     if (!wc) continue;
     const g = wc.canvas.getContext('2d', { willReadFrequently: true });
     const img = g.getImageData(0, 0, 320, 240);
-    out.push({ t, faces: await fw.detect(new Uint8ClampedArray(img.data.buffer)) });
+    const rec = { t, faces: [] };
+    if (o.stats) { // 80×60 gray: brightness, sharpness (edges), motion (change since the last sample)
+      const d = img.data, G = new Float32Array(80 * 60);
+      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { let s2 = 0; for (let yy = 0; yy < 4; yy++) for (let xx = 0; xx < 4; xx++) { const q = ((y * 4 + yy) * 320 + x * 4 + xx) * 4; s2 += 0.299 * d[q] + 0.587 * d[q + 1] + 0.114 * d[q + 2]; } G[y * 80 + x] = s2 / 16 / 255; }
+      let br = 0, sh = 0, mo = 0;
+      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { const v = G[y * 80 + x]; br += v; if (x < 79) sh += Math.abs(G[y * 80 + x + 1] - v); if (y < 59) sh += Math.abs(G[(y + 1) * 80 + x] - v); if (prevG) mo += Math.abs(v - prevG[y * 80 + x]); }
+      rec.br = +(br / 4800).toFixed(3); rec.sh = +(sh / 9400).toFixed(4); rec.mo = prevG ? +(mo / 4800).toFixed(4) : null; prevG = G;
+    }
+    if (fw) rec.faces = await fw.detect(new Uint8ClampedArray(img.data.buffer));
+    out.push(rec);
     if (i % 4 === 0) onP(i / ts.length);
   }
   return out;
@@ -4152,17 +4215,19 @@ async function openSmart() {
   const list = el('div', 'smart-list');
   const sum = el('p', 'smart-sum');
   const upd = () => {
+    if (multiFixed()) { const ap = $('#dlgActions button[value="apply"]'); if (ap) ap.disabled = !SMART.some(s => pick[s.k]); return; }
     const orig = c.end - c.start, out = orig - smartSecs(pick, c);
     sum.innerHTML = `${c.src === 'full' ? 'Vídeo inteiro' : 'Este corte'}: <b>${fmtT(orig)}</b> → <b>${fmtT(out)}</b>${orig - out > 0.05 ? ` <span class="fine">(saem ${fmtT(orig - out)})</span>` : ' <span class="fine">(nada é cortado)</span>'}`;
     const ap = $('#dlgActions button[value="apply"]'); if (ap) ap.disabled = !SMART.some(s => pick[s.k]);
   };
   for (const s of SMART) {
+    if (s.cut && multiFixed()) { pick[s.k] = false; continue; }
     const l = el('label', 'switch'); const sp = el('span', null, s.label); sp.appendChild(el('small', 'fine', info[s.k]));
     const i = el('input'); i.type = 'checkbox'; i.checked = !!pick[s.k]; i.dataset.k = s.k;
     i.addEventListener('change', () => { pick[s.k] = i.checked; upd(); });
     l.append(sp, i); list.appendChild(l);
   }
-  const body = [intro, list, sum];
+  const body = multiFixed() ? [intro, list, el('p', 'fine', 'Nesta montagem os trechos já foram escolhidos sem as pausas: aqui entram legenda, zoom e gancho.')] : [intro, list, sum];
   if (MODE === 'mont' && !M.v1Auto) body.push(el('p', 'fine', 'Você mexeu no V1 à mão. Se mudar o que é cortado, o V1 é refeito com os cortes novos (dá para desfazer).'));
   const actions = [{ label: 'Cancelar', value: 'cancel', ghost: true }];
   if (any) actions.push({ label: 'Voltar ao original', value: 'orig' });
@@ -4355,6 +4420,7 @@ const TCOL = { V3: ['#6C45D6', '#7D55E8', '#FFFFFF'], V2: ['#2556BC', '#2F68DD',
 const WAVE = { A1: '#86EBAE', A2: '#82E3DB' };
 const SEL = '#F4B942';
 const MEDIA = new Map();
+let MX_PENDING = new Map(); // analysis of videos of a saved multi-video edit, waiting for the file to be opened again
 let OFFLINE = new Map(); // media the saved project uses but that is not loaded right now (id -> {name,size,kind,path})
 const RELINKING = new Set(); // ids being read back from disk right now
 function mediaMeta() {
@@ -4519,6 +4585,7 @@ async function importMedia(files, opts = {}) {
       }
     } catch (e) { toast(`Não consegui abrir “${f.name}” ${HERE}.`); URL.revokeObjectURL(url); continue; }
     MEDIA.set(m.id, m); added.push(m);
+    if (MX_PENDING.has(m.id)) { m.ax = axFromSaved(MX_PENDING.get(m.id), m.id); MX_PENDING.delete(m.id); mxCacheGet(f).then(c => { if (c && m.ax) { m.ax.env = m.ax.env || c.env || null; m.ax.vis = m.ax.vis || c.vis || null; if (!m.env && m.ax.env) m.env = m.ax.env; M.dirty = true; } }); }
   }
   renderBin();
   if (relinked) { changed(true); toast(`${relinked} ${relinked === 1 ? 'arquivo reconectado' : 'arquivos reconectados'} na edição.`); }
@@ -4538,19 +4605,21 @@ function restoreSegs(snap) {
   reindexWords(); computeRemoval(); buildPages();
 }
 let undoWhat = '';
+function mediaWordsSnap() { const o = {}; for (const m of MEDIA.values()) if (m.ax && m.ax.words) o[m.id] = m.ax.words.map(w => [w.w, w.start, w.end, w.nocap ? 1 : 0, w.emph === true ? 1 : w.emph === false ? 0 : -1]); return o; }
+function restoreMediaWords(o) { for (const [id, arr] of Object.entries(o || {})) { const m = MEDIA.get(id); if (!m || !m.ax || !m.ax.words) continue; arr.forEach((a, i) => { const w = m.ax.words[i]; if (!w) return; w.w = a[0]; w.start = a[1]; w.end = a[2]; w.nocap = !!a[3]; w.emph = a[4] === 1 ? true : a[4] === 0 ? false : undefined; }); } }
 function pushUndo(cap, what) {
-  M.undo.push({ clips: JSON.stringify(M.clips), segs: cap ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: what || undoWhat || '' });
+  M.undo.push({ clips: JSON.stringify(M.clips), segs: cap ? segsSnap() : null, mw: cap ? mediaWordsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: what || undoWhat || '' });
   undoWhat = '';
   if (M.undo.length > 80) M.undo.shift();
   M.redo = []; updUndoBtns();
 }
 function applySnap(s) {
-  M.clips = JSON.parse(s.clips); M.hook = s.hook; if (s.v1Auto != null) M.v1Auto = s.v1Auto; if (s.segs) restoreSegs(s.segs);
+  M.clips = JSON.parse(s.clips); M.hook = s.hook; if (s.v1Auto != null) M.v1Auto = s.v1Auto; if (s.segs) restoreSegs(s.segs); if (s.mw) restoreMediaWords(s.mw);
   if (s.smart) { setSmart(s.smart); computeRemoval(); renderClips(); syncControls(); saveLooks(); saveProject(); updateSmartUI(); }
   M.sel.clear(); M.selCap = null; M.gap = null; changed(); updateV1Notes();
 }
-function undo() { const s = M.undo.pop(); if (!s) { toast('Nada para desfazer.', 1200); return; } M.redo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Desfeito: ${s.what}.` : 'Desfeito.', 1400); }
-function redo() { const s = M.redo.pop(); if (!s) return; M.undo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Refeito: ${s.what}.` : 'Refeito.', 1400); }
+function undo() { const s = M.undo.pop(); if (!s) { toast('Nada para desfazer.', 1200); return; } M.redo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, mw: s.mw ? mediaWordsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Desfeito: ${s.what}.` : 'Desfeito.', 1400); }
+function redo() { const s = M.redo.pop(); if (!s) return; M.undo.push({ clips: JSON.stringify(M.clips), segs: s.segs ? segsSnap() : null, mw: s.mw ? mediaWordsSnap() : null, hook: M.hook, v1Auto: M.v1Auto, what: s.what, smart: s.smart ? smartNow() : undefined }); applySnap(s); toast(s.what ? `Refeito: ${s.what}.` : 'Refeito.', 1400); }
 function updUndoBtns() { const u = $('#tUndo'), r = $('#tRedo'); if (u) u.disabled = !M.undo.length; if (r) r.disabled = !M.redo.length; }
 
 /* ---------- sequence building ---------- */
@@ -4573,12 +4642,16 @@ function loadMontage(id) {
 let smT = 0;
 function saveMontage() { if (M.key) montages[M.key] = { clips: M.clips, hook: M.hook, T: M.T, v1Auto: M.v1Auto }; saveProject(); }
 function saveMontSoon() { clearTimeout(smT); smT = setTimeout(saveMontage, 800); }
+function wordsOf(mid) { if (mid === 'm0') return st.words; const m = MEDIA.get(mid); return m && m.ax && m.ax.words || null; }
+function refWord(ref) { if (typeof ref === 'number') return st.words[ref]; if (typeof ref !== 'string') return null; const k = ref.lastIndexOf('#'); const W = wordsOf(ref.slice(0, k)); return W ? W[+ref.slice(k + 1)] : null; }
+function wordIdxIn(W, t) { let lo = 0, hi = W.length; while (lo < hi) { const m = (lo + hi) >> 1; if (W[m].end <= t) lo = m + 1; else hi = m; } return Math.max(0, lo - 2); }
 function wordIdxAt(t) { const W = st.words; let lo = 0, hi = W.length; while (lo < hi) { const m = (lo + hi) >> 1; if (W[m].end <= t) lo = m + 1; else hi = m; } return Math.max(0, lo - 2); }
 function clipLabel(c) {
   if (c.lt) return 'Lower third · ' + (c.text || '');
   if (c.text != null) return c.text.replace(/\s+/g, ' ');
   const m = MEDIA.get(c.media); if (!m) { const o = OFFLINE.get(c.media); return RELINKING.has(c.media) ? `Carregando ${o ? o.name : ''}…` : o ? `Faltando: ${o.name}` : 'Arquivo faltando'; }
-  if (c.media === 'm0') { const ws = []; for (let i = wordIdxAt(c.in); i < st.words.length; i++) { const w = st.words[i]; if (w.start >= c.out) break; if (w.end > c.in && !w.del) ws.push(w.w); if (ws.length > 8) break; } if (ws.length) return ws.join(' '); }
+  const Wc = wordsOf(c.media);
+  if (Wc && Wc.length) { const ws = []; for (let i = wordIdxIn(Wc, c.in); i < Wc.length; i++) { const w = Wc[i]; if (w.start >= c.out) break; if (w.end > c.in && !w.del) ws.push(w.w); if (ws.length > 8) break; } if (ws.length) return ws.join(' '); }
   return m.name;
 }
 function changed(skipEC) {
@@ -4600,15 +4673,18 @@ function buildMontPages() {
   const S = st.style, max = Math.max(1, S.words | 0), pages = [];
   let cur = [];
   const push = () => { if (cur.length) pages.push({ words: cur, start: cur[0].start, end: cur[cur.length - 1].end, id: cur[0].ref }); cur = []; };
-  const W = st.words;
+  let prevMedia = null;
   for (const c of trackClips('V1')) {
-    if (c.media !== 'm0') { push(); continue; }
-    for (let i = wordIdxAt(c.in); i < W.length; i++) {
+    const W = wordsOf(c.media);
+    if (!W || !W.length) { push(); prevMedia = null; continue; }
+    if (c.media !== prevMedia) push();
+    prevMedia = c.media;
+    for (let i = wordIdxIn(W, c.in); i < W.length; i++) {
       const w = W[i];
       if (w.start >= c.out) break;
       const mid = (w.start + w.end) / 2;
       if (mid < c.in || mid >= c.out || w.nocap || !w.w) continue;
-      const pw = { w: w.w, start: Math.max(c.tl, c.tl + (w.start - c.in)), end: Math.min(cend(c), c.tl + (w.end - c.in)), ref: w.i };
+      const pw = { w: w.w, start: Math.max(c.tl, c.tl + (w.start - c.in)), end: Math.min(cend(c), c.tl + (w.end - c.in)), ref: c.media === 'm0' ? w.i : c.media + '#' + w.i };
       const last = cur[cur.length - 1];
       if (last && (cur.length >= max || pw.start - last.end > 0.7 || (max > 1 && /[.!?]$/.test(last.w)))) push();
       cur.push(pw);
@@ -4625,7 +4701,7 @@ function editPageText(pg, text) {
   const refs = pg.words.map(w => w.ref), K = refs.length, N = toks.length;
   pushUndo(true, 'editar legenda');
   refs.forEach((ref, k) => {
-    const w = st.words[ref]; if (!w) return;
+    const w = refWord(ref); if (!w) return;
     if (!N) { w.nocap = true; return; }
     const a = Math.floor(k * N / K), b = Math.floor((k + 1) * N / K);
     if (k === K - 1 && b < N) { w.w = toks.slice(a).join(' '); w.nocap = false; return; }
@@ -4633,8 +4709,8 @@ function editPageText(pg, text) {
   });
   capChanged();
 }
-function shiftPage(pg, d) { pushUndo(true, 'mover legenda'); for (const pw of pg.words) { const w = st.words[pw.ref]; w.start = Math.max(0, w.start + d); w.end = Math.max(w.start + 0.04, w.end + d); } capChanged(); }
-function hidePage(pg) { pushUndo(true, 'apagar legenda'); for (const pw of pg.words) st.words[pw.ref].nocap = true; M.selCap = null; capChanged(); toast('Legenda removida. O áudio continua.', 1800); }
+function shiftPage(pg, d) { pushUndo(true, 'mover legenda'); for (const pw of pg.words) { const w = refWord(pw.ref); if (!w) continue; w.start = Math.max(0, w.start + d); w.end = Math.max(w.start + 0.04, w.end + d); } capChanged(); }
+function hidePage(pg) { pushUndo(true, 'apagar legenda'); for (const pw of pg.words) { const w = refWord(pw.ref); if (w) w.nocap = true; } M.selCap = null; capChanged(); toast('Legenda removida. O áudio continua.', 1800); }
 function capChanged() { computeRemoval(); buildPages(); changed(); saveProject(); }
 function addCaptionAtPlayhead() {
   const c = clipAt('V1', M.T);
@@ -4818,7 +4894,9 @@ function srcToT(s, list) {
   for (const c of v) { if (s >= c.in - 1e-6 && s < c.out) return c.tl + (s - c.in); if (c.in > s && (!next || c.in < next.in)) next = c; }
   return next ? next.tl : null;
 }
+const multiFixed = () => !!(st.multi && st.multi.mode !== 'apoio');
 function rebuildV1(fromUser, silent) {
+  if (multiFixed()) return;
   const cl = curClip(); if (!cl) return;
   const rs = rangesFor(cl);
   const sig = rs.map(r => r[0].toFixed(3) + '-' + r[1].toFixed(3)).join('|');
@@ -4856,7 +4934,7 @@ function onCleanupChanged() {
   updateV1Notes();
 }
 function updateV1Notes() {
-  const show = MODE === 'mont' && !M.v1Auto;
+  const show = MODE === 'mont' && !M.v1Auto && !multiFixed();
   $$('[data-v1note]').forEach(n => { n.hidden = !show; });
 }
 
@@ -4914,7 +4992,15 @@ function prepareUpcoming() {
   }
 }
 function speechAt(T) {
-  const c = clipAt('V1', T); if (!c || c.media !== 'm0' || !st.env) return false;
+  const c = clipAt('V1', T); if (!c) return false;
+  if (c.media !== 'm0') {
+    const m = MEDIA.get(c.media), env = m && m.ax && m.ax.env; if (!env) return false;
+    if (m.ax.thr == null) m.ax.thr = envThr(env);
+    const s = c.in + (T - c.tl);
+    for (let d = -0.15; d <= 0.15; d += 0.05) { const i = Math.floor((s + d) / 0.02); if (i >= 0 && i < env.length && env[i] > m.ax.thr) return true; }
+    return false;
+  }
+  if (!st.env) return false;
   const s = c.in + (T - c.tl), thr = curThr();
   for (let d = -0.15; d <= 0.15; d += 0.05) if (envAt(s + d) > thr) return true;
   return false;
@@ -5020,8 +5106,9 @@ function drawMediaClip(src, sw, sh, c, tid, alpha, T) {
   if (isMain && F.autoZoom && (M.v1idx.get(c.id) || 0) % 2 === 1) z *= F.zoomAmt;
   if (c.kb) z *= 1 + 0.08 * clamp((T - c.tl) / Math.max(0.1, cdur(c)), 0, 1);
   const dw = sw * base * z, dh = sh * base * z;
-  const afx = isMain && c.media === 'm0' ? autoFX(c.in + (T - c.tl), W, dw) : null;
-  const fx = isMain ? (afx != null ? afx : F.x) : 0.5, fy = isMain ? F.y : 0.5;
+  const mm = c.media === 'm0' ? null : MEDIA.get(c.media);
+  const afx = !isMain ? null : c.media === 'm0' ? autoFX(c.in + (T - c.tl), W, dw) : mm && mm.ax && mm.ax.rf ? autoFX(c.in + (T - c.tl), W, dw, mm.ax.rf) : null;
+  const fx = isMain ? (afx != null ? afx : c.media === 'm0' ? F.x : 0.5) : 0.5, fy = isMain && c.media === 'm0' ? F.y : 0.5;
   let x = dw > W ? (W - dw) * fx : (W - dw) / 2;
   let y = dh > H ? (H - dh) * fy : (H - dh) / 2;
   x += (c.px || 0) * W; y += (c.py || 0) * H;
@@ -5378,7 +5465,7 @@ tlc.addEventListener('pointerdown', e => {
     M.sel.clear(); M.gap = null;
     if (h.page) {
       M.selCap = h.page.words[0].ref;
-      const orig = h.page.words.map(pw => { const w = st.words[pw.ref]; return [pw.ref, w.start, w.end]; });
+      const orig = h.page.words.map(pw => { const w = refWord(pw.ref) || pw; return [pw.ref, w.start, w.end]; });
       tdrag = { kind: h.edge ? 'capTrim' : 'capMove', edge: h.edge, t0: h.t, orig, pushed: false, moved: false };
     } else M.selCap = null;
     M.dirty = true; renderEC(); if (h.page) activateTab('clip');
@@ -5470,7 +5557,7 @@ tlc.addEventListener('pointermove', e => {
     if (!tdrag.pushed) return;
     const o = tdrag.orig, s0 = o[0][1], s1 = o[o.length - 1][2];
     for (const [ref, a, b] of o) {
-      const w = st.words[ref]; if (!w) continue;
+      const w = refWord(ref); if (!w) continue;
       if (tdrag.kind === 'capMove') { w.start = Math.max(0, a + d); w.end = Math.max(w.start + 0.04, b + d); }
       else {
         const ns0 = tdrag.edge === 'L' ? Math.min(s1 - 0.15, s0 + d) : s0;
@@ -5739,14 +5826,20 @@ function renderEC() {
     return;
   }
   // nothing selected: sequence settings
+  if (st.multi) {
+    add(ecEl('h4', null, MULTI_NAMES[st.multi.mode] || 'Montagem'));
+    add(ecEl('p', 'fine', `${st.multi.n} vídeos${st.multi.musicName ? ` · música: ${st.multi.musicName}` : ''}${st.multi.q ? ` · procurando “${st.multi.q}”` : ''}. Os vídeos já foram analisados: montar de novo é rápido.`));
+    const rb2 = ecEl('button', 'btn block', 'Montar de novo…'); rb2.type = 'button'; rb2.id = 'ecRemont'; rb2.onclick = remontMulti; add(rb2);
+  }
   add(ecEl('h4', null, 'Edição inteligente'));
   const sOn = smartAny();
   add(ecEl('p', 'fine', sOn ? 'Aplicada neste vídeo. Ligue ou desligue cada parte aqui.' : 'Ainda não aplicada: o vídeo está como foi gravado. Nada entra sem você mandar.'));
   const sb = ecEl('button', sOn ? 'btn block' : 'btn primary block', sOn ? 'Mudar ou voltar ao original…' : 'Aplicar edição inteligente…'); sb.type = 'button'; sb.id = 'ecSmart'; sb.onclick = openSmart; add(sb);
   if (sOn) {
     const sw = (label, path) => { const l = ecEl('label', 'switch'); l.append(ecEl('span', null, label)); const i = document.createElement('input'); i.type = 'checkbox'; i.checked = !!getPath(path); i.addEventListener('change', () => { setPath(path, i.checked); onChange(path); }); l.appendChild(i); return l; };
-    add(...SMART.map(s => sw(s.label, s.path)));
-    if (!M.v1Auto) { const n = ecEl('div', 'v1note'); n.append(ecEl('span', null, 'O V1 foi editado à mão. Mudar a limpeza não refaz o V1 sozinho.')); const b = ecEl('button', 'btn', 'Reaplicar limpeza no V1'); b.onclick = () => rebuildV1(true); n.appendChild(b); add(n); }
+    add(...SMART.filter(s => !(s.cut && multiFixed())).map(s => sw(s.label, s.path)));
+    if (multiFixed()) {}
+    else if (!M.v1Auto) { const n = ecEl('div', 'v1note'); n.append(ecEl('span', null, 'O V1 foi editado à mão. Mudar a limpeza não refaz o V1 sozinho.')); const b = ecEl('button', 'btn', 'Reaplicar limpeza no V1'); b.onclick = () => rebuildV1(true); n.appendChild(b); add(n); }
     else add(ecEl('p', 'fine', 'Enquanto você não mexer no V1 à mão, a limpeza e o que você cortar na aba Texto refazem a linha do tempo na hora.'));
   }
   add(ecEl('h4', null, 'Sequência'));
@@ -5758,7 +5851,7 @@ function renderEC() {
   hi.addEventListener('keydown', e => e.stopPropagation());
   hi.addEventListener('input', () => { M.hook = hi.value; dirty = true; saveMontSoon(); });
   hf.append(hl, hi); add(hf);
-  const rb = ecEl('button', 'btn', 'Recriar a partir do corte');
+  const rb = ecEl('button', 'btn', 'Recriar a partir do corte'); rb.hidden = !!st.multi;
   let armed = false;
   rb.onclick = () => {
     if (!armed) { armed = true; rb.textContent = 'Clique de novo para confirmar'; rb.classList.add('primary'); setTimeout(() => { armed = false; rb.textContent = 'Recriar a partir do corte'; rb.classList.remove('primary'); }, 3500); return; }
@@ -5819,6 +5912,7 @@ function montKey(e) {
 const viewportEl = $('#viewport'), stageEl = $('#scrEdit .stage'), inspectorEl = $('#scrEdit .inspector');
 function syncModeSeg() { $$('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === MODE))); }
 function setMode(m) {
+  if (m === 'cuts' && st.multi && MODE === 'mont') return;
   if (exporting && m !== MODE) { toast('Espere a exportação terminar para trocar de modo.'); syncModeSeg(); return; }
   if (exporting || m === MODE) return;
   if (!st.segs.length && !st.dur) return;
@@ -5857,6 +5951,7 @@ function setMode(m) {
   }
   syncModeSeg();
   updateExportCard();
+  updateMultiUI();
 }
 $('#modeSeg').addEventListener('click', e => { const b = e.target.closest('button[data-m]'); if (b) setMode(b.dataset.m); });
 $('#toMont').addEventListener('click', () => setMode('mont'));
@@ -5926,6 +6021,510 @@ function buildMontEDL(fps) {
 })();
 window.addEventListener('resize', () => { fitCanvasCSS(); sizeTimeline(); });
 new ResizeObserver(() => { document.documentElement.style.setProperty('--toph', $('.top').offsetHeight + 'px'); }).observe($('.top'));
-window.__cs = { st, M, MEDIA, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
+/* ================= montagem com vários vídeos ================= */
+/* Quatro jeitos de juntar vídeos numa edição só. Cada vídeo é analisado uma vez (som, fala quando
+   precisa, qualidade da imagem e rostos) e a análise fica guardada: montar de novo é instantâneo. */
+const MULTI_NAMES = { lances: 'Melhores lances', after: 'Aftermovie', apoio: 'Fala com imagens de apoio', depo: 'Depoimentos' };
+const MULTI_DESC = {
+  lances: 'Jogos e eventos: acha os gritos da torcida e a narração e junta os lances.',
+  after: 'Vídeos de celular de um evento, cortados no ritmo da música.',
+  apoio: 'Um vídeo de alguém falando, com cenas dos outros vídeos por cima.',
+  depo: 'Várias pessoas falando: as melhores frases de cada uma num vídeo só.'
+};
+const MULTI_NOTE = {
+  lances: 'Os lances são achados pelo som: torcida e narração que explodem, e as palavras do campo “O que procurar”. Ele não enxerga a imagem: lance sem torcida nem narração passa batido.',
+  after: 'Escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem em que os vídeos foram gravados.',
+  apoio: 'O vídeo de quem fala fica inteiro; as cenas dos outros entram por cima a cada poucos segundos, sem som. Se o nome de um arquivo aparecer na fala (ex.: “loja.mp4” e “loja”), a cena entra nessa hora.',
+  depo: 'Transcreve todos os vídeos e escolhe as frases mais completas e fortes de cada pessoa, alternando quem fala.'
+};
+const mxKey = f => 'mx:' + f.name + ':' + f.size;
+async function mxCacheGet(f) { try { return f ? await idb.getKV(mxKey(f)) : null; } catch (e) { return null; } }
+async function mxCachePut(f, ax) { try { await idb.putKV(mxKey(f), { env: ax.env || null, vis: ax.vis || null, rf: ax.rf || null, segs: ax.segs ? axToSave(ax).segs : null, model: ax.model || null, beats: ax.beats || null, bpm: ax.bpm || null }); } catch (e) {} }
+function axToSave(ax) { return { segs: ax.segs ? ax.segs.map(s => ({ start: s.start, end: s.end, text: s.text, words: s.words.map(w => ({ w: w.w, start: w.start, end: w.end, nocap: w.nocap || undefined, emph: w.emph })) })) : null, rf: ax.rf || null }; }
+function axFromSaved(d, mid) { const ax = { rf: d.rf || null, env: null, vis: null }; if (d.segs) { const b = buildWords(d.segs, null, mid); ax.segs = b.segs; ax.words = b.words; } return ax; }
+function mxForProject() {
+  const o = {};
+  for (const m of MEDIA.values()) if (!m.main && m.ax && (m.ax.segs || m.ax.rf)) o[m.id] = axToSave(m.ax);
+  for (const [id, d] of MX_PENDING) if (!o[id]) o[id] = d;
+  return o;
+}
+function guessName(fname) {
+  const b = fname.replace(/\.[^.]+$/, '').replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!/\p{L}{2,}/u.test(b) || /^(img|vid|mov|mvi|dsc|dji|gopr|gx\d|pxl|wa\d|whatsapp|video|v[ií]deo|clip|screen|grava|record|captura|trim|copy|c[oó]pia|final|edit)/i.test(b)) return '';
+  const words = b.split(' ').filter(w => !/\d/.test(w));
+  if (!words.length || words.length > 5) return '';
+  return words.map(w => w.length > 3 || words.indexOf(w) === 0 ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase()).join(' ');
+}
+
+/* ---- análise de um vídeo: som, fala (se precisar), imagem e rostos ---- */
+async function analyzeSource(file, mid, need, ui, myWork) {
+  const c = await mxCacheGet(file);
+  const ax = { env: c && c.env || null, vis: c && c.vis || null, rf: c && c.rf || null, segs: null, words: null, model: c && c.model || null };
+  if (c && c.segs) { const b = buildWords(c.segs, ax.env, mid); ax.segs = b.segs; ax.words = b.words; }
+  let pcm = null;
+  if (!ax.env || (need.asr && !ax.segs)) {
+    ui.say('lendo o áudio');
+    try { pcm = await decodeAudio(file); ax.env = WhisperCore.envelope(pcm, 16000); } catch (e) { ax.noAudio = true; }
+  }
+  if (myWork.cancelled) return null;
+  if (need.asr && !ax.segs && pcm) {
+    const all = await runASR(pcm, myWork, { collect: true, stageKey: ui.key, label: 'transcrevendo · ', dur: pcm.length / 16000, onProgress: f => ui.progress(0.1 + f * 0.6) });
+    if (myWork.cancelled) return null;
+    const b = buildWords(all || [], ax.env, mid); ax.segs = b.segs; ax.words = b.words; ax.model = st.opts.model;
+  }
+  pcm = null;
+  if (!ax.vis) {
+    ui.say('olhando as imagens');
+    try {
+      const samples = await faceScan(file, p => { ui.progress(0.7 + p * 0.3); ui.say(`olhando as imagens · ${Math.round(p * 100)}%`); }, () => myWork.cancelled, { stats: true });
+      ax.vis = samples.map(sm => ({ t: sm.t, br: sm.br, sh: sm.sh, mo: sm.mo, f: sm.faces && sm.faces.length ? +Math.max(...sm.faces.map(f => f.w * f.h)).toFixed(3) : 0 }));
+      ax.rf = buildReframe(samples);
+    } catch (e) { ax.vis = ax.vis || []; }
+  }
+  if (myWork.cancelled) return null;
+  await mxCachePut(file, ax);
+  return ax;
+}
+
+/* ---- batida da música: força dos ataques → andamento (autocorrelação) → fase ---- */
+function detectBeats(pcm, sr = 16000) {
+  const hop = 256, win = 512, n = Math.floor((pcm.length - win) / hop), fps = sr / hop;
+  if (n < fps * 4) return null;
+  const e = new Float32Array(n);
+  for (let k = 0; k < n; k++) { let s2 = 0; const o = k * hop; for (let i = 0; i < win; i++) { const v = pcm[o + i]; s2 += v * v; } e[k] = Math.log(1e-9 + s2 / win); }
+  const on = new Float32Array(n);
+  for (let k = 1; k < n; k++) on[k] = Math.max(0, e[k] - e[k - 1]);
+  { const W = Math.round(fps * 0.5); let acc = 0; const mean = new Float32Array(n); for (let k = 0; k < n; k++) { acc += on[k]; if (k >= W) acc -= on[k - W]; mean[k] = acc / Math.min(k + 1, W); } for (let k = 0; k < n; k++) on[k] = Math.max(0, on[k] - mean[k]); }
+  let best = -1, lag = 0;
+  for (let bpm = 70; bpm <= 180; bpm += 0.5) {
+    const L = 60 * fps / bpm, Li = Math.floor(L), fr = L - Li; let sc = 0;
+    for (let k = Li + 1; k < n; k++) sc += on[k] * (on[k - Li] * (1 - fr) + on[k - Li - 1] * fr);
+    const w = Math.exp(-0.5 * Math.pow(Math.log2(bpm / 120) / 0.8, 2));
+    if (sc * w > best) { best = sc * w; lag = L; }
+  }
+  if (!lag) return null;
+  let bestP = -1, phase = 0;
+  for (let ph = 0; ph < lag; ph += 0.5) { let sc = 0; for (let x = ph; x < n; x += lag) sc += on[Math.round(x)] || 0; if (sc > bestP) { bestP = sc; phase = ph; } }
+  // follow the actual hits: each beat is looked for around where the last one predicts, so the grid never drifts
+  const beats = []; const sw = Math.max(2, Math.round(lag * 0.12));
+  let x = phase, prev = null;
+  while (x < n) {
+    const k = Math.round(x); let bk = k, bv = -1;
+    for (let d = -sw; d <= sw; d++) { const v = (on[k + d] || 0) * (1 - Math.abs(d) / (sw * 3)); if (v > bv) { bv = v; bk = k + d; } }
+    const strong = bv > 0;
+    const t = strong ? bk : k;
+    beats.push(+(t / fps).toFixed(3));
+    if (prev != null && strong) lag = lag * 0.9 + (t - prev) * 0.1; // tempo adapts a little
+    prev = t; x = t + lag;
+  }
+  const per = beats.length > 2 ? (beats[beats.length - 1] - beats[0]) / (beats.length - 1) : lag / fps;
+  return { bpm: Math.round(60 / per), beats };
+}
+/* beats on the timeline, music starting at "start" and repeating when it ends (as musicClips lays it) */
+function beatGrid(mus, start, total) {
+  const B = mus && mus.ax && mus.ax.beats; if (!B || B.length < 8 || !(mus.dur > 1)) return null;
+  const out = [];
+  for (let k = 0, off = -start; off < total + 1 && k < 60; k++, off += mus.dur) for (const b of B) { if (k === 0 && b < start) continue; const t = off + b; if (t > total + 1) break; if (t >= 0) out.push(+t.toFixed(3)); }
+  return out;
+}
+const nearBeat = (beats, t, max) => { let b = null, d = max; for (const x of beats) { const dd = Math.abs(x - t); if (dd < d) { d = dd; b = x; } if (x > t + max) break; } return b; };
+
+/* ---- qualidade da imagem por trecho ---- */
+function visScores(ax) {
+  const V = (ax && ax.vis) || []; if (!V.length) return [];
+  const shs = V.map(v => v.sh).filter(x => x > 0).sort((a, b) => a - b), shMed = shs[shs.length >> 1] || 0.02;
+  return V.map(v => {
+    let q = clamp((v.sh || 0) / shMed, 0, 1.8) * 0.55;
+    if (v.br != null) { if (v.br < 0.12) q -= 0.8; else if (v.br < 0.22) q -= 0.3; else if (v.br > 0.93) q -= 0.4; }
+    if (v.mo != null) { if (v.mo > 0.22) q -= 0.5; else if (v.mo > 0.03) q += 0.25; else if (v.mo < 0.008) q -= 0.05; }
+    if (v.f > 0.01) q += 0.15;
+    return { t: v.t, q };
+  });
+}
+function qAt(S, a, b) {
+  if (!S.length) return 0.5;
+  let s2 = 0, n = 0; for (const x of S) { if (x.t >= a && x.t <= b) { s2 += x.q; n++; } }
+  if (n) return s2 / n;
+  let near = S[0]; for (const x of S) if (Math.abs(x.t - (a + b) / 2) < Math.abs(near.t - (a + b) / 2)) near = x;
+  return near.q;
+}
+/* melhores janelas de um vídeo, sem sobrepor */
+function bestWindows(src, L, maxN, gap) {
+  const S = visScores(src.ax), dur = src.dur, out = [];
+  if (dur < 1.2) return out;
+  const Lw = Math.min(L, Math.max(0.8, dur - 0.8));
+  const c = [];
+  for (let a = Math.min(0.6, dur * 0.1); a + Lw <= dur - 0.3; a += 0.5) c.push({ a, b: a + Lw, q: qAt(S, a, a + Lw) });
+  if (!c.length) c.push({ a: 0, b: Math.min(dur, Lw), q: 0.3 });
+  c.sort((x, y) => y.q - x.q);
+  for (const w of c) { if (out.length >= maxN) break; if (out.some(o => w.a < o.b + gap && w.b > o.a - gap)) continue; out.push(w); }
+  return out;
+}
+
+/* ---- as fontes (vídeos) já analisadas ---- */
+function multiSources() {
+  const ids = st.multi && st.multi.vids ? st.multi.vids.map(v => v.mid) : ['m0'];
+  return ids.map((mid, i) => {
+    const m = mid === 'm0' ? ensureMainMedia() : MEDIA.get(mid); if (!m) return null;
+    const ax = mid === 'm0' ? Object.assign({ env: st.env, rf: st.reframe }, m.ax || {}) : (m.ax || {});
+    return { mid, i, m, ax, dur: mid === 'm0' ? st.dur : m.dur, words: wordsOf(mid) || [], segs: mid === 'm0' ? st.segs : ax.segs || [], name: m.name, person: (st.multi.vids[i] || {}).person || '' };
+  }).filter(Boolean);
+}
+const vclip = (mid, tl, a, b, o = {}) => Object.assign({ id: nid(), track: 'V1', media: mid, tl, in: a, out: b, vol: 1, fadeIn: 0.04, fadeOut: 0.06, scale: 1, px: 0, py: 0, opacity: 1 }, o);
+/* música embaixo de tudo; repete se acabar antes do vídeo */
+function musicClips(mus, total, vol, duck, start) {
+  if (!mus || !(total > 0.5)) return [];
+  const out = []; let t = 0; const s0 = start || 0, md = mus.dur || 0; if (!(md > s0 + 1)) return [];
+  while (t < total - 0.05 && out.length < 40) { const d = Math.min(md - (out.length ? 0 : s0), total - t); out.push({ id: nid(), track: 'A2', media: mus.id, tl: t, in: out.length ? 0 : s0, out: (out.length ? 0 : s0) + d, vol, fadeIn: out.length ? 0.3 : 0, fadeOut: 0.3, duck: !!duck }); t += d; }
+  if (out.length) out[out.length - 1].fadeOut = Math.min(1.8, cdur(out[out.length - 1]));
+  return out;
+}
+/* corta na batida: cada fim de trecho vai para a batida mais perto */
+function snapToBeats(cl, beats, srcDur) {
+  let t = 0;
+  for (let i = 0; i < cl.length; i++) {
+    const c = cl[i]; c.tl = t; let d = c.out - c.in;
+    if (beats && beats.length && i < cl.length - 1) {
+      const b = nearBeat(beats, t + d, 0.6);
+      if (b != null && b - t >= 0.8) { const nd = b - t, room = (srcDur(c.media) || Infinity) - c.in; if (nd <= room) d = nd; }
+    }
+    c.out = c.in + d; t += d;
+  }
+  return t;
+}
+
+/* ---- 1. melhores lances ---- */
+function planLances(ch, srcs, mus) {
+  const T = ch.len || 60, P = ch.q ? parseFind(ch.q) : null, cands = [];
+  srcs.forEach(s => {
+    const peaks = excitePeaks(s.ax.env), hits = P && s.words.length ? findHits(s.words, P) : [], S = visScores(s.ax);
+    for (const pk of peaks) {
+      const near = hits.filter(h => h.t >= pk.a - 10 && h.t <= pk.z + 3);
+      const a = Math.max(0.2, pk.a - 6), b = Math.min(s.dur - 0.1, pk.z + 2.5);
+      if (b - a < 2) continue;
+      cands.push({ s, a, b, score: 40 + Math.min(30, pk.area * 1.4 + (pk.peak - 6) * 1.5) + (near.length ? 25 : 0) + qAt(S, a, b) * 6, why: near.length ? `fala “${near[0].word}” e o som explode` : 'o som explode', at: pk.a });
+    }
+    for (const h of hits) if (!peaks.some(pk => h.t >= pk.a - 10 && h.t <= pk.z + 3)) cands.push({ s, a: Math.max(0, h.t - 5), b: Math.min(s.dur, h.t + 4), score: 48, why: `fala “${h.word}”`, at: h.t });
+  });
+  if (!cands.length) srcs.forEach(s => { // sem picos: os trechos mais altos e nítidos de cada vídeo
+    const env = s.ax.env; if (!env) return;
+    for (let a = 0.5; a + 7 <= s.dur; a += 1) { let sp = 0, n = 0; for (let i = Math.floor(a / 0.02); i < Math.floor((a + 7) / 0.02) && i < env.length; i++) { sp += Math.pow(10, env[i] / 10); n++; } cands.push({ s, a, b: a + 7, score: 30 + 10 * Math.log10(sp / Math.max(1, n) + 1e-12) / 10 + qAt(visScores(s.ax), a, a + 7) * 8, why: 'trecho mais animado', at: a }); }
+  });
+  cands.sort((x, y) => y.score - x.score);
+  const pick = []; let total = 0;
+  for (const c of cands) {
+    if (pick.some(p => p.s === c.s && c.a < p.b + 0.5 && c.b > p.a - 0.5)) continue;
+    if (total + (c.b - c.a) > T + 2) continue;
+    pick.push(c); total += c.b - c.a; if (total >= T - 2) break;
+  }
+  pick.sort((x, y) => x.s.i - y.s.i || x.a - y.a);
+  const v = pick.map(c => vclip(c.s.mid, 0, c.a, c.b, { vol: mus ? 0.85 : 1 }));
+  const dur = snapToBeats(v, beatGrid(mus, 0, T + 15), mid => (MEDIA.get(mid) || {}).dur || st.dur);
+  if (v.length) { v[0].fadeIn = 0.25; v[v.length - 1].fadeOut = 0.6; }
+  return { clips: [...v, ...musicClips(mus, dur, 0.5, false)], v1Auto: false, summary: `${v.length} ${v.length === 1 ? 'lance' : 'lances'} de ${new Set(pick.map(c => c.s.mid)).size} ${new Set(pick.map(c => c.s.mid)).size === 1 ? 'vídeo' : 'vídeos'}, ${fmtT(dur)}`, empty: !v.length };
+}
+
+/* ---- 2. aftermovie: trechos curtos e bonitos, na batida ---- */
+function planAfter(ch, srcs, mus) {
+  const T = Math.min(ch.len || 30, mus && mus.dur ? mus.dur : Infinity);
+  const mb = mus && mus.ax && mus.ax.beats && mus.ax.beats.length > 8 ? mus.ax.beats : null;
+  const start = mb ? (mb.find(b => b >= 0.05) || 0) : 0;
+  const beats = mb ? beatGrid(mus, start, T + 6) : null;   // timeline time: 0 = first beat
+  const grid = beats || Array.from({ length: Math.ceil(T / 0.5) + 8 }, (_, i) => +(i * 0.5).toFixed(3));
+  const bi = grid.length > 2 ? (grid[grid.length - 1] - grid[0]) / (grid.length - 1) : 0.5;
+  const k = Math.max(1, Math.round((mus ? 1.6 : 2.5) / bi));
+  // cortes nas batidas: um pouco de variação, um trecho mais longo a cada 4
+  const cuts = [grid[0] || 0]; let bi0 = 0, n = 0;
+  while (true) { const step = (n % 4 === 3) ? k * 2 : k; bi0 += step; n++; const t = grid[bi0]; if (t == null || t - cuts[0] > T + 0.01) break; cuts.push(t); }
+  if (cuts.length < 2) cuts.push(cuts[0] + Math.min(T, 2));
+  const shots = []; for (let i = 0; i + 1 < cuts.length; i++) shots.push(cuts[i + 1] - cuts[i]);
+  const N = shots.length, maxL = Math.max(...shots);
+  // melhores cenas: primeiro a melhor de cada vídeo (se prestar), depois as melhores de todos, com limite por vídeo
+  const typ = shots.slice().sort((p, q) => p - q)[shots.length >> 1] || 1.5;
+  const pools = srcs.map(s => ({ s, w: bestWindows(s, typ + 0.2, Math.max(4, Math.ceil(N / srcs.length) * 3), 0.25) }));
+  const cap = Math.max(2, Math.ceil(N / srcs.length * 1.6)), cnt = new Map(), chosen = [];
+  const add = x => { chosen.push(x); cnt.set(x.s, (cnt.get(x.s) || 0) + 1); };
+  for (const p of pools) if (p.w[0] && p.w[0].q > 0.2) add({ s: p.s, w: p.w[0] });
+  const all = pools.flatMap(p => p.w.map(w => ({ s: p.s, w }))).sort((x, y) => y.w.q - x.w.q);
+  for (const x of all) { if (chosen.length >= N) break; if (chosen.some(c => c.w === x.w) || x.w.q < 0 || (cnt.get(x.s) || 0) >= cap) continue; add(x); }
+  for (const x of all) { if (chosen.length >= N) break; if (chosen.some(c => c.w === x.w) || x.w.q < -0.3) continue; add(x); }
+  const seq = chosen.sort((x, y) => x.s.i - y.s.i || x.w.a - y.w.a);
+  const v = [];
+  for (let i = 0; i < Math.min(N, seq.length); i++) {
+    const { s, w } = seq[i], d = shots[i];
+    const a = Math.max(0, Math.min(w.a + Math.max(0, (w.b - w.a - d) / 2), s.dur - d - 0.05)); // a longer shot runs on past its stretch
+    v.push(vclip(s.mid, cuts[i] - cuts[0], a, a + d, { vol: mus ? 0 : 0.9, fadeIn: 0, fadeOut: 0 }));
+  }
+  let dur = 0; for (const c of v) { c.tl = dur; dur += c.out - c.in; }
+  if (v.length) { v[0].fadeIn = 0.35; v[v.length - 1].fadeOut = 0.8; }
+  return { clips: [...v, ...musicClips(mus, dur, 0.9, false, start + (cuts[0] || 0))], v1Auto: false, summary: `${v.length} cenas de ${new Set(seq.slice(0, v.length).map(x => x.s.mid)).size} vídeos${beats ? ` na batida (${mus.ax.bpm} BPM)` : ''}, ${fmtT(dur)}`, empty: !v.length };
+}
+
+/* ---- 3. fala com imagens de apoio ---- */
+function planApoio(ch, srcs, mus) {
+  const main = srcs.find(s => s.mid === 'm0'), others = srcs.filter(s => s.mid !== 'm0');
+  const v = buildMainV1();
+  const total = v.reduce((a, c) => Math.max(a, c.tl + c.out - c.in), 0);
+  const L = 3, every = 6.5;
+  const toksOf = n => n.replace(/\.[^.]+$/, '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter(t => t.length >= 4 && !/^\d+$/.test(t) && !/^(img|vid|video|clip|final|copia|copy|edit|trim|take)/.test(t));
+  const pools = others.map(s => ({ s, w: bestWindows(s, L, 12, 1), used: 0, toks: toksOf(s.name) }));
+  const b = [];
+  const free = (a, z) => a >= 2.5 && z <= total - 1.5 && !b.some(x => a < x.tl + x.out - x.in + 1.5 && z > x.tl - 1.5);
+  // 1) cena cujo nome aparece na fala, na hora em que é dita
+  for (const p of pools) for (const t of p.toks) {
+    const h = (main ? main.words : []).find(w => termHit(t, norm(w.w))); if (!h) continue;
+    const at = Math.max(2.5, h.start - 0.3); const w = p.w[p.used % Math.max(1, p.w.length)]; if (!w || !free(at, at + L)) continue;
+    b.push({ id: nid(), track: 'V2', media: p.s.mid, tl: at, in: w.a, out: w.a + Math.min(L, w.b - w.a), vol: 0, fadeIn: 0.12, fadeOut: 0.12, scale: 1, px: 0, py: 0, opacity: 1 }); p.used++;
+  }
+  // 2) as outras, espalhadas pela fala, revezando os vídeos
+  let pi = 0;
+  for (let at = 3; at + L <= total - 1.5; at += every) {
+    if (!free(at, at + L) || !pools.length) continue;
+    let p = null; for (let k = 0; k < pools.length; k++) { const q = pools[(pi + k) % pools.length]; if (q.w.length) { p = q; pi = (pi + k + 1) % pools.length; break; } }
+    if (!p) break;
+    const w = p.w[p.used % p.w.length]; p.used++;
+    b.push({ id: nid(), track: 'V2', media: p.s.mid, tl: at, in: w.a, out: w.a + Math.min(L, w.b - w.a), vol: 0, fadeIn: 0.12, fadeOut: 0.12, scale: 1, px: 0, py: 0, opacity: 1 });
+  }
+  const lt = [];
+  if (ch.lt && main && main.person && total > 4) { // the name goes where the speaker is on screen, not over a cutaway
+    let at = 0.8; const D = Math.min(3.5, total - 1.5);
+    while (at + D < total && b.some(x => at < x.tl + x.out - x.in + 0.2 && at + D > x.tl - 0.2)) at += 0.25;
+    if (at + D < total) lt.push(makeLtClip(ltBase(main.person), st.lt.y, at, D));
+  }
+  return { clips: [...v, ...b, ...lt, ...musicClips(mus, total, 0.18, true)], v1Auto: true, summary: `${fmtT(total)} de fala com ${b.length} ${b.length === 1 ? 'cena' : 'cenas'} de apoio de ${new Set(b.map(x => x.media)).size} ${new Set(b.map(x => x.media)).size === 1 ? 'vídeo' : 'vídeos'}`, empty: !v.length };
+}
+function buildMainV1() { const c = curClip() || { start: 0, end: st.dur }; const rs = rangesFor(c); let tl = 0; return rs.map(r => { const k = vclip('m0', tl, r[0], r[1], { fadeIn: 0, fadeOut: 0 }); tl += r[1] - r[0]; return k; }); }
+function ltBase(name) { return { name, role: '', style: st.lt.style, c1: st.lt.c1, c2: st.lt.c2, font: st.lt.font, align: st.lt.align, size: st.lt.size }; }
+
+/* ---- 4. depoimentos: as melhores frases de cada pessoa ---- */
+const DEPO_HOOK = /(?<![\p{L}])(nunca|sempre|ninguém|ninguem|segredo|erro|verdade|maior|melhor|pior|importante|mudou|mudança|mudanca|incrível|incrivel|primeira vez|resultado|aprendi|descobri|recomendo|vale a pena|com certeza|sem dúvida|sem duvida)(?![\p{L}])/iu;
+const DEPO_CLOSE = /(obrigad|recomendo|vale a pena|com certeza|por isso|faria de novo|sem dúvida|sem duvida|é isso|e isso|valeu)/i;
+function sentencesOf(s) {
+  const W = s.words.filter(w => w.w && !w.del), out = []; let cur = [];
+  const flush = () => { if (cur.length) out.push({ s, a: cur[0].start, b: cur[cur.length - 1].end, text: cur.map(w => w.w).join(' '), words: cur }); cur = []; };
+  for (const w of W) { const last = cur[cur.length - 1]; if (last && (w.start - last.end > 0.8 || (/[.!?…]$/.test(last.w) && last.end - cur[0].start > 1.8))) flush(); cur.push(w); }
+  flush();
+  for (let i = 0; i + 1 < out.length; i++) if (out[i].b - out[i].a < 2 && out[i + 1].a - out[i].b < 0.4) { out[i] = { s, a: out[i].a, b: out[i + 1].b, text: out[i].text + ' ' + out[i + 1].text, words: out[i].words.concat(out[i + 1].words) }; out.splice(i + 1, 1); i--; }
+  return out;
+}
+function planDepo(ch, srcs, mus) {
+  const T = ch.len || 60, P = ch.q ? parseFind(ch.q) : null, fs = fillerSet();
+  const all = [];
+  for (const s of srcs) for (const se of sentencesOf(s)) {
+    const d = se.b - se.a; let sc = 50;
+    if (d < 2.5) sc -= 25; else if (d > 14) sc -= 20; else if (d >= 3.5 && d <= 10) sc += 6;
+    if (/^(e|mas|então|entao|porque|aí|ai|tipo|né|ne|and|but|so)(?![\p{L}])/iu.test(se.text.trim())) sc -= 12;
+    if (/[.!?…]$/.test(se.text.trim())) sc += 8; if (/!$/.test(se.text.trim())) sc += 5; if (/\?$/.test(se.text.trim())) sc += 3;
+    if (DEPO_HOOK.test(se.text)) sc += 10;
+    sc += Math.min(9, se.words.filter(w => EMPH_WORDS.has(norm(w.w))).length * 3);
+    if (se.words.filter(w => fs.has(normKeepAccent(w.w))).length / se.words.length > 0.15) sc -= 10;
+    if (P) { const h = findHits(se.words, P).length; sc += Math.min(2, h) * 30; }
+    se.score = sc; se.d = Math.min(d, 14); se.close = DEPO_CLOSE.test(se.text) || /!$/.test(se.text.trim());
+    all.push(se);
+  }
+  const pick = []; let total = 0; const per = new Map();
+  const take = se => { pick.push(se); total += se.d + 0.3; per.set(se.s, (per.get(se.s) || 0) + 1); };
+  const bySrc = srcs.map(s => all.filter(x => x.s === s).sort((a, b) => b.score - a.score));
+  bySrc.sort((a, b) => ((b[0] || {}).score || 0) - ((a[0] || {}).score || 0));
+  for (const list of bySrc) { const best = list[0]; if (best && best.score > 20 && total + best.d <= T + 1) take(best); }
+  for (const se of [...all].sort((a, b) => b.score - a.score)) {
+    if (pick.includes(se) || se.score < 30 || (per.get(se.s) || 0) >= 3) continue;
+    if (total + se.d > T + 1) continue;
+    if (pick.some(p => p.s === se.s && se.a < p.b && se.b > p.a)) continue;
+    take(se);
+  }
+  // ordem: abre com a mais forte, fecha com uma conclusão, alterna quem fala no meio
+  const rest = [...pick].sort((a, b) => b.score - a.score), seq = [];
+  const first = rest.shift(); if (first) seq.push(first);
+  let last = null; { const i = rest.findIndex(x => x.close); if (i >= 0 && rest.length > 1) last = rest.splice(i, 1)[0]; }
+  while (rest.length) { const prev = seq[seq.length - 1]; let i = rest.findIndex(x => x.s !== prev.s && (!last || x.s !== last.s || rest.length === 1)); if (i < 0) i = rest.findIndex(x => x.s !== prev.s); if (i < 0) i = 0; seq.push(rest.splice(i, 1)[0]); }
+  if (last) seq.push(last);
+  const v = []; let tl = 0; const seen = new Set(), lt = [];
+  for (const se of seq) {
+    const a = Math.max(0, se.a - 0.12), b = Math.min(se.s.dur, Math.min(se.b, se.a + 14) + 0.2);
+    const c = vclip(se.s.mid, tl, a, b, { fadeIn: 0.05, fadeOut: 0.08 }); v.push(c);
+    if (ch.lt && se.s.person && !seen.has(se.s) && b - a > 2.2) { seen.add(se.s); lt.push(makeLtClip(ltBase(se.s.person), st.lt.y, tl + 0.3, Math.min(3.5, b - a - 0.5))); }
+    tl += b - a;
+  }
+  return { clips: [...v, ...lt, ...musicClips(mus, tl, 0.16, true)], v1Auto: false, summary: `${v.length} ${v.length === 1 ? 'frase' : 'frases'} de ${new Set(seq.map(x => x.s)).size} ${new Set(seq.map(x => x.s)).size === 1 ? 'pessoa' : 'pessoas'}, ${fmtT(tl)}`, empty: !v.length };
+}
+function planMulti(ch) {
+  const srcs = multiSources(), mus = ch.musicId ? MEDIA.get(ch.musicId) : null;
+  const plan = ch.mode === 'after' ? planAfter(ch, srcs, mus) : ch.mode === 'apoio' ? planApoio(ch, srcs, mus) : ch.mode === 'depo' ? planDepo(ch, srcs, mus) : planLances(ch, srcs, mus);
+  return plan;
+}
+
+/* ---- escolha do modo ---- */
+async function multiDialog(vids, music, prev) {
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const saved = store.get('cs:multi', {});
+  const S = Object.assign({ mode: 'lances', len: 60, q: '', lt: true }, saved, prev || {}, { music: music || null, musicName: music ? music.name : prev && prev.musicName || '', mainIdx: prev && prev.mainIdx != null ? prev.mainIdx : vids.reduce((bi, f, i, a) => ((f.size || 0) > (a[bi].size || 0) ? i : bi), 0) });
+  S.names = vids.map((f, i) => (prev && prev.names && prev.names[i] != null ? prev.names[i] : guessName(f.name || '')));
+  const box = el('div', 'mm');
+  const modes = el('div', 'mm-modes'); modes.setAttribute('role', 'group'); modes.setAttribute('aria-label', 'Tipo de edição');
+  for (const k of ['lances', 'after', 'apoio', 'depo']) { const b = el('button', 'mm-mode'); b.type = 'button'; b.dataset.k = k; b.append(el('b', null, MULTI_NAMES[k]), el('span', null, MULTI_DESC[k])); b.onclick = () => { S.mode = k; upd(); }; modes.appendChild(b); }
+  const fLen = el('div', 'field'); fLen.dataset.for = 'lances after depo'; fLen.append(el('span', 'lbl', 'Duração da edição'));
+  const seg = el('div', 'seg seg-full'); for (const [v, t] of [[30, 'Até 30 s'], [60, 'Até 60 s'], [90, 'Até 90 s']]) { const b = el('button', null, t); b.type = 'button'; b.dataset.v = v; b.onclick = () => { S.len = v; upd(); }; seg.appendChild(b); } fLen.appendChild(seg);
+  const fQ = el('div', 'field'); fQ.dataset.for = 'lances depo'; const lq = el('label', null, 'O que procurar '); lq.appendChild(el('small', 'fine', 'opcional')); const iq = el('input'); iq.type = 'text'; iq.maxLength = 120; iq.placeholder = 'Ex.: gols · bolas de 3 · quando falam da SULTS'; iq.value = S.q || ''; iq.id = 'mmQ'; lq.htmlFor = 'mmQ'; iq.addEventListener('input', () => { S.q = iq.value; }); iq.addEventListener('keydown', e => e.stopPropagation()); fQ.append(lq, iq);
+  const fMain = el('div', 'field'); fMain.dataset.for = 'apoio'; const lm = el('label', null, 'Quem fala (vídeo principal)'); const sm = el('select'); sm.id = 'mmMain'; lm.htmlFor = 'mmMain'; vids.forEach((f, i) => { const o = el('option', null, f.name); o.value = i; sm.appendChild(o); }); sm.value = String(S.mainIdx); sm.addEventListener('change', () => { S.mainIdx = +sm.value; upd(); }); fMain.append(lm, sm);
+  const fMus = el('div', 'field'); fMus.append(el('span', 'lbl', 'Música (opcional)'));
+  const mr = el('div', 'row'); const mname = el('span', 'fine'); const mpick = el('label', 'btn'); mpick.style.position = 'relative'; mpick.style.overflow = 'hidden'; mpick.append('Escolher música'); const mi = el('input'); mi.type = 'file'; mi.accept = 'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac'; Object.assign(mi.style, { position: 'absolute', inset: '0', opacity: '0', cursor: 'pointer' }); mpick.appendChild(mi);
+  const mclear = el('button', 'btn ghost', 'Sem música'); mclear.type = 'button'; mclear.onclick = () => { S.music = null; S.musicName = ''; S.musicId = null; upd(); };
+  mi.addEventListener('change', () => { const f = mi.files[0]; mi.value = ''; if (f) { S.music = f; S.musicName = f.name; S.musicId = null; upd(); } });
+  mr.append(mpick, mclear, mname); fMus.appendChild(mr);
+  const fNames = el('div', 'field'); fNames.dataset.for = 'apoio depo';
+  const ltSw = el('label', 'switch'); ltSw.append(el('span', null, 'Nome de quem fala (lower third)')); const ltI = el('input'); ltI.type = 'checkbox'; ltI.checked = S.lt !== false; ltI.addEventListener('change', () => { S.lt = ltI.checked; upd(); }); ltSw.appendChild(ltI);
+  const nameList = el('div', 'mm-names');
+  fNames.append(ltSw, nameList);
+  const note = el('p', 'fine mm-note');
+  box.append(modes, fLen, fQ, fMain, fMus, fNames, note);
+  const renderNames = () => {
+    nameList.innerHTML = '';
+    if (!S.lt) return;
+    const idxs = S.mode === 'apoio' ? [S.mainIdx] : vids.map((_, i) => i);
+    for (const i of idxs) { const r = el('div', 'mm-name'); const sp = el('span', 'fine', vids[i].name); const inp = el('input'); inp.type = 'text'; inp.placeholder = 'Nome da pessoa'; inp.value = S.names[i] || ''; inp.maxLength = 60; inp.addEventListener('input', () => { S.names[i] = inp.value; }); inp.addEventListener('keydown', e => e.stopPropagation()); r.append(sp, inp); nameList.appendChild(r); }
+  };
+  const upd = () => {
+    $$('.mm-mode', modes).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === S.mode)));
+    $$('button', seg).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === +S.len)));
+    for (const f of [fLen, fQ, fMain, fNames]) f.hidden = !f.dataset.for.split(' ').includes(S.mode);
+    mname.textContent = S.musicName ? S.musicName : (S.mode === 'after' ? 'Sem música, o aftermovie usa o som dos vídeos.' : 'Sem música.');
+    mclear.hidden = !S.musicName;
+    note.textContent = MULTI_NOTE[S.mode] + (S.mode === 'apoio' && vids.length < 2 ? ' Precisa de pelo menos 2 vídeos.' : '');
+    renderNames();
+    const go = $('#dlgActions button[value="go"]'); if (go) go.disabled = (S.mode === 'apoio' || S.mode === 'depo') && vids.length < 2;
+  };
+  const pr = openModal(`Montar com ${vids.length} ${vids.length === 1 ? 'vídeo' : 'vídeos'}`, box, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: prev ? 'Montar de novo' : 'Montar', value: 'go', primary: true }], false);
+  upd();
+  const r = await pr;
+  if (r !== 'go') return null;
+  store.set('cs:multi', { mode: S.mode, len: S.len, lt: S.lt });
+  return { mode: S.mode, len: S.mode === 'apoio' ? 0 : S.len, q: (S.q || '').trim(), music: S.music, musicName: S.musicName, musicId: S.music ? null : prev && S.musicName ? prev.musicId : null, mainIdx: S.mainIdx, names: S.names.map(n => (n || '').trim()), lt: !!S.lt };
+}
+
+/* ---- do zero: analisa tudo e monta ---- */
+async function startMulti(files) {
+  const auds = files.filter(f => mediaKindOfFile(f) === 'audio'), vids = files.filter(f => mediaKindOfFile(f) === 'video');
+  if (!vids.length) { toast('Escolha os vídeos (e, se quiser, uma música).'); return; }
+  vids.sort((a, b) => (a.lastModified || 0) - (b.lastModified || 0) || a.name.localeCompare(b.name));
+  const ch = await multiDialog(vids, auds[0] || null, null);
+  if (!ch) return;
+  return runMulti(vids, ch);
+}
+async function runMulti(vids, ch) {
+  cancelWork(); pause(); resetAll();
+  const main = vids[ch.mode === 'apoio' ? clamp(ch.mainIdx || 0, 0, vids.length - 1) : 0];
+  st.file = main; st.url = URL.createObjectURL(main); st.model = st.opts.model;
+  work = { cancelled: false, workers: [] }; const myWork = work;
+  show('scrWork');
+  const needAsr = f => ch.mode === 'depo' || (ch.mode === 'apoio' && f === main) || (ch.mode === 'lances' && !!ch.q);
+  $('#workFile').textContent = `${vids.length} vídeos`; $('#workTitle').textContent = 'Montando';
+  $('#workSet').textContent = [MULTI_NAMES[ch.mode], ch.len ? `até ${ch.len} s` : '', ch.musicName ? `música: ${ch.musicName}` : '', ch.q ? `procurando “${ch.q}”` : ''].filter(Boolean).join(' · ');
+  $('#live').innerHTML = ''; $('#workErr').hidden = true; $('#workMeter').style.width = '0%';
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  $('#stages').innerHTML = (vids.some(needAsr) ? '<li data-s="model"><span class="dot"></span><span>Modelo de transcrição</span><span class="det"></span></li>' : '')
+    + vids.map((f, i) => `<li data-s="v${i}"><span class="dot"></span><span>${esc(f.name)}</span><span class="det">na fila</span></li>`).join('')
+    + (ch.music ? '<li data-s="mus"><span class="dot"></span><span>Batida da música</span><span class="det"></span></li>' : '')
+    + '<li data-s="mount"><span class="dot"></span><span>Escolhendo os trechos e montando</span><span class="det"></span></li>';
+  try { await loadVideoMeta(st.url); st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight; setFileInfo(); }
+  catch (e) { return failWork(`Não consegui abrir “${main.name}” ${HERE}. Tente exportar em MP4 (H.264).`); }
+  const others = vids.filter(f => f !== main);
+  const added = await importMedia(others.concat(ch.music ? [ch.music] : []), { quiet: true });
+  ensureMainMedia();
+  const list = [];
+  for (let i = 0; i < vids.length; i++) {
+    const f = vids[i], mid = f === main ? 'm0' : (added.find(m => m.file === f) || {}).id;
+    if (!mid) { stage('v' + i, 'done', 'não abriu'); continue; }
+    stage('v' + i, 'on', 'lendo o áudio');
+    const ui = { key: 'v' + i, say: t => stage('v' + i, 'on', t), progress: x => { $('#workMeter').style.width = ((i + clamp(x, 0, 1)) / vids.length * 92).toFixed(1) + '%'; } };
+    let ax = null;
+    try { ax = await analyzeSource(f, mid, { asr: needAsr(f) }, ui, myWork); } catch (e) { ax = null; }
+    if (myWork.cancelled) return false;
+    if (!ax) { stage('v' + i, 'done', 'não deu para analisar'); continue; }
+    if (mid === 'm0') { st.env = ax.env; if (ax.segs) setSegments(axToSave(ax).segs); st.reframe = ax.rf || null; const m0 = MEDIA.get('m0'); m0.env = st.env; m0.ax = { env: ax.env, vis: ax.vis, rf: ax.rf }; }
+    else { MEDIA.get(mid).ax = ax; MEDIA.get(mid).env = ax.env; }
+    stage('v' + i, 'done', [fmtT(f === main ? st.dur : MEDIA.get(mid).dur), ax.segs ? `${ax.segs.length} frases` : '', ax.noAudio ? 'sem som' : ''].filter(Boolean).join(' · '));
+    list.push({ mid, person: ch.names[i] || '', name: f.name });
+  }
+  if (!list.length) return failWork('Não consegui analisar nenhum desses vídeos.');
+  if (ch.music) {
+    const mm = added.find(m => m.file === ch.music);
+    if (mm) {
+      ch.musicId = mm.id; stage('mus', 'on', 'ouvindo');
+      const c = await mxCacheGet(ch.music);
+      if (c && c.beats) mm.ax = { beats: c.beats, bpm: c.bpm };
+      else { try { const pcm = await decodeAudio(ch.music); const r = detectBeats(pcm) || { beats: [], bpm: null }; mm.ax = { beats: r.beats, bpm: r.bpm, env: WhisperCore.envelope(pcm, 16000) }; await mxCachePut(ch.music, mm.ax); } catch (e) { mm.ax = { beats: [] }; } }
+      stage('mus', 'done', mm.ax.bpm ? `${mm.ax.bpm} BPM` : 'sem batida clara');
+    }
+  }
+  stage('mount', 'on');
+  st.multi = { key: 'cs:multi:' + Date.now().toString(36), mode: ch.mode, n: list.length, len: ch.len, q: ch.q, musicId: ch.musicId || null, musicName: ch.musicName || '', lt: ch.lt, mainIdx: ch.mainIdx, vids: list };
+  st.clips = [fullClip(), { id: 'multi', title: MULTI_NAMES[ch.mode], hook: '', start: 0, end: st.dur, score: null, src: 'multi', why: '' }]; st.cur = 'multi';
+  setSmart(smartNone()); st.lt.on = false; computeRemoval();
+  const plan = planMulti(ch);
+  if (plan.empty) return failWork('Não achei trechos para montar com esses vídeos. Tente outro tipo de edição ou outra duração.');
+  montages = { multi: { clips: plan.clips, hook: '', T: 0, v1Auto: plan.v1Auto } };
+  stage('mount', 'done', plan.summary); $('#workMeter').style.width = '100%';
+  work = null;
+  saveProject();
+  openEditor(); setMode('mont'); zoomFit();
+  setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
+  toastAction(`${MULTI_NAMES[ch.mode]} pronto: ${plan.summary}. Ajuste na linha do tempo; legenda e zoom ficam na Edição inteligente.`, 'Edição inteligente…', openSmart, 14000);
+  return true;
+}
+
+/* ---- montar de novo, com o que já foi analisado ---- */
+async function remontMulti() {
+  if (!st.multi) return;
+  const srcFiles = st.multi.vids.map(v => { const m = v.mid === 'm0' ? { file: st.file } : MEDIA.get(v.mid); return m && m.file ? m.file : { name: v.name, size: 0 }; });
+  const mainI = Math.max(0, st.multi.vids.findIndex(v => v.mid === 'm0'));
+  for (const v of st.multi.vids) { // picture analysis comes back from the cache after reopening
+    const m = v.mid === 'm0' ? ensureMainMedia() : MEDIA.get(v.mid); if (!m || !m.file) continue;
+    if (!m.ax || !m.ax.vis) { const c = await mxCacheGet(v.mid === 'm0' ? st.file : m.file); if (c) m.ax = Object.assign(m.ax || {}, { env: (m.ax && m.ax.env) || c.env, vis: c.vis, rf: (m.ax && m.ax.rf) || c.rf }); }
+  }
+  const prev = { mode: st.multi.mode, len: st.multi.len || 60, q: st.multi.q || '', lt: st.multi.lt, mainIdx: mainI, names: st.multi.vids.map(v => v.person || ''), musicName: st.multi.musicName || '', musicId: st.multi.musicId || null };
+  const ch = await multiDialog(srcFiles, null, prev);
+  if (!ch) return;
+  if (ch.mode === 'apoio' && ch.mainIdx !== mainI) { toast(`Aqui quem fala continua sendo “${st.multi.vids[mainI].name}”. Para trocar, comece uma montagem nova pela tela inicial.`, 6000); ch.mainIdx = mainI; }
+  // what is still missing (e.g. transcripts for depoimentos)
+  const needAsr = (v, i) => ch.mode === 'depo' || (ch.mode === 'apoio' && v.mid === 'm0') || (ch.mode === 'lances' && !!ch.q);
+  const myWork = { cancelled: false, workers: [] };
+  for (let i = 0; i < st.multi.vids.length; i++) {
+    const v = st.multi.vids[i]; if (!needAsr(v, i)) continue;
+    const has = v.mid === 'm0' ? st.segs.length : (MEDIA.get(v.mid) && MEDIA.get(v.mid).ax && MEDIA.get(v.mid).ax.segs);
+    if (has) continue;
+    const m = v.mid === 'm0' ? { file: st.file } : MEDIA.get(v.mid); if (!m || !m.file) continue;
+    toast(`Transcrevendo ${v.name} (${i + 1} de ${st.multi.vids.length})…`, 60000);
+    const ui = { key: 'x', say: () => {}, progress: x => toast(`Transcrevendo ${v.name}: ${Math.round(x * 100)}%`, 60000) };
+    const ax = await analyzeSource(m.file, v.mid, { asr: true }, ui, myWork);
+    if (!ax) continue;
+    if (v.mid === 'm0') { setSegments(axToSave(ax).segs || []); } else MEDIA.get(v.mid).ax = Object.assign(MEDIA.get(v.mid).ax || {}, ax);
+  }
+  if (ch.music) {
+    const [mm] = await importMedia([ch.music], { quiet: true });
+    if (mm) { ch.musicId = mm.id; const c = await mxCacheGet(ch.music); if (c && c.beats) mm.ax = { beats: c.beats, bpm: c.bpm }; else { try { const pcm = await decodeAudio(ch.music); const r = detectBeats(pcm) || { beats: [] }; mm.ax = { beats: r.beats, bpm: r.bpm }; await mxCachePut(ch.music, mm.ax); } catch (e) { mm.ax = { beats: [] }; } } }
+  } else if (!ch.musicName) ch.musicId = null;
+  else ch.musicId = st.multi.musicId;
+  st.multi.vids.forEach((v, i) => { v.person = ch.names[i] || ''; });
+  Object.assign(st.multi, { mode: ch.mode, len: ch.len, q: ch.q, lt: ch.lt, musicId: ch.musicId || null, musicName: ch.musicName || '' });
+  const c = curClip(); if (c && c.src === 'multi') c.title = MULTI_NAMES[ch.mode];
+  const plan = planMulti(ch);
+  if (plan.empty) { toast('Não achei trechos com essa escolha. Nada mudou.', 4000); return; }
+  pushUndo(false, 'montar de novo');
+  M.clips = plan.clips; M.v1Auto = plan.v1Auto; M.sel.clear(); M.selCap = null; M.gap = null;
+  $('#seqName').textContent = MULTI_NAMES[ch.mode];
+  changed(); zoomFit(); seekM(0); saveMontage(); updateMultiUI();
+  toastAction(`Montado de novo: ${plan.summary}.`, 'Desfazer', undo, 9000);
+}
+/* telas: numa montagem de vários vídeos a tela de Cortes não se aplica */
+function updateMultiUI() {
+  const multi = !!st.multi;
+  if (multi) $('#modeSeg').hidden = true;
+  const hideTx = multi && st.multi.mode !== 'apoio';
+  const tc = $('#tabs button[data-t="clean"]'), tt = $('#tabs button[data-t="text"]');
+  if (MODE === 'mont' && tc && tt) { tc.hidden = hideTx; tt.hidden = hideTx; }
+}
+
+window.__cs = { st, M, MEDIA, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
 })();
 </script>
