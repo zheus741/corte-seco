@@ -71,6 +71,8 @@ o .srt junto é empurrado pela abertura para continuar batendo com o vídeo.
 - Teste local: `python3 web/build.py && node web/serve.mjs` → http://localhost:8766
 
 ## Instalar (app de Mac e Windows)
+Baixe em **https://github.com/zheus741/corte-seco/releases/latest**. O app avisa sozinho quando sai uma versão nova.
+Para gerar instaladores novos: Actions → build → Run workflow (sai uma versão com o número do `package.json`).
 - **Mac (M1, M2, M3, M4):** abra o `.zip`/`.dmg` com `arm64` e arraste o Corte Seco para Aplicativos.
   Na primeira vez, se o Mac avisar que não pode verificar o app: Ajustes do Sistema → Privacidade e Segurança →
   "Abrir mesmo assim". (Ou, no Terminal: `xattr -dr com.apple.quarantine "/Applications/Corte Seco.app"`.)
