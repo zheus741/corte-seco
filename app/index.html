@@ -162,36 +162,110 @@ details.more[open]>summary{margin-bottom:10px}
 .hr{height:1px;background:var(--line);margin-block:4px}
 .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
 
-/* ---------- start screen ---------- */
-.start{max-width:1240px;margin:0 auto;padding-block:clamp(22px,4.5vw,56px) 64px;padding-inline:16px;display:grid;gap:clamp(28px,4vw,48px)}
-.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:clamp(24px,4vw,64px);align-items:center}
-.hero-copy{display:grid;gap:18px;min-width:0}
+/* ---------- start screen: modules ---------- */
+.start{max-width:1120px;margin:0 auto;padding-block:clamp(20px,4vw,48px) 64px;padding-inline:16px;display:grid;gap:clamp(22px,3vw,32px)}
+.home{display:grid;gap:clamp(22px,3vw,30px)}
+.home-head{display:grid;gap:12px}
 .hero-eyebrow{display:flex;align-items:center;gap:10px}
 .hero-eyebrow .mark{width:20px;height:20px;color:var(--amber);flex:none}
-.start h1{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(44px,5.8vw,92px);line-height:.9;letter-spacing:.005em}
+.start h1{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(38px,5vw,72px);line-height:.92;letter-spacing:.005em}
 .slice{position:relative;display:inline-block;color:transparent;white-space:nowrap;line-height:1.02;margin-top:.04em}
 .slice::before,.slice::after{content:attr(data-t);position:absolute;inset:-.1em 0 -.1em 0;padding-top:.1em;color:var(--amber);white-space:nowrap}
 .slice::before{clip-path:polygon(0 0,100% 0,100% 42.5%,0 55.8%);transform:translateX(-.03em)}
 .slice::after{clip-path:polygon(0 60.9%,100% 47.5%,100% 100%,0 100%);transform:translateX(.03em)}
-.lede{max-width:56ch;color:var(--ink2);font-size:16.5px;line-height:1.5}
-.goals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
-.goal{position:relative;display:grid;gap:6px;align-content:start;text-align:left;padding:18px 18px 16px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s,transform .15s;min-height:188px}
-.goal input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.goal .g-ico{width:40px;height:40px;display:grid;place-items:center;background:var(--raise2);color:var(--amber);margin-bottom:4px}
-.goal .g-ico svg{width:22px;height:22px}
-.goal b{font-size:19px;font-weight:700;line-height:1.2}
-.goal .gp{color:var(--mute);font-size:13.5px;line-height:1.45}
-.goal .g-cta{margin-top:auto;padding-top:10px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--amber)}
-.goal .g-cta svg{width:16px;height:16px}
-.goal:hover,.goal.over{border-color:var(--amber);background:#1A1812}
-.goal.over{transform:translateY(-2px);box-shadow:0 0 0 1px var(--amber) inset}
-.goal:focus-within{outline:2px solid var(--amber);outline-offset:2px}
-.goals.dragging .goal{border-style:dashed}
-.goal.wide{grid-column:1/-1;min-height:0;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 16px}
-.goal.wide .g-ico{margin-bottom:0}
-.goal.wide .g-txt{display:grid;gap:4px}
-.goal.wide .g-cta{margin-top:0;padding-top:0;white-space:nowrap}
-@media (max-width:760px){ .goal.wide{grid-template-columns:auto minmax(0,1fr)} .goal.wide .g-cta{grid-column:1/-1} }
+.lede{max-width:60ch;color:var(--ink2);font-size:16px;line-height:1.5}
+.mod-group{display:grid;gap:10px}
+.mod-group h2{display:flex;align-items:center;gap:12px;font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.mod-group h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.mods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mod{position:relative;display:grid;grid-template-rows:auto auto 1fr;gap:5px;align-content:start;text-align:left;padding:16px 16px 15px;border:1px solid var(--line2);border-radius:0;background:var(--panel);color:var(--ink);cursor:pointer;min-height:156px;font:inherit;transition:border-color .15s,background .15s,transform .18s,box-shadow .15s;animation:modIn .5s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 45ms)}
+@keyframes modIn{from{opacity:0;transform:translateY(12px)}}
+.mod:hover,.mod:focus-visible,.mod.over{border-color:var(--amber);background:#1A1812;transform:translateY(-2px)}
+.mod:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.mod.over{box-shadow:0 0 0 1px var(--amber) inset}
+.m-ico{width:46px;height:46px;display:grid;place-items:center;background:var(--raise2);color:var(--amber);flex:none;transition:background .15s,color .15s}
+.mod .m-ico{margin-bottom:7px}
+.mod:hover .m-ico,.mod:focus-visible .m-ico,.mod.over .m-ico{background:var(--amber);color:var(--amber-ink)}
+.m-ico svg{width:25px;height:25px;overflow:visible}
+.mod b{font-size:16.5px;font-weight:700;line-height:1.2}
+.mod .mp{color:var(--mute);font-size:13px;line-height:1.42}
+.mod .m-go{position:absolute;right:14px;top:16px;width:18px;height:18px;color:var(--dim);transition:transform .15s,color .15s}
+.mod:hover .m-go,.mod:focus-visible .m-go{color:var(--amber);transform:translateX(3px)}
+.home.dragging .mod{border-style:dashed}
+@media (max-width:980px){ .mods{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:520px){ .mods{grid-template-columns:1fr} .mod{min-height:0;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;padding-right:38px} .mod .m-ico{grid-row:1/3;margin-bottom:0} .mod .m-go{top:50%;transform:translateY(-50%)} .mod:hover .m-go{transform:translate(3px,-50%)} }
+/* module icons: a short loop on hover (and on the open step) */
+.mi .pv{transform-box:view-box;transform-origin:12px 12px}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-snip .ba{animation:snipA .55s ease-in-out infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-snip .bb{animation:snipB .55s ease-in-out infinite}
+@keyframes snipA{50%{transform:rotate(-13deg)}}
+@keyframes snipB{50%{transform:rotate(13deg)}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-find .lens{animation:look 1.6s ease-in-out infinite}
+@keyframes look{25%{transform:translate(-2px,-1px)}50%{transform:translate(1px,-2.5px)}75%{transform:translate(2px,1px)}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-find .spk{animation:spark 1.6s ease-in-out infinite}
+@keyframes spark{0%,100%{opacity:0}40%,60%{opacity:1}}
+.mi-find .spk{opacity:0}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-tl .ph{animation:sweepI 1.4s linear infinite}
+@keyframes sweepI{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
+.mi-cc .ln{stroke-dasharray:10;stroke-dashoffset:0}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-cc .ln{animation:typeI 1.3s steps(5) infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-cc .ln2{animation-delay:.25s}
+@keyframes typeI{from{stroke-dashoffset:10}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-ball .ball{animation:kick .9s cubic-bezier(.3,.6,.3,1) infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-ball .trail{animation:trailI .9s infinite}
+@keyframes kick{0%,100%{transform:translateX(-2.5px)}55%{transform:translateX(2.5px)}}
+@keyframes trailI{50%{opacity:.15}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-note .nt{animation:beatI .5s ease-in-out infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-note .fr{animation:beatF .5s ease-in-out infinite}
+@keyframes beatI{50%{transform:translateY(-2.5px)}}
+@keyframes beatF{50%{opacity:.35}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-talk .ta{animation:talk 1.3s infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-talk .tb{animation:talk 1.3s .65s infinite}
+@keyframes talk{0%,40%{opacity:1}50%,90%{opacity:.3}}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-over .c1{animation:slideI 1.5s ease-in-out infinite}
+@keyframes slideI{50%{transform:translate(-2px,1.5px)}}
+/* a module, open: what to do, the few options it needs and where to drop */
+.step{display:grid;gap:20px;animation:stepIn .38s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes stepIn{from{opacity:0;transform:translateX(26px)}}
+.step-back{justify-self:start;display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 6px;border:1px solid var(--line2);border-radius:0;background:transparent;color:var(--ink2);font:600 13px var(--ui);cursor:pointer}
+.step-back svg{width:16px;height:16px}
+.step-back:hover{border-color:var(--amber);color:var(--ink)}
+.step-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.step-ico{width:72px;height:72px;background:var(--amber);color:var(--amber-ink)}
+.step-ico svg{width:38px;height:38px}
+.step-head h2:focus{outline:none}
+.step-head h2{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(30px,4vw,50px);line-height:.95;margin-top:4px}
+.step-head .lede{margin-top:6px}
+.step-how{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 0;counter-reset:sh}
+.step-how li{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2);counter-increment:sh}
+.step-how li::before{content:counter(sh);width:22px;height:22px;display:grid;place-items:center;flex:none;font:600 12px var(--mono);background:var(--raise2);color:var(--amber)}
+.step-how li+li::before{margin-left:0}
+.step-how li:not(:last-child)::after{content:"";width:22px;height:1px;background:var(--line2);margin-inline:12px}
+.step-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px 20px;align-items:start}
+.step-fields:not(:has(>.field:not([hidden]))){display:none}
+.step-fields input[type=text]{font-size:15px}
+.step-fields .field.big{grid-column:1/-1}
+.step-fields .field.big input{font-size:17px;padding-block:12px}
+.dropzone{position:relative;display:grid;justify-items:center;gap:8px;padding:clamp(30px,5vw,56px) 20px;border:2px dashed var(--line2);background:var(--panel);text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dropzone:hover,.dropzone.over,.start.dragging .dropzone{border-color:var(--amber);background:#1A1812}
+.dropzone:focus-within{outline:2px solid var(--amber);outline-offset:2px}
+.dz-ico{width:58px;height:58px;display:grid;place-items:center;background:var(--amber);color:var(--amber-ink);margin-bottom:4px}
+.dz-ico svg{width:28px;height:28px;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.dropzone b{font-size:20px;font-weight:700}
+.dropzone .fine{max-width:68ch}
+.dz-held{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--amber);background:var(--raise)}
+.dz-held .nm{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cap-picks{display:flex;flex-wrap:wrap;gap:6px}
+.cap-pick{display:grid;gap:4px;justify-items:center;min-width:112px;padding:10px 12px 8px;border:1px solid var(--line2);border-radius:0;background:#16161a;color:var(--ink);cursor:pointer}
+.cap-pick .cs{font-size:19px;line-height:1.1;white-space:nowrap}
+.cap-pick small{font-size:11.5px;color:var(--mute)}
+.cap-pick:hover{border-color:#4a4c52}
+.cap-pick[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.mus-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mus-row .fine{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+@media (max-width:520px){ .step-head{grid-template-columns:1fr} .step-ico{width:56px;height:56px} .step-how{display:grid;gap:6px} .step-how li:not(:last-child)::after{display:none} }
 .mm{display:grid;gap:12px}
 .mm-modes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .mm-mode{display:grid;gap:3px;align-content:start;text-align:left;padding:10px 12px;border:1px solid var(--line2);background:var(--well);color:var(--mute);border-radius:0;font-size:12.5px;line-height:1.35}
@@ -207,44 +281,13 @@ details.more[open]>summary{margin-bottom:10px}
 .setline #setSummary{font-family:var(--mono);font-size:12px;color:var(--ink2)}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px 20px;align-items:start;padding:16px;border:1px solid var(--line);background:var(--panel)}
 .opts .field>label{font-size:12.5px}
-/* demo on the right: a phone with a viral caption and a timeline losing its pauses */
-.hero-demo{position:relative;display:grid;justify-items:center;gap:14px;min-width:0}
-.phone{position:relative;width:min(300px,100%);aspect-ratio:9/16;background:#000;border:8px solid #1b1b1e;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px #2a2a2e;overflow:hidden}
-.ph-scene{position:absolute;inset:0;background:linear-gradient(170deg,#3a2a14 0%,#1b1712 45%,#0d0d0f 100%)}
-.ph-scene i{position:absolute;display:block}
-.ph-light{width:120%;height:60%;left:-10%;top:-12%;background:radial-gradient(closest-side,rgba(244,185,66,.35),transparent)}
-.ph-head{width:30%;aspect-ratio:.86;left:35%;top:27%;background:radial-gradient(120% 90% at 50% 20%,#3b2c19 0,#15110c 55%,#0b0a09 100%);border-radius:48% 48% 46% 46%;box-shadow:0 -3px 14px rgba(244,185,66,.28),inset 0 3px 6px rgba(255,214,140,.25)}
-.ph-body{width:82%;height:42%;left:9%;top:57%;background:linear-gradient(180deg,#221a11 0,#0e0c0a 40%,#0a0909 100%);border-radius:48% 48% 0 0;box-shadow:inset 0 3px 8px rgba(255,214,140,.18),0 -2px 18px rgba(244,185,66,.15)}
-.ph-hook{position:absolute;left:8%;right:8%;top:9%;padding:6px 8px;background:var(--amber);color:#111;font:900 15px/1.05 var(--display);text-transform:uppercase;text-align:center;letter-spacing:.02em}
-.ph-cap{position:absolute;left:6%;right:6%;top:62%;text-align:center;word-spacing:.16em;font:900 30px/1 var(--display);letter-spacing:.01em;color:#fff;text-shadow:0 3px 0 #000,0 0 14px rgba(0,0,0,.6);-webkit-text-stroke:1.5px #000;paint-order:stroke fill}
-.ph-cap i{font-style:normal;display:inline-block;transition:transform .12s,color .12s}
-.ph-cap i.on{color:#3CFF7A;transform:scale(1.14)}
-.ph-cap i.key{color:var(--amber)}
-.ph-logo{position:absolute;right:6%;top:3.5%;width:12%;color:#fff;opacity:.9}
-.ph-prog{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.18)}
-.ph-prog i{display:block;height:100%;width:0;background:var(--amber);animation:prog 9s linear infinite}
-@keyframes prog{to{width:100%}}
-.ph-badge{position:absolute;font:600 11px/1 var(--mono);padding:6px 8px;background:#111113;border:1px solid var(--line2);color:var(--ink);white-space:nowrap}
-.ph-badge.b1{left:-8px;bottom:22%;border-left:3px solid var(--cut)}
-.ph-badge.b2{right:-8px;top:24%;border-left:3px solid var(--amber)}
-.demo-tl{position:relative;width:min(420px,100%);background:#121214;border:1px solid var(--line);padding:0 0 6px;overflow:hidden}
-.dt-ruler{display:flex;justify-content:space-between;padding:4px 6px;font:500 9.5px var(--mono);color:var(--dim);background:#1A1A1D;border-bottom:1px solid #000}
-.dt-row{display:flex;height:22px;margin-top:4px;padding-inline:6px}
-.dt-v{height:30px}
-.dt-row>span{flex:0 0 var(--w);min-width:0;border-right:1px solid #000;overflow:hidden}
-.dt-v>.k{background:linear-gradient(#2F68DD 0 9px,#2556BC 9px)}
-.dt-c>.k{background:#9E3577}
-.dt-a>.k{background:#1A6B40 repeating-linear-gradient(90deg,transparent 0 2px,rgba(134,235,174,.55) 2px 3px);background-size:auto,3px 100%}
-.dt-row>.x{background:repeating-linear-gradient(45deg,rgba(229,83,75,.8) 0 3px,rgba(229,83,75,.35) 3px 6px);animation:gapcut 7s ease-in-out infinite}
-@keyframes gapcut{0%,34%{flex-basis:var(--w);opacity:1}48%,88%{flex-basis:0;opacity:0;border:0}100%{flex-basis:var(--w);opacity:1}}
-.dt-ph{position:absolute;top:0;bottom:0;left:6px;width:1px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4);animation:sweep 7s linear infinite}
-@keyframes sweep{0%{left:6px}100%{left:calc(100% - 7px)}}
-/* recent projects (compact, inside the hero so they are above the fold) */
-.recents{display:grid;gap:8px;margin-top:4px}
-.rec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.rec-head h2{font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
-.rec-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.rec{position:relative;display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:6px 34px 6px 6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-width:0}
+/* recent projects */
+.recents{display:grid;gap:10px}
+.rec-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rec-head h2{display:flex;align-items:center;gap:12px;flex:1;font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.rec-head h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.rec-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rec{position:relative;display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:6px 34px 6px 6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-width:0;animation:modIn .5s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 45ms + 300ms)}
 .rec:hover,.rec:focus-visible{border-color:var(--amber)}
 .rec .rt{grid-row:1/3;position:relative;width:76px;aspect-ratio:16/9;background:#000 center/cover no-repeat}
 .rec .rt .bdur{bottom:0;font-size:9.5px;padding:2px 3px}
@@ -255,15 +298,8 @@ details.more[open]>summary{margin-bottom:10px}
 .rec .rx:hover{color:var(--ink);background:var(--raise2)}
 @media (hover:none){ .rec .rx{opacity:1} }
 .rec .rtag{position:absolute;left:0;top:0;padding:1px 4px;font:600 8.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:rgba(0,0,0,.78);color:var(--amber)}
+@media (max-width:980px){ .rec-list{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:640px){ .rec-list{grid-template-columns:1fr} }
-/* how it works */
-.how{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
-.how li{padding:16px 18px 0 0;display:grid;gap:4px;align-content:start}
-.how .n{font:600 12px var(--mono);color:var(--amber-ink);background:var(--amber);width:22px;height:22px;display:grid;place-items:center;margin-bottom:4px}
-.how b{font-size:15px}
-.how p{color:var(--mute);font-size:13px}
-@media (max-width:980px){ .hero{grid-template-columns:1fr} .hero-demo{grid-template-columns:auto;order:2} .how{grid-template-columns:1fr 1fr;gap:0 16px} }
-@media (max-width:640px){ .goals{grid-template-columns:1fr} .goal{min-height:0} .how{grid-template-columns:1fr} .phone{width:min(240px,70vw)} .ph-cap{font-size:24px} }
 
 /* ---------- work screen ---------- */
 .work{max-width:860px;margin:0 auto;padding-block:40px 60px;padding-inline:16px;display:grid;gap:22px}
@@ -558,104 +594,105 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 <main>
 <!-- ============ START ============ -->
 <section class="start" id="scrStart">
-  <div class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow hero-eyebrow"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#logoMark"/></svg><span id="heroEyebrow">Edição inteligente para Reels</span></p>
-      <h1>Solte o vídeo.<br><span class="slice" data-t="Saem os cortes.">Saem os cortes.</span></h1>
-      <p class="lede" id="heroLede">Transcreve, acha os melhores trechos e, quando você mandar, tira as pausas e coloca legenda viral com a sua marca. O vídeo não sai do seu computador.</p>
-      <div class="goals" id="goalSeg" role="group" aria-label="O que você quer fazer com o vídeo">
-        <label class="goal" data-v="cuts" id="drop">
-          <input type="file" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" data-goal="cuts" aria-label="Achar os melhores cortes: escolher vídeo">
-          <span class="g-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 6h5v12H3zM10 6h4v12h-4zM16 6h5v12h-5z"/><path d="M8.5 3v18M15.5 3v18" stroke-dasharray="2 2"/></svg></span>
-          <b>Achar os melhores cortes</b>
-          <span class="gp">Podcast, live ou aula. Saem vários cortes curtos, com nota de potencial.</span>
-          <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte o vídeo aqui ou clique</span>
-        </label>
-        <label class="goal" data-v="edit" id="dropEdit">
-          <input type="file" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" data-goal="edit" aria-label="Limpar o vídeo inteiro: escolher vídeo">
-          <span class="g-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 7h6v10H3zM15 7h6v10h-6z"/><path d="M11 9l2 6M13 9l-2 6"/></svg></span>
-          <b>Limpar o vídeo inteiro</b>
-          <span class="gp">Vídeo gravado para um post. Abre inteiro na linha do tempo; pausas, vícios e legenda saem num clique, quando você quiser.</span>
-          <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte o vídeo aqui ou clique</span>
-        </label>
-        <label class="goal wide" data-v="multi" id="dropMulti">
-          <input type="file" multiple accept="video/*,audio/*,.mov,.mp4,.webm,.mkv,.m4v,.mp3,.wav,.m4a,.aac" data-goal="multi" aria-label="Juntar vários vídeos: escolher os vídeos e, se quiser, uma música">
-          <span class="g-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 8h8v8H3zM13 8h8v8h-8z"/><path d="M7 4h10M7 20h10"/></svg></span>
-          <span class="g-txt"><b>Juntar vários vídeos</b><span class="gp">Melhores lances, aftermovie no ritmo da música, depoimentos ou fala com imagens de apoio. Pode soltar uma música junto.</span></span>
-          <span class="g-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 4v11M7 9l5-5 5 5M5 20h14"/></svg>Solte os vídeos aqui ou clique</span>
-        </label>
-      </div>
-      <input type="file" id="fileIn" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" hidden>
-      <div class="setline"><span id="setSummary"></span><button type="button" class="linkbtn" id="setToggle" aria-expanded="false" aria-controls="optsBox">Ajustar</button><span class="fine">· vários vídeos de uma vez viram uma fila</span></div>
-      <div class="opts" id="optsBox" hidden>
-        <div class="field">
-          <label for="optLang">Idioma da fala</label>
-          <select id="optLang">
-            <option value="pt">Português</option>
-            <option value="en">Inglês</option>
-            <option value="es">Espanhol</option>
-            <option value="auto">Detectar sozinho</option>
-          </select>
-        </div>
-        <div class="field">
-          <span class="lbl">Transcrição</span>
-          <div class="seg" id="optModel">
-            <button type="button" data-v="base" aria-pressed="true">Precisa</button>
-            <button type="button" data-v="tiny" aria-pressed="false">Rápida</button>
-          </div>
-          <span class="fine" id="modelNote">Modelo de 80 MB, baixado uma vez por sessão.</span>
-        </div>
-        <div class="field" id="optLenField">
-          <label for="optLen">Duração dos cortes</label>
-          <select id="optLen">
-            <option value="15-30" selected>Até 30 s</option>
-            <option value="30-60">30 a 60 s</option>
-            <option value="60-90">60 a 90 s</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="optFind">O que você quer cortar? <small class="fine">opcional</small></label>
-          <input type="text" id="optFind" maxlength="120" placeholder="Ex.: quando fala da SULTS · melhores gols">
-        </div>
-        <div class="field">
-          <span class="lbl">Já tem a legenda?</span>
-          <label class="btn" style="position:relative;overflow:hidden">Usar arquivo .srt<input type="file" id="srtIn" accept=".srt,.vtt,text/plain" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
-          <span class="fine" id="srtName">Opcional. Pula a transcrição.</span>
-        </div>
-      </div>
-      <section class="recents" id="recents" hidden aria-labelledby="recTitle">
-        <div class="rec-head"><h2 id="recTitle">Continuar editando</h2><span class="fine">Tudo fica salvo sozinho.</span></div>
-        <div class="rec-list" id="recList"></div>
-      </section>
+  <div class="home" id="home">
+    <header class="home-head">
+      <p class="eyebrow hero-eyebrow"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#logoMark"/></svg><span id="heroEyebrow">Corte Seco</span></p>
+      <h1>O que vamos <span class="slice" data-t="editar hoje?">editar hoje?</span></h1>
+      <p class="lede" id="heroLede">Escolha um módulo e solte o vídeo. Tudo roda no seu computador: o vídeo não vai para a internet.</p>
+    </header>
+    <section class="mod-group" aria-labelledby="mgOne">
+      <h2 id="mgOne">Um vídeo</h2>
+      <div class="mods" id="modsOne"></div>
+    </section>
+    <section class="mod-group" aria-labelledby="mgMany">
+      <h2 id="mgMany">Vários vídeos numa edição só</h2>
+      <div class="mods" id="modsMany"></div>
+    </section>
+    <section class="recents" id="recents" hidden aria-labelledby="recTitle">
+      <div class="rec-head"><h2 id="recTitle">Continuar editando</h2><span class="fine">Tudo fica salvo sozinho.</span></div>
+      <div class="rec-list" id="recList"></div>
+    </section>
+  </div>
+
+  <div class="step" id="modStep" hidden>
+    <button type="button" class="step-back" id="stepBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Todos os módulos</button>
+    <div class="step-head">
+      <span class="m-ico step-ico" id="stepIco" aria-hidden="true"></span>
+      <div><p class="eyebrow" id="stepGroup">Um vídeo</p><h2 id="stepTitle">—</h2><p class="lede" id="stepDesc"></p></div>
     </div>
-    <div class="hero-demo" aria-hidden="true">
-      <div class="phone">
-        <div class="ph-scene"><i class="ph-light"></i><i class="ph-head"></i><i class="ph-body"></i></div>
-        <div class="ph-hook">O erro que trava seu perfil</div>
-        <div class="ph-cap" id="demoCap"><i>PARA</i> <i>DE</i> <i>PERDER</i> <i>TEMPO</i></div>
-        <svg class="ph-logo" viewBox="0 0 100 100"><use href="#logoMark"/></svg>
-        <div class="ph-prog"><i></i></div>
-        <span class="ph-badge b1">−0:14 de pausas</span>
-        <span class="ph-badge b2">Nota 91</span>
+    <ol class="step-how" id="stepHow"></ol>
+    <div class="step-fields" id="stepFields">
+      <div class="field" data-for="cortes momento" id="fFind">
+        <label for="optFind" id="optFindLbl">O que você quer cortar? <small class="fine">opcional</small></label>
+        <input type="text" id="optFind" maxlength="120" autocomplete="off" placeholder="Ex.: os gols · quando fala de preço · as risadas">
       </div>
-      <div class="demo-tl">
-        <div class="dt-ruler"><span>00:00:00:00</span><span>00:00:05:00</span><span>00:00:10:00</span></div>
-        <div class="dt-row dt-v" id="demoV"></div>
-        <div class="dt-row dt-c" id="demoC"></div>
-        <div class="dt-row dt-a" id="demoA"></div>
-        <i class="dt-ph"></i>
+      <div class="field" data-for="cortes momento">
+        <span class="lbl" id="lenLbl">Duração de cada corte</span>
+        <div class="seg" id="optLenSeg" role="group" aria-labelledby="lenLbl">
+          <button type="button" data-v="15-30">Até 30 s</button><button type="button" data-v="30-60">30 a 60 s</button><button type="button" data-v="60-90">60 a 90 s</button>
+        </div>
+        <select id="optLen" hidden aria-hidden="true" tabindex="-1">
+          <option value="15-30" selected>Até 30 s</option>
+          <option value="30-60">30 a 60 s</option>
+          <option value="60-90">60 a 90 s</option>
+        </select>
+      </div>
+      <div class="field big" data-for="legenda">
+        <span class="lbl" id="capLbl">Estilo da legenda</span>
+        <div class="cap-picks" id="capPicks" role="group" aria-labelledby="capLbl"></div>
+        <span class="fine">Dá para trocar depois, na aba Legenda. Ela também sai como arquivo .srt.</span>
+      </div>
+      <div class="field" data-for="lances after depo">
+        <span class="lbl" id="mLenLbl">Duração da edição</span>
+        <div class="seg" id="mLenSeg" role="group" aria-labelledby="mLenLbl"><button type="button" data-v="30">Até 30 s</button><button type="button" data-v="60">Até 60 s</button><button type="button" data-v="90">Até 90 s</button></div>
+      </div>
+      <div class="field" data-for="lances depo">
+        <label for="mQ">O que procurar <small class="fine">opcional</small></label>
+        <input type="text" id="mQ" maxlength="120" autocomplete="off" placeholder="Ex.: os gols · as risadas · quando falam de preço">
+      </div>
+      <div class="field" data-for="lances after depo apoio">
+        <span class="lbl" id="mMusLbl">Música <small class="fine" id="mMusOpt">opcional</small></span>
+        <div class="mus-row">
+          <label class="btn" style="position:relative;overflow:hidden">Escolher música<input type="file" id="mMusIn" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac" aria-labelledby="mMusLbl" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+          <button type="button" class="btn ghost" id="mMusClear" hidden>Tirar</button>
+          <span class="fine" id="mMusName">Sem música.</span>
+        </div>
+      </div>
+    </div>
+    <label class="dropzone" id="stepDrop">
+      <input type="file" id="stepIn" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" aria-label="Escolher o vídeo">
+      <span class="dz-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+      <b id="dzTitle">Solte o vídeo aqui</b>
+      <span class="fine" id="dzHint">ou clique para escolher · MP4, MOV ou WebM</span>
+    </label>
+    <div class="dz-held" id="dzHeld" hidden><span class="nm" id="dzHeldName"></span><button type="button" class="btn ghost" id="dzHeldX">Trocar</button><button type="button" class="btn primary" id="stepGo">Procurar</button></div>
+    <div class="setline"><span id="setSummary"></span><button type="button" class="linkbtn" id="setToggle" aria-expanded="false" aria-controls="optsBox">Ajustar</button></div>
+    <div class="opts" id="optsBox" hidden>
+      <div class="field">
+        <label for="optLang">Idioma da fala</label>
+        <select id="optLang">
+          <option value="pt">Português</option>
+          <option value="en">Inglês</option>
+          <option value="es">Espanhol</option>
+          <option value="auto">Detectar sozinho</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="lbl">Transcrição</span>
+        <div class="seg" id="optModel">
+          <button type="button" data-v="base" aria-pressed="true">Precisa</button>
+          <button type="button" data-v="tiny" aria-pressed="false">Rápida</button>
+        </div>
+        <span class="fine" id="modelNote">Modelo de 80 MB, baixado uma vez por sessão.</span>
+      </div>
+      <div class="field" id="srtField">
+        <span class="lbl">Já tem a legenda?</span>
+        <label class="btn" style="position:relative;overflow:hidden">Usar arquivo .srt<input type="file" id="srtIn" accept=".srt,.vtt,text/plain" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+        <span class="fine" id="srtName">Opcional. Pula a transcrição.</span>
       </div>
     </div>
   </div>
-
-
-
-  <ol class="how">
-    <li><span class="n">1</span><b>Solte o vídeo</b><p>MP4, MOV ou WebM, do celular ou da câmera.</p></li>
-    <li><span class="n">2</span><b>Ele transcreve e marca</b><p>Acha pausas, “ahn”, “hum” e frases repetidas, sem cortar nada ainda.</p></li>
-    <li><span class="n">3</span><b>Você aplica a edição</b><p>Um clique corta o que foi marcado e põe legenda viral, zoom e gancho. Você escolhe o que entra.</p></li>
-    <li><span class="n">4</span><b>Exporte tudo de uma vez</b><p>Reels, Feed e YouTube, com .srt, capa e texto do post.</p></li>
-  </ol>
+  <input type="file" id="fileIn" multiple accept="video/*,.mov,.mp4,.webm,.mkv,.m4v" hidden>
 </section>
 
 <!-- ============ WORK ============ -->
@@ -684,7 +721,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
     <div class="col-head"><h2>Cortes</h2><span id="clipCount">0</span></div>
     <div class="ai-box find-box">
       <label class="lbl" for="findQ">O que você quer cortar?</label>
-      <input type="text" id="findQ" maxlength="120" placeholder="Ex.: quando fala da SULTS · melhores gols" autocomplete="off">
+      <input type="text" id="findQ" maxlength="120" placeholder="Ex.: os gols · quando fala de preço · as risadas" autocomplete="off">
       <div class="row find-row">
         <select id="findLen" aria-label="Duração dos cortes"><option value="15-30">Até 30 s</option><option value="30-60">30 a 60 s</option><option value="60-90">60 a 90 s</option></select>
         <button class="btn primary" id="findBtn" type="button">Achar cortes</button>
@@ -714,7 +751,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
     <div class="tl-legend"><span><i style="background:var(--ink2)"></i>fica</span><span><i style="background:var(--cut)"></i>sai</span><span><i style="background:var(--amber)"></i>entrada e saída (arraste)</span></div>
     <div class="meta-edit">
       <div class="field"><label for="clipTitle">Título do corte</label><input type="text" id="clipTitle"></div>
-      <div class="field"><label for="clipHook">Gancho na tela</label><input type="text" id="clipHook" placeholder="Ex.: O erro que trava sua franquia"></div>
+      <div class="field"><label for="clipHook">Gancho na tela</label><input type="text" id="clipHook" placeholder="Ex.: Ninguém te conta isso"></div>
     </div>
     <div class="to-mont"><p class="stats" id="stats"></p><button class="btn" id="toMont">Abrir na edição →</button></div>
   </div>
@@ -1219,7 +1256,7 @@ $('#optModel').addEventListener('click', e => { const b = e.target.closest('butt
 $('#optLang').addEventListener('change', e => { st.opts.lang = e.target.value; syncSetSummary(); store.set('cs:opts', st.opts); });
 $('#optLen').addEventListener('change', e => { st.opts.clipLen = e.target.value; $('#findLen').value = st.opts.clipLen; syncSetSummary(); store.set('cs:opts', st.opts); });
 $('#optFind').addEventListener('input', () => { syncSetSummary(); $('#findQ').value = $('#optFind').value; });
-$('#optFind').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+$('#optFind').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (heldFiles && e.target.value.trim()) modGo(heldFiles); else e.target.blur(); } });
 let srtText = null;
 $('#srtIn').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -1234,7 +1271,7 @@ function nameControls(root) {
   }
 }
 nameControls();
-if (!DESK) $('#heroLede').textContent += ' Tudo roda aqui, neste navegador.';
+if (!DESK) $('#heroLede').textContent = 'Escolha um módulo e solte o vídeo. Tudo roda neste navegador: o vídeo não vai para a internet.';
 
 /* ---- recent projects: open again and carry on ---- */
 let recents = [];
@@ -1260,7 +1297,7 @@ function renderRecents() {
   const box = $('#recList'); if (!box) return;
   $('#recents').hidden = !recents.length; box.innerHTML = '';
   for (const r of recents.slice(0, 4)) {
-    const b = document.createElement('div'); b.className = 'rec'; b.tabIndex = 0; b.setAttribute('role', 'button'); b.setAttribute('aria-label', `Continuar ${r.name}`);
+    const b = document.createElement('div'); b.className = 'rec'; b.tabIndex = 0; b.style.setProperty('--i', box.childElementCount); b.setAttribute('role', 'button'); b.setAttribute('aria-label', `Continuar ${r.name}`);
     const t = document.createElement('div'); t.className = 'rt'; if (r.thumb) t.style.backgroundImage = `url("${r.thumb}")`;
     const tag = document.createElement('span'); tag.className = 'rtag'; tag.textContent = r.multi ? 'Montagem' : r.mode === 'mont' || r.goal === 'edit' ? 'Edição' : 'Cortes';
     const du = document.createElement('span'); du.className = 'bdur'; du.textContent = fmtT(r.dur || 0);
@@ -1296,25 +1333,206 @@ async function openRecent(r) {
 }
 (async () => { recents = (await idb.getKV('recents')) || []; renderRecents(); })();
 
-/* ---- demo on the home: a caption popping word by word and a timeline losing its pauses ---- */
-(function demo() {
-  const V = $('#demoV'), C = $('#demoC'), A = $('#demoA'); if (!V) return;
-  const pat = [['k', 17], ['x', 7], ['k', 14], ['x', 5], ['k', 21], ['x', 8], ['k', 15], ['x', 5], ['k', 8]];
-  for (const row of [V, C, A]) for (const [t, w] of pat) { const sp = document.createElement('span'); sp.className = t; sp.style.setProperty('--w', w + '%'); row.appendChild(sp); }
-  const lines = [['PARA', 'DE', 'PERDER', 'TEMPO'], ['CORTA', 'O', 'SILÊNCIO'], ['E', 'POSTA', 'HOJE']];
-  const cap = $('#demoCap'); let li = 0, wi = 0;
-  const draw = () => { cap.innerHTML = ''; lines[li].forEach((w, i) => { const e = document.createElement('i'); e.textContent = w; if (i === wi) e.className = 'on'; else if (i === lines[li].length - 1 && i > wi) e.className = ''; cap.append(e, document.createTextNode(' ')); }); };
-  draw();
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  setInterval(() => { if ($('#scrStart').hidden) return; wi++; if (wi >= lines[li].length) { wi = 0; li = (li + 1) % lines.length; } draw(); }, 430);
-})();
-function syncGoal() { syncSetSummary(); } // the goal is picked by which card the video goes into
+/* ---- tela inicial: módulos. Cada módulo abre um passo só com o que ele precisa e o lugar de soltar ---- */
+const MOD_ICONS = {
+  cortes: '<svg class="mi mi-snip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><g class="pv ba"><circle cx="6" cy="18" r="3"/><path d="M8.3 15.7 20 4"/></g><g class="pv bb"><circle cx="6" cy="6" r="3"/><path d="M8.3 8.3 20 20"/></g></svg>',
+  momento: '<svg class="mi mi-find" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><g class="lens"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3 21 21"/><path class="spk" fill="currentColor" stroke="none" d="M10.5 7.2l.95 2.35 2.35.95-2.35.95-.95 2.35-.95-2.35-2.35-.95 2.35-.95z"/></g></svg>',
+  editar: '<svg class="mi mi-tl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 6h7v5H3zM13 6h8v5h-8zM3 14h10v5H3zM16 14h5v5h-5z"/><path class="ph" d="M12 2.5v19" stroke-width="2.4"/></svg>',
+  legenda: '<svg class="mi mi-cc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><rect x="3" y="4.5" width="18" height="15"/><path class="ln" d="M7 12.5h10"/><path class="ln ln2" d="M9 16h6"/></svg>',
+  lances: '<svg class="mi mi-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="ball"><circle cx="15" cy="12" r="6.2"/><path d="M15 9.3l2.4 1.75-.9 2.8h-3l-.9-2.8z"/></g><path class="trail" d="M2.5 9h3.5M1.5 12h4.5M2.5 15h3.5"/></svg>',
+  after: '<svg class="mi mi-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="nt"><path d="M9 18V5.5l12-2.2v12.6"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></g><path class="fr" d="M9 9.5l12-2.2"/></svg>',
+  depo: '<svg class="mi mi-talk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="ta" d="M3 4h11v8H8l-3 3v-3H3z"/><path class="tb" d="M17 8h4v9h-2v3l-3-3h-6v-2"/></svg>',
+  apoio: '<svg class="mi mi-over" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M2 20c0-3.3 2.2-5.5 5-5.5s5 2.2 5 5.5"/><g class="c1"><rect x="13" y="3.5" width="8" height="6.5"/><path d="M13 9l2.5-2.2 2 1.6 3.5-3"/></g><rect x="15" y="13" width="6" height="7"/></svg>'
+};
+const MODS = {
+  cortes: { g: 'one', goal: 'cuts', t: 'Cortes para Reels', d: 'Vídeo longo vira vários cortes curtos, com nota de potencial.', how: ['Solte o vídeo', 'Ele transcreve e escolhe os melhores trechos', 'Você ajusta e exporta'], long: 'Podcast, live, aula, entrevista ou jogo: ele acha os trechos que se sustentam sozinhos e já corta no tamanho de Reels.' },
+  momento: { g: 'one', goal: 'cuts', t: 'Achar um momento', d: 'Diga o que procura: um assunto, os gols, as risadas.', how: ['Escreva o que procura', 'Solte o vídeo', 'Ele acha na fala e no som'], long: 'Procura no que é falado (mesmo com erro de transcrição) e no som: torcida, narração empolgada, risada. Não enxerga a imagem.' },
+  editar: { g: 'one', goal: 'edit', t: 'Editar um vídeo', d: 'Abre inteiro na linha do tempo, como foi gravado.', how: ['Solte o vídeo', 'Ele marca pausas, vícios e repetições', 'Você corta e põe legenda com um clique'], long: 'Para o vídeo gravado para um post: nada é cortado até você aplicar a edição inteligente, e dá para voltar ao original.' },
+  legenda: { g: 'one', goal: 'edit', t: 'Legendar vídeo', d: 'Legenda dinâmica no vídeo inteiro, e o arquivo .srt.', how: ['Escolha o estilo', 'Solte o vídeo', 'Revise o texto e exporte'], long: 'Transcreve e põe a legenda no vídeo inteiro, sem cortar nada. Você revisa as palavras e exporta o vídeo legendado ou só o .srt.' },
+  lances: { g: 'many', multi: 'lances', t: 'Melhores lances', d: 'Jogos e eventos: junta os momentos em que o som explode.', how: ['Solte os vídeos', 'Ele acha torcida e narração', 'Sai um vídeo só com os lances'], long: 'Acha os gritos da torcida e a narração que explode em cada vídeo e junta os lances. Lance sem torcida nem narração passa batido.' },
+  after: { g: 'many', multi: 'after', t: 'Aftermovie', d: 'Vídeos de celular de um evento, no ritmo da música.', how: ['Escolha a música', 'Solte os vídeos', 'Ele corta na batida'], long: 'Escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem em que foram gravados.' },
+  depo: { g: 'many', multi: 'depo', t: 'Depoimentos', d: 'Várias pessoas falando: as melhores frases de cada uma.', how: ['Solte um vídeo por pessoa', 'Confira os nomes', 'Ele alterna as melhores frases'], long: 'Transcreve todos e junta as frases mais completas e fortes de cada pessoa, alternando quem fala, com o nome na tela.' },
+  apoio: { g: 'many', multi: 'apoio', t: 'Fala + imagens de apoio', d: 'Quem fala fica inteiro; as cenas entram por cima.', how: ['Solte a fala e as cenas', 'Confira quem fala', 'As cenas entram por cima, sem som'], long: 'O vídeo de quem fala fica inteiro e as cenas dos outros vídeos entram por cima a cada poucos segundos, sem som.' }
+};
+const MOD_GO = '<svg class="m-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
+const MULTI_PICK_TYPES = [{ description: 'Vídeos e música', accept: { 'video/*': ['.mp4', '.mov', '.m4v', '.webm', '.mkv'], 'audio/*': ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac'] } }];
+const CAP_KEYS = ['impacto', 'revelar', 'karaoke', 'caixa', 'marcador', 'neon'];
+const FIND_EX = ['os gols', 'quando fala de preço', 'as risadas', 'a melhor dica', 'as bolas de 3', 'a parte da receita', 'quando citam o patrocinador', 'a história do começo', 'quando a torcida explode'];
+var curMod = null, heldFiles = null, PRESET = null; // var: syncSetSummary roda antes desta linha
+let capPick = store.get('cs:capPick', 'impacto'); if (!CAP_KEYS.includes(capPick)) capPick = 'impacto';
+const MSTEP = { len: +(store.get('cs:multi', {}).len) || 60, q: '', music: null, musicName: '' };
+function renderMods() {
+  let i = 0;
+  for (const [k, m] of Object.entries(MODS)) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mod'; b.dataset.mod = k; b.style.setProperty('--i', i++);
+    b.innerHTML = `<span class="m-ico" aria-hidden="true">${MOD_ICONS[k]}</span><b></b><span class="mp"></span>${MOD_GO}`;
+    b.querySelector('b').textContent = m.t; b.querySelector('.mp').textContent = m.d;
+    b.addEventListener('click', () => openMod(k));
+    b.addEventListener('dragover', e => { e.preventDefault(); b.classList.add('over'); });
+    b.addEventListener('dragleave', e => { if (!b.contains(e.relatedTarget)) b.classList.remove('over'); });
+    b.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); endHomeDrag(); withHandles(e, fs => openMod(k, fs)); });
+    $(m.g === 'one' ? '#modsOne' : '#modsMany').appendChild(b);
+  }
+}
+function openMod(k, files) {
+  const m = MODS[k]; if (!m) return;
+  curMod = k; store.set('cs:mod', k); unhold();
+  $('#stepIco').innerHTML = MOD_ICONS[k];
+  $('#stepGroup').textContent = m.g === 'one' ? 'Um vídeo' : 'Vários vídeos numa edição só';
+  $('#stepTitle').textContent = m.t; $('#stepDesc').textContent = m.long || m.d;
+  const how = $('#stepHow'); how.innerHTML = '';
+  for (const s of m.how) { const li = document.createElement('li'); li.textContent = s; how.appendChild(li); }
+  for (const f of $$('#stepFields > .field')) f.hidden = !f.dataset.for.split(' ').includes(k);
+  $('#optFindLbl').innerHTML = k === 'momento' ? 'O que você procura?' : 'O que você quer cortar? <small class="fine">opcional</small>';
+  $('#fFind').classList.toggle('big', k === 'momento');
+  $('#mMusOpt').textContent = k === 'after' ? 'recomendado' : 'opcional';
+  if (k === 'legenda') renderCapPicks();
+  syncMStep();
+  const multi = !!m.multi, inp = $('#stepIn');
+  inp.accept = multi ? 'video/*,audio/*,.mov,.mp4,.webm,.mkv,.m4v,.mp3,.wav,.m4a,.aac,.ogg,.flac' : 'video/*,.mov,.mp4,.webm,.mkv,.m4v';
+  inp.setAttribute('aria-label', multi ? 'Escolher os vídeos' : 'Escolher o vídeo');
+  $('#dzTitle').textContent = multi ? 'Solte os vídeos aqui' : 'Solte o vídeo aqui';
+  $('#dzHint').textContent = multi ? `ou clique para escolher${k === 'depo' ? ' · um vídeo por pessoa' : k === 'apoio' ? ' · a fala e as cenas' : ''} · pode soltar a música junto` : 'ou clique para escolher · MP4, MOV ou WebM · vários de uma vez viram uma fila';
+  $('#srtField').hidden = multi;
+  syncSetSummary();
+  $('#home').hidden = true;
+  const sp = $('#modStep'); sp.hidden = false; sp.style.animation = 'none'; void sp.offsetWidth; sp.style.animation = '';
+  window.scrollTo(0, 0);
+  if (files && files.length) { modGo(files); return; }
+  if (k === 'momento') setTimeout(() => $('#optFind').focus(), 50);
+  else { const h = $('#stepTitle'); h.tabIndex = -1; h.focus({ preventScroll: true }); }
+}
+function closeMod() {
+  const was = curMod; curMod = null; unhold();
+  $('#modStep').hidden = true; $('#home').hidden = false;
+  const b = was && $(`.mod[data-mod="${was}"]`); if (b) b.focus({ preventScroll: true });
+  syncSetSummary();
+}
+function unhold() { heldFiles = null; $('#dzHeld').hidden = true; }
+function holdFiles(fs) {
+  heldFiles = fs; $('#dzHeld').hidden = false;
+  $('#dzHeldName').textContent = `${fs.length > 1 ? fs.length + ' vídeos' : fs[0].name} · agora escreva o que você procura`;
+  $('#stepGo').disabled = !$('#optFind').value.trim();
+  $('#optFind').focus();
+}
+function modGo(files) {
+  const k = curMod, m = MODS[k];
+  if (!m) { onPicked(files); return; }
+  if (m.multi) { multiGo(files); return; }
+  const fs = files.filter(isVideoFile);
+  if (!fs.length) { if (files.length) toast('Solte um arquivo de vídeo (MP4, MOV ou WebM).'); return; }
+  if (k === 'momento' && !$('#optFind').value.trim()) { holdFiles(fs); return; }
+  unhold();
+  PRESET = { mod: k, title: m.t, captions: k === 'legenda', style: k === 'legenda' ? capPick : null };
+  onPicked(fs, m.goal);
+}
+async function multiGo(files) {
+  const mode = MODS[curMod].multi;
+  const auds = files.filter(f => mediaKindOfFile(f) === 'audio'), vids = files.filter(f => mediaKindOfFile(f) === 'video');
+  if (auds[0]) setMStepMusic(auds[0]);
+  if (!vids.length) { toast(auds.length ? 'Música escolhida. Agora solte os vídeos.' : 'Solte os vídeos (e, se quiser, uma música).'); return; }
+  if ((mode === 'apoio' || mode === 'depo') && vids.length < 2) { toast(mode === 'depo' ? 'Solte pelo menos 2 vídeos: um por pessoa.' : 'Solte pelo menos 2 vídeos: a fala e uma cena.', 4000); return; }
+  vids.sort((a, b) => (a.lastModified || 0) - (b.lastModified || 0) || a.name.localeCompare(b.name));
+  store.set('cs:multi', Object.assign(store.get('cs:multi', {}), { mode, len: MSTEP.len }));
+  let ch;
+  if (mode === 'lances' || mode === 'after') ch = { mode, len: MSTEP.len, q: mode === 'lances' ? (MSTEP.q || '').trim() : '', music: MSTEP.music, musicName: MSTEP.musicName, musicId: null, mainIdx: 0, names: vids.map(f => guessName(f.name || '')), lt: false };
+  else { ch = await multiDialog(vids, MSTEP.music, null, { fixed: mode, len: MSTEP.len, q: MSTEP.q }); if (!ch) return; }
+  setMStepMusic(null); // a música foi para esta montagem; a próxima começa sem
+  return runMulti(vids, ch);
+}
+function setMStepMusic(f) { MSTEP.music = f || null; MSTEP.musicName = f ? f.name : ''; syncMStep(); }
+function syncMStep() {
+  $$('#mLenSeg button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === +MSTEP.len)));
+  if ($('#mQ').value !== MSTEP.q) $('#mQ').value = MSTEP.q;
+  $('#mMusName').textContent = MSTEP.musicName || (curMod === 'after' ? 'Sem música, o aftermovie usa o som dos vídeos.' : 'Sem música.');
+  $('#mMusClear').hidden = !MSTEP.musicName;
+}
+function capSample(p) {
+  const s = document.createElement('span'); s.className = 'cs';
+  const w1 = document.createElement('i'), w2 = document.createElement('i');
+  w1.textContent = p.upper ? 'SUA' : 'Sua'; w2.textContent = p.upper ? 'LEGENDA' : 'legenda';
+  s.append(w1, ' ', w2);
+  s.style.fontFamily = `"${p.font}", sans-serif`; s.style.fontWeight = p.weight;
+  const hi = p.hi && p.hi !== p.color ? p.hi : (p.hi2 || p.hi);
+  for (const w of [w1, w2]) { w.style.fontStyle = 'normal'; w.style.color = p.color; if (p.strokeW) { w.style.webkitTextStroke = `${Math.max(1, p.strokeW / 9)}px ${p.stroke}`; w.style.paintOrder = 'stroke fill'; } }
+  if (p.mode === 'box') { w2.style.background = p.boxColor; w2.style.padding = '0 4px'; w2.style.borderRadius = '4px'; }
+  else if (p.mode === 'marker') { w2.style.background = p.hi; w2.style.color = lum(p.hi) > 0.6 ? '#111' : '#fff'; w2.style.padding = '0 4px'; }
+  else { w2.style.color = hi; if (p.mode === 'glow') { w1.style.textShadow = `0 0 8px ${hexA(p.hi, 0.7)}`; w2.style.textShadow = `0 0 10px ${p.hi}`; } }
+  return s;
+}
+function renderCapPicks() {
+  const box = $('#capPicks');
+  if (!box.childElementCount) {
+    for (const k of CAP_KEYS) {
+      const p = PRESETS[k]; if (!p) continue;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'cap-pick'; b.dataset.k = k;
+      const sm = document.createElement('small'); sm.textContent = p.label;
+      b.append(capSample(p), sm); ensureFont(p.font, p.weight);
+      b.onclick = () => { capPick = k; store.set('cs:capPick', k); renderCapPicks(); };
+      box.appendChild(b);
+    }
+  }
+  $$('.cap-pick', box).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === capPick)));
+}
+async function applyCapStyle(k) {
+  const p = PRESETS[k]; if (!p) return;
+  const on = st.style.on;
+  Object.assign(st.style, STYLE_BASE, p, { preset: k, on });
+  delete st.style.key; delete st.style.label; delete st.style.group;
+  await ensureFont(st.style.font, st.style.weight);
+  buildPages(); if (MODE === 'mont') { buildMontPages(); M.dirty = true; }
+  syncControls(); saveLooks(); saveProject(); dirty = true;
+}
+renderMods();
+$('#stepBack').addEventListener('click', closeMod);
+$('#stepIn').addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; modGo(fs); });
+{
+  const dz = $('#stepDrop');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', e => { if (!dz.contains(e.relatedTarget)) dz.classList.remove('over'); });
+  dz.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); endHomeDrag(); withHandles(e, modGo); });
+  // no site, escolher pelo seletor do navegador deixa reabrir o projeto depois com um clique
+  dz.addEventListener('click', async e => {
+    if (!(SITE && 'showOpenFilePicker' in window)) return;
+    e.preventDefault();
+    const multi = curMod && MODS[curMod].multi;
+    try { modGo(await pickWithHandles(multi ? MULTI_PICK_TYPES : VIDEO_TYPES, true)); } catch (err) {}
+  });
+}
+$('#stepGo').addEventListener('click', () => { if (heldFiles) modGo(heldFiles); });
+$('#dzHeldX').addEventListener('click', () => { unhold(); $('#stepIn').click(); });
+$('#optLenSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $('#optLen').value = b.dataset.v; $('#optLen').dispatchEvent(new Event('change')); });
+$('#mLenSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MSTEP.len = +b.dataset.v; syncMStep(); });
+$('#mQ').addEventListener('input', e => { MSTEP.q = e.target.value; });
+$('#mQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+$('#mMusIn').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) setMStepMusic(f); });
+$('#mMusClear').addEventListener('click', () => setMStepMusic(null));
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !curMod || $('#scrStart').hidden || $('#dlg').open) return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && e.target.value && e.target.type !== 'file') return;
+  closeMod();
+});
+// exemplos que vão mudando no campo de busca: mostra que vale qualquer assunto
+let findEx = 0;
+setInterval(() => {
+  if ($('#scrStart').hidden || !curMod || document.hidden) return;
+  findEx = (findEx + 1) % FIND_EX.length;
+  for (const id of ['optFind', 'mQ']) { const i = $('#' + id); if (i && !i.value && document.activeElement !== i) i.placeholder = `Ex.: ${FIND_EX[findEx]} · ${FIND_EX[(findEx + 4) % FIND_EX.length]}`; }
+}, 2800);
+function syncGoal() { syncSetSummary(); } // o objetivo vem do módulo escolhido
 function syncSetSummary() {
   const lang = ($('#optLang').selectedOptions[0] || {}).textContent || '';
   const mb = $(`#optModel button[data-v="${st.opts.model}"]`);
   const len = ($('#optLen').selectedOptions[0] || {}).textContent || '';
   const q = ($('#optFind') && $('#optFind').value.trim()) || '';
-  $('#setSummary').textContent = `${lang} · transcrição ${mb ? mb.textContent.toLowerCase() : ''} · cortes ${/^até/i.test(len) ? len.toLowerCase() : 'de ' + len}${q ? ` · procurando “${q.length > 28 ? q.slice(0, 27) + '…' : q}”` : ''}${srtText ? ' · legenda do .srt' : ''}`;
+  const m = curMod && MODS[curMod], cuts = !m || m.goal === 'cuts';
+  const parts = [lang, 'transcrição ' + (mb ? mb.textContent.toLowerCase() : '')];
+  if (cuts) parts.push('cortes ' + (/^até/i.test(len) ? len.toLowerCase() : 'de ' + len));
+  if (cuts && q && curMod !== 'momento') parts.push(`procurando “${q.length > 28 ? q.slice(0, 27) + '…' : q}”`);
+  if (srtText && !(m && m.multi)) parts.push('legenda do .srt');
+  $('#setSummary').textContent = parts.join(' · ');
+  $$('#optLenSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === $('#optLen').value)));
+  if (heldFiles) $('#stepGo').disabled = !q;
 }
 $('#setToggle').addEventListener('click', e => { const box = $('#optsBox'); box.hidden = !box.hidden; e.currentTarget.setAttribute('aria-expanded', String(!box.hidden)); e.currentTarget.textContent = box.hidden ? 'Ajustar' : 'Fechar ajustes'; });
 let pendingGoal = null;
@@ -1323,24 +1541,17 @@ function onPicked(files, goal) {
   if (goal === 'multi') { startMulti(files); return; }
   if (goal) { st.opts.goal = goal; store.set('cs:opts', st.opts); }
   const fs = files.filter(isVideoFile);
-  if (!fs.length) { if (files.length) toast('Solte um arquivo de vídeo (MP4, MOV ou WebM).'); return; }
-  if (fs.length > 1) startQueue(fs); else startAnalysis(fs[0]);
-}
-for (const card of $$('#goalSeg .goal')) {
-  const inp = card.querySelector('input');
-  card.addEventListener('pointerdown', () => { if (card.dataset.v === 'multi') return; st.opts.goal = card.dataset.v; store.set('cs:opts', st.opts); });
-  inp.addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; onPicked(fs, card.dataset.v); });
-  card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('over'); });
-  card.addEventListener('dragleave', e => { if (!card.contains(e.relatedTarget)) card.classList.remove('over'); });
-  card.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); card.classList.remove('over'); $('#goalSeg').classList.remove('dragging'); withHandles(e, fs => onPicked(fs, card.dataset.v)); });
+  if (!fs.length) { PRESET = null; if (files.length) toast('Solte um arquivo de vídeo (MP4, MOV ou WebM).'); return; }
+  if (fs.length > 1) { const pre = PRESET; PRESET = null; startQueue(fs, pre); } else startAnalysis(fs[0]);
 }
 $('#fileIn').addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; onPicked(fs, pendingGoal); pendingGoal = null; });
-['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { if (!$('#scrStart').hidden) { e.preventDefault(); $('#goalSeg').classList.add('dragging'); } }));
-['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => { if (ev === 'dragleave' && e.relatedTarget) return; $('#goalSeg').classList.remove('dragging'); $$('#goalSeg .goal').forEach(c => c.classList.remove('over')); }));
+function endHomeDrag() { $('#scrStart').classList.remove('dragging'); $('#home').classList.remove('dragging'); $$('#scrStart .over').forEach(c => c.classList.remove('over')); }
+['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { if (!$('#scrStart').hidden) { e.preventDefault(); $('#scrStart').classList.add('dragging'); $('#home').classList.add('dragging'); } }));
+['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => { if (ev === 'dragleave' && e.relatedTarget) return; endHomeDrag(); }));
 document.addEventListener('drop', e => {
   if ($('#scrStart').hidden) return;
   e.preventDefault();
-  withHandles(e, fs => onPicked(fs));
+  withHandles(e, fs => { if (curMod) modGo(fs); else openMod(MODS[store.get('cs:mod', 'cortes')] ? store.get('cs:mod', 'cortes') : 'cortes', fs); });
 });
 function withHandles(e, fn) {
   const files = [...(e.dataTransfer?.files || [])];
@@ -1349,7 +1560,7 @@ function withHandles(e, fn) {
   const hp = items.map(i => i.getAsFileSystemHandle().catch(() => null));
   Promise.all(hp).then(hs => { files.forEach((f, i) => { if (hs[i] && hs[i].kind === 'file') f.__handle = hs[i]; }); fn(files); }, () => fn(files));
 }
-function goHome() { if (exporting) { toast('Espere a exportação terminar.'); return; } if ($('#scrStart').hidden === false) return; const had = st.segs.length > 0; if (had) touchRecent(); cancelWork(); pause(); resetAll(); show('scrStart'); if (had) toast('Projeto salvo. Ele está em “Continuar editando”.', 2600); }
+function goHome() { if (exporting) { toast('Espere a exportação terminar.'); return; } if ($('#scrStart').hidden === false) { if (curMod) closeMod(); return; } closeMod(); const had = st.segs.length > 0; if (had) touchRecent(); cancelWork(); pause(); resetAll(); show('scrStart'); if (had) toast('Projeto salvo. Ele está em “Continuar editando”.', 2600); }
 $('#newBtn').addEventListener('click', goHome);
 $('#brandHome').addEventListener('click', goHome);
 
@@ -1449,6 +1660,7 @@ function projectKey(file, model) { return `cs:proj:${file.name}:${file.size}:${m
 
 const STAGES_HTML = $('#stages').innerHTML;
 async function startAnalysis(file, force) {
+  const pre = PRESET; PRESET = null; // o módulo que abriu este vídeo (legendar já põe a legenda)
   cancelWork(); pause();
   $('#stages').innerHTML = STAGES_HTML;
   resetAll();
@@ -1456,7 +1668,7 @@ async function startAnalysis(file, force) {
   work = { cancelled: false, workers: [] };
   const myWork = work;
   show('scrWork');
-  { const lang = ($('#optLang').selectedOptions[0] || {}).textContent || '', mb = $(`#optModel button[data-v="${st.opts.model}"]`), len = ($('#optLen').selectedOptions[0] || {}).textContent || ''; $('#workSet').textContent = [st.opts.goal === 'edit' ? 'Limpar o vídeo inteiro' : 'Achar os melhores cortes', lang, 'transcrição ' + (mb ? mb.textContent.toLowerCase() : ''), st.opts.goal === 'edit' ? '' : 'cortes de ' + len].filter(Boolean).join(' · '); }
+  { const lang = ($('#optLang').selectedOptions[0] || {}).textContent || '', mb = $(`#optModel button[data-v="${st.opts.model}"]`), len = ($('#optLen').selectedOptions[0] || {}).textContent || ''; $('#workSet').textContent = [pre ? pre.title : st.opts.goal === 'edit' ? 'Editar um vídeo' : 'Cortes para Reels', lang, 'transcrição ' + (mb ? mb.textContent.toLowerCase() : ''), st.opts.goal === 'edit' ? '' : 'cortes ' + (/^até/i.test(len) ? len.toLowerCase() : 'de ' + len)].filter(Boolean).join(' · '); }
   $('#cutsStageLabel').textContent = st.opts.goal === 'edit' ? 'Marcando pausas e montando a linha do tempo' : 'Marcando pausas e sugerindo cortes';
   $('#workFile').textContent = file.name;
   $('#workTitle').textContent = 'Analisando';
@@ -1509,6 +1721,9 @@ async function startAnalysis(file, force) {
     if (findQ0 && !goalEdit) { const r = localFind(findQ0); found = r.clips.length; if (found) st.clips = [fullClip(), ...r.clips]; }
     if (!st.clips.length) st.clips = [fullClip(), ...localSuggest()];
     st.cur = (st.clips[1] || st.clips[0]).id;
+  } else if (findQ0 && !goalEdit && pre) { // vídeo já analisado antes, mas a pessoa pediu uma busca agora
+    const r = localFind(findQ0); found = r.clips.length;
+    if (found) { st.clips = [st.clips.find(c => c.src === 'full') || fullClip(), ...r.clips, ...st.clips.filter(c => c.src === 'manual')]; st.cur = r.clips[0].id; }
   }
   if (findQ0) $('#findQ').value = findQ0;
   if (goalEdit) { st.cur = 'full'; if (!st.clips.find(c => c.id === 'full')) st.clips.unshift(fullClip()); }
@@ -1518,8 +1733,14 @@ async function startAnalysis(file, force) {
   saveProject();
   openEditor();
   if (goalEdit || st.multi) setMode('mont');
+  if (pre && pre.captions && !myWork.cancelled) {
+    if (pre.style) await applyCapStyle(pre.style);
+    applySmart(Object.assign(smartNow(), { captions: true }), { quiet: true });
+    activateTab('cap');
+  }
   setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
-  if (restored) toast('Continuando de onde você parou.', 2400);
+  if (pre && pre.captions && !Q.running) toastAction('Pronto. A legenda entrou no vídeo inteiro, sem cortar nada. Revise as palavras na aba Texto e exporte o vídeo ou o .srt.', 'Exportar', () => activateTab('exp'), 12000);
+  else if (restored && found == null) toast('Continuando de onde você parou.', 2400);
   else if (!Q.running && findQ0 && !goalEdit && found === 0) toast(`Não achei “${findQ0}” na fala nem no som: ficaram os melhores trechos. Dá para buscar de novo na coluna Cortes.`, 9000);
   else if (!Q.running) toastAction(goalEdit ? 'Pronto. O vídeo abriu como foi gravado: nada foi cortado ainda.' : found ? `Pronto. ${found} ${found === 1 ? 'corte' : 'cortes'} para “${findQ0}”. Nada foi limpo ainda.` : 'Pronto. Os cortes abriram como foram gravados: nada foi limpo ainda.', 'Edição inteligente…', openSmart, 12000);
   return true;
@@ -1939,41 +2160,61 @@ function clipBounds(i, j) {
   return { start: Math.max(0, snap(a.start - 0.12, -1)), end: Math.min(st.dur || b.end + 1, snap(b.end + 0.15, 1)) };
 }
 function localSuggest() {
-  const segs = st.segs; if (!segs.length) return [];
+  /* Vale para qualquer assunto: conversa, aula, humor, jogo, evento. Pesa o começo forte da fala,
+     ideia que fecha, ritmo e o som que sobe (risada, torcida, empolgação). Vídeo com pouca fala
+     (jogo, show) ganha cortes pelos picos do som. */
+  const segs = st.segs; if (!segs.length && !st.env) return [];
   const [mn, mx] = lenRange();
-  const HOOK = /(?<![\p{L}])(você|voce|segredo|erro|erros|dica|nunca|sempre|ninguém|ninguem|como|verdade|problema|maior|melhor|pior|importante|atenção|cuidado|dinheiro|resultado|simples|rápido|agora|pare|jeito|motivo|todo mundo|you|never|secret|mistake|why|how)(?![\p{L}])/iu;
+  const HOOK = /(?<![\p{L}])(você|voce|vocês|voces|gente|galera|olha|olhem|imagina|sabia|descobri|história|historia|primeira vez|segredo|erro|erros|dica|dicas|nunca|sempre|ninguém|ninguem|como|verdade|problema|maior|melhor|pior|importante|atenção|cuidado|resultado|simples|rápido|agora|pare|jeito|motivo|todo mundo|inacreditável|incrível|sério|serio|you|never|secret|mistake|why|how|imagine|look)(?![\p{L}])/iu;
+  const peaks = excitePeaks();
+  const nWords = st.words.length, wpm = st.dur ? nWords / (st.dur / 60) : 0;
+  const N = Math.min(10, 5 + Math.floor((st.dur || 0) / 600));
   const cands = [];
   for (let i = 0; i < segs.length; i++) {
     let j = i;
     while (j < segs.length && segs[j].end - segs[i].start < mn) j++;
     for (; j < segs.length && segs[j].end - segs[i].start <= mx; j++) {
-      const d = segs[j].end - segs[i].start;
+      const a = segs[i].start, z = segs[j].end, d = z - a;
       let words = 0; let text = '';
       for (let k = i; k <= j; k++) { words += segs[k].words.length; text += ' ' + segs[k].text; }
-      let sc = 42;
-      if (HOOK.test(segs[i].text)) sc += 14;
-      if (/\?/.test(segs[i].text)) sc += 10;
+      let sc = 42; const why = [];
+      if (HOOK.test(segs[i].text)) { sc += 14; why.push('hook'); }
+      if (/\?/.test(segs[i].text)) { sc += 10; why.push('q'); }
       if (/[.!?]$/.test(segs[j].text.trim())) sc += 12;
       if (/^[A-ZÀ-Ú]/.test(segs[i].text.trim())) sc += 4;
       if (/^(e|mas|então|entao|porque|aí|ai|and|but|so)(?![\p{L}])/iu.test(segs[i].text.trim())) sc -= 12;
       sc += clamp((words / d - 2.2) * 9, -10, 14);
       if (/\d/.test(text)) sc += 4;
-      cands.push({ i, j, sc, d });
+      const pk = peaks.filter(p => p.a >= a + 0.8 && p.a <= z - 0.3);
+      if (pk.length) { sc += Math.min(16, 6 + pk.reduce((s, p) => s + p.area, 0) * 0.6); why.push('som'); }
+      cands.push({ i, j, a, z, sc, d, why });
     }
   }
-  cands.sort((a, b) => b.sc - a.sc);
-  const picked = [];
+  const speech = [];
+  cands.sort((x, y) => y.sc - x.sc);
   for (const c of cands) {
-    if (picked.length >= 5) break;
-    if (picked.some(p => !(c.j < p.i || c.i > p.j))) continue;
-    picked.push(c);
+    if (speech.length >= N) break;
+    if (speech.some(p => !(c.j < p.i || c.i > p.j))) continue;
+    speech.push(c);
   }
-  return picked.map(p => {
+  const WHY = { som: 'O som sobe aqui (risada, torcida ou empolgação) e a fala fecha a ideia.', hook: 'Começa com uma frase que prende e fecha uma ideia completa.', q: 'Abre com uma pergunta e responde no próprio trecho.' };
+  let out = speech.map(p => {
     const b = clipBounds(p.i, p.j); b.end = capEnd(b.start, b.end, mx);
     const first = (segs[p.i].text.match(/^[^.!?]+[.!?]?/) || [''])[0].trim();
     const hook = first.split(/\s+/).length <= 7 ? first.replace(/[.,;:]+$/, '') : '';
-    return { id: newId(), title: firstWords(segs[p.i].text, 8), hook, start: b.start, end: b.end, score: Math.round(clamp(p.sc, 20, 89)), src: 'auto', why: 'Escolhido pelo ritmo da fala e por começar com uma frase forte.' };
+    const w = p.why.includes('som') ? WHY.som : p.why.includes('hook') ? WHY.hook : p.why.includes('q') ? WHY.q : 'Escolhido pelo ritmo da fala e por fechar uma ideia completa.';
+    return { id: newId(), title: firstWords(segs[p.i].text, 8), hook, start: b.start, end: b.end, score: Math.round(clamp(p.sc, 20, 89)), src: 'auto', why: w };
   });
+  // pouca fala (jogo, show, vídeo de evento): os picos do som viram cortes, cada um no seu
+  const sparse = wpm < 70;
+  if (peaks.length && (sparse || out.length < 2)) {
+    const snd = localFind('melhores momentos', [mn, mx]).clips.map(c => Object.assign(c, { src: 'auto', q: undefined, score: Math.min(89, c.score + (sparse ? 6 : 0)) }));
+    const ov = (o, c) => Math.min(o.end, c.end) - Math.max(o.start, c.start) > 0.3 * Math.min(o.end - o.start, c.end - c.start);
+    const merged = (sparse ? snd : out).slice();
+    for (const c of (sparse ? out : snd)) if (!merged.some(o => ov(o, c))) merged.push(c);
+    out = merged.sort((x, y) => y.score - x.score).slice(0, N);
+  }
+  return out.sort((x, y) => x.start - y.start).sort((x, y) => y.score - x.score);
 }
 
 /* ---------------- "o que você quer cortar?": busca local ---------------- */
@@ -2003,7 +2244,7 @@ function levDist(a, b, max) {
 function termHit(t, w) {
   if (!w) return false;
   if (w === t) return true;
-  if (t.length >= 4 && w.startsWith(t) && w.length - t.length <= 3) return true;   // sults → sults', plurais
+  if (t.length >= 4 && w.startsWith(t) && w.length - t.length <= 3) return true;   // marca → marcas, plurais
   if (w.length >= 3 && t.startsWith(w) && t.length - w.length <= 1) return true;    // gols → gol
   const max = t.length >= 7 ? 2 : t.length >= 4 ? 1 : 0;
   return max > 0 && levDist(t, w, max) <= max;                                         // erro de transcrição: sultz, salts
@@ -2295,7 +2536,6 @@ async function pickWithHandles(types, multiple) {
 if (SITE) {
   // pick through the browser's file API so the project can be reopened later in one click
   if ('showOpenFilePicker' in window) {
-    for (const card of $$('#goalSeg .goal')) card.addEventListener('click', async e => { e.preventDefault(); st.opts.goal = card.dataset.v; store.set('cs:opts', st.opts); try { onPicked(await pickWithHandles(VIDEO_TYPES, true), card.dataset.v); } catch (err) {} });
     const ml = $('#mediaIn').closest('label');
     if (ml) ml.addEventListener('click', async e => { if (e.target !== $('#mediaIn') && e.target !== ml) return; e.preventDefault(); try { const fs = await pickWithHandles(MEDIA_TYPES, true); if (fs.length) await importMedia(fs); } catch (err) {} });
   }
@@ -2390,6 +2630,7 @@ Se nenhum trecho atender ao pedido, responda {"clips":[]}.
   const prompt = `Você é editor de vídeos curtos (Reels, TikTok, Shorts), especialista em retenção, no estilo do OpusClip.
 Abaixo está a transcrição de um vídeo em trechos numerados, no formato [número|início] texto. Duração total: ${fmtT(st.dur)}.
 Um "!" depois do tempo marca trechos em que o som sobe muito (torcida, narração empolgada, risadas): em jogos, costuma ser um lance importante.
+O vídeo pode ser de qualquer assunto (conversa, aula, humor, esporte, evento, receita, vlog, entrevista). Escolha pelo que prende quem assiste naquele tipo de vídeo: informação útil, emoção, humor, surpresa, opinião forte, uma história com começo e fim, ou um lance que o som denuncia.
 ${ask}
 Escolha ${q ? 'até 8' : 'de 3 a 7'} cortes para Reels. Regras:
 - Cada corte é um trecho contínuo de ${mn} a ${mx} segundos (nunca mais que ${mx}) que faça sentido sozinho, sem depender do que veio antes.
@@ -2671,7 +2912,8 @@ function layoutWords(items, fs, maxW, extra) {
 const EMPH_WORDS = new Set(('dinheiro grana lucro lucros faturamento receita milhao milhoes mil bilhao gratis segredo segredos erro erros errado nunca sempre jamais maior melhor pior importante ' +
   'atencao cuidado perigo resultado resultados rapido agora hoje zero primeiro primeira unico unica simples facil dificil dobro triplo metade tudo nada ninguem todos todo ' +
   'verdade mentira problema problemas solucao sucesso fracasso crescer crescimento escalar vender venda vendas cliente clientes lucrar economizar proibido obrigatorio ' +
-  'urgente incrivel absurdo chocante gigante enorme maximo minimo real reais porcento').split(' '));
+  'urgente incrivel absurdo chocante gigante enorme maximo minimo real reais porcento gol golaco vitoria campeao campea titulo recorde inacreditavel sensacional ' +
+  'epico historico perfeito demais impossivel surpresa segredo louco loucura melhor top amor medo vergonha').split(' '));
 function srcWord(w) { return w.ref != null ? refWord(w.ref) || w : w; }
 function isEmph(w, S) {
   const src = srcWord(w);
@@ -2692,7 +2934,9 @@ const EMOJI = [
   [/^(tempo|hora|minut|prazo|rapid|urgente)/, '⏰'], [/^(meta|metas|objetiv|foco|alvo|estrateg)/, '🎯'], [/^(sucesso|venc|ganh|campe|vitori|conquist)/, '🏆'],
   [/^(atencao|cuidado|perigo|alert|risco)/, '⚠️'], [/^(olh|veja|repar|observ)/, '👀'], [/^(fogo|incrivel|absurd|explod)/, '🔥'],
   [/^(amor|amo$|apaixon|coracao)/, '❤️'], [/^(dado|numero|relatori|planilha|grafic|indicador|metrica)/, '📊'], [/^(processo|sistema|ferrament|tecnolog|automa)/, '⚙️'],
-  [/^(celular|aplicativo|app$)/, '📱'], [/^(mundo|brasil|global|pais$)/, '🌎'], [/^(foguete|lanc|decol)/, '🚀'], [/^(pergunt|duvida)/, '❓'],
+  [/^(celular|aplicativo|app$)/, '📱'], [/^(gol$|gols$|golac|futebol|bola$|jogo$|jogos$|partida|campeonat)/, '⚽'], [/^(cesta|basquete|enterrad)/, '🏀'],
+  [/^(music|cancao|cantar|show$|banda|ritmo)/, '🎵'], [/^(comida|receita|cozinh|comer|delicios|sabor)/, '🍽️'], [/^(viag|viaj|praia|aeroport|ferias)/, '✈️'],
+  [/^(casa$|lar$|famili|filho|filha|mae$|pai$)/, '🏠'], [/^(treino|academia|correr|corrida|saude)/, '💪'], [/^(risad|kkk|engracad|piada|rir$)/, '😂'], [/^(festa|comemor|celebr|aniversari)/, '🎉'], [/^(mundo|brasil|global|pais$)/, '🌎'], [/^(foguete|lanc|decol)/, '🚀'], [/^(pergunt|duvida)/, '❓'],
   [/^(certo|corret|perfeit|aprovad)/, '✅'], [/^(nunca|jamais|proibid)/, '🚫'], [/^(feliz|alegr|sorri|rindo)/, '😄'], [/^(medo|assust|susto|chocante)/, '😱'],
   [/^(dificil|complicad|cansad)/, '😓'], [/^(facil|simples|tranquil)/, '👌'], [/^(pens|cabeca|mente|cerebr|inteligen)/, '🧠'], [/^(aprend|estud|curso|aula|livro)/, '📚'],
   [/^(trabalh|carreira|emprego)/, '💼'], [/^(forca|forte|saude|trein)/, '💪'], [/^(video|camera|grav|filme)/, '🎥'], [/^(music|cancao)/, '🎵'], [/^(casa|familia)/, '🏠']
@@ -4087,7 +4331,6 @@ async function openSettings() {
   if (r === 'save') { await DESK.settings.set({ claudeKey: key.value.trim() }); toast('Configurações salvas.', 1500); updAiBtn(); }
 }
 if (DESK) {
-  $('#heroEyebrow').textContent = 'Edição inteligente para Reels';
   $('#workHint').textContent = 'Pode minimizar a janela: o trabalho continua. Nada é enviado para a internet.';
 }
 if (DESK) { $('#fontNote').textContent = 'Suas fontes ficam guardadas neste computador.'; }
@@ -4120,14 +4363,15 @@ async function aiAvailable() {
   if (!smp.desk) return true;
   const set = await SETTINGS.get(); return !!set.claudeKey;
 }
-async function startQueue(files) {
+async function startQueue(files, pre) {
   if (Q.running) { toast('Já tem uma fila rodando.'); return; }
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const goal = el('div', 'seg'); let g = st.opts.goal;
-  for (const [v, l] of [['cuts', 'Achar os melhores cortes'], ['edit', 'Limpar o vídeo inteiro']]) { const b = el('button', null, l); b.type = 'button'; b.dataset.v = v; b.setAttribute('aria-pressed', String(v === g)); b.onclick = () => { g = v; $$('button', goal).forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === g))); }; goal.appendChild(b); }
-  const f1 = el('div', 'field'); f1.append(el('span', 'lbl', 'O que fazer com cada vídeo'), goal);
+  for (const [v, l] of [['cuts', 'Cortes para Reels'], ['edit', 'Editar um vídeo']]) { const b = el('button', null, l); b.type = 'button'; b.dataset.v = v; b.setAttribute('aria-pressed', String(v === g)); b.onclick = () => { g = v; $$('button', goal).forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === g))); }; goal.appendChild(b); }
+  const f1 = el('div', 'field'); f1.append(el('span', 'lbl', 'O que fazer com cada vídeo'), goal); if (pre) f1.hidden = true;
   const mk = (label, on) => { const l = el('label', 'switch'); const i = el('input'); i.type = 'checkbox'; i.checked = on; l.append(el('span', null, label), i); return [l, i]; };
   const [lSmart, iSmart] = mk('Aplicar a edição inteligente em cada vídeo', store.get('cs:qSmart', false));
+  if (pre && pre.captions) { lSmart.hidden = true; iSmart.checked = true; }
   { const inc = SMART.filter(s => smartPick[s.k]).map(s => s.label.replace(/ \(.*\)$/, '').toLowerCase()); if (inc.length) { const sm = el('small', 'fine', 'Entra: ' + inc.join(', ') + '. Muda no botão Edição inteligente.'); sm.style.display = 'block'; sm.style.marginTop = '2px'; lSmart.querySelector('span').appendChild(sm); } }
   const [lExp, iExp] = mk('Exportar sozinho no final', true);
   const [lPack, iPack] = mk('Com legenda .srt, capa e texto do post', true);
@@ -4138,13 +4382,14 @@ async function startQueue(files) {
   for (const [v, l] of [['9:16', '9:16 Reels'], ['4:5', '4:5 Feed'], ['1:1', '1:1'], ['16:9', '16:9 YouTube']]) { const lb = el('label', 'chip'); const i = el('input'); i.type = 'checkbox'; i.value = v; i.checked = cur.includes(v); lb.append(i, el('span', null, l)); chips.appendChild(lb); }
   const f2 = el('div', 'field'); f2.append(el('span', 'lbl', 'Formatos'), chips);
   const note = el('p', 'fine');
-  const updNote = () => { note.textContent = `${iSmart.checked ? 'Usa' : 'Sem a edição inteligente, cada vídeo sai como foi gravado, sem cortar pausas e sem legenda. Usa'} o estilo de legenda${st.brand.on && st.brand.logo ? ', o logo' : ''} e a transcrição “${(deskModels ? (deskModels.find(m => m.id === st.opts.model) || {}).label : st.opts.model === 'base' ? 'Precisa' : 'Rápida') || ''}” que estão escolhidos agora.${DESK ? ' Os arquivos vão para a pasta de exportação, uma subpasta por vídeo.' : ''}`; };
+  const updNote = () => { note.textContent = pre && pre.captions ? `Cada vídeo ganha a legenda no estilo “${(PRESETS[pre.style] || {}).label || 'atual'}”, sem cortar nada.${DESK ? ' Os arquivos vão para a pasta de exportação, uma subpasta por vídeo.' : ''}` : `${iSmart.checked ? 'Usa' : 'Sem a edição inteligente, cada vídeo sai como foi gravado, sem cortar pausas e sem legenda. Usa'} o estilo de legenda${st.brand.on && st.brand.logo ? ', o logo' : ''} e a transcrição “${(deskModels ? (deskModels.find(m => m.id === st.opts.model) || {}).label : st.opts.model === 'base' ? 'Precisa' : 'Rápida') || ''}” que estão escolhidos agora.${DESK ? ' Os arquivos vão para a pasta de exportação, uma subpasta por vídeo.' : ''}`; };
   iSmart.addEventListener('change', updNote); updNote();
-  const r = await openModal(`${files.length} vídeos na fila`, [f1, f2, lSmart, lExp, lPack, lAI, note], [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Começar', value: 'go', primary: true }]);
+  const r = await openModal(pre ? `${pre.title} · ${files.length} vídeos na fila` : `${files.length} vídeos na fila`, [f1, f2, lSmart, lExp, lPack, lAI, note], [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Começar', value: 'go', primary: true }]);
   if (r !== 'go') return;
   const aspects = $$('input', chips).filter(i => i.checked).map(i => i.value);
-  store.set('cs:qSmart', iSmart.checked);
-  Q.opts = { goal: g, smart: iSmart.checked && SMART.some(s => smartPick[s.k]), export: iExp.checked, pack: iPack.checked, ai: hasAI && iAI.checked, aspects: aspects.length ? aspects : ['9:16'] };
+  if (!(pre && pre.captions)) store.set('cs:qSmart', iSmart.checked);
+  const capOnly = pre && pre.captions ? Object.assign(smartNone(), { captions: true }) : null;
+  Q.opts = { goal: g, pick: capOnly, capStyle: capOnly ? pre.style : null, smart: capOnly ? true : iSmart.checked && SMART.some(s => smartPick[s.k]), export: iExp.checked, pack: iPack.checked, ai: hasAI && iAI.checked, aspects: aspects.length ? aspects : ['9:16'] };
   Q.items = files.map(f => ({ file: f, status: 'wait', note: '' })); Q.stop = false;
   $('#queueBox').hidden = false; renderQueue(); runQueue();
 }
@@ -4161,7 +4406,8 @@ async function runQueue() {
     if (!ok) { it.status = 'err'; it.note = 'não deu para analisar esse arquivo'; renderQueue(); continue; }
     $('#queueBox').classList.add('min'); renderQueue();
     if (Q.opts.ai && st.opts.goal === 'cuts') { it.note = 'escolhendo os cortes com IA'; renderQueue(); try { await aiSuggest(); } catch (e) {} }
-    if (Q.opts.smart) { it.note = 'aplicando a edição inteligente'; renderQueue(); applySmart(smartPick, { quiet: true }); }
+    if (Q.opts.capStyle) await applyCapStyle(Q.opts.capStyle);
+    if (Q.opts.smart) { it.note = Q.opts.pick ? 'pondo a legenda' : 'aplicando a edição inteligente'; renderQueue(); applySmart(Q.opts.pick || smartPick, { quiet: true }); }
     if (Q.opts.export && !Q.stop) {
       $$('#expAspects input').forEach(b => { b.checked = Q.opts.aspects.includes(b.value); });
       it.note = 'exportando'; renderQueue();
@@ -4308,7 +4554,7 @@ async function applyKit(k) {
 $('#kitSel').addEventListener('change', e => { const k = kits.find(x => x.name === e.target.value); if (k) applyKit(k); });
 $('#kitSave').addEventListener('click', async () => {
   const cur = $('#kitSel').value;
-  const name = ((await askText('Nome do kit de marca', cur, 'Ex.: SULTS, Cliente X')) || '').slice(0, 40);
+  const name = ((await askText('Nome do kit de marca', cur, 'Ex.: Minha marca, Cliente X')) || '').slice(0, 40);
   if (!name) return;
   const k = kitFromCurrent(name);
   // bundle the uploaded font so the kit works on another computer
@@ -6355,17 +6601,17 @@ function planMulti(ch) {
 }
 
 /* ---- escolha do modo ---- */
-async function multiDialog(vids, music, prev) {
+async function multiDialog(vids, music, prev, fx) { // fx: {fixed, len, q} quando o módulo já escolheu o tipo
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const saved = store.get('cs:multi', {});
-  const S = Object.assign({ mode: 'lances', len: 60, q: '', lt: true }, saved, prev || {}, { music: music || null, musicName: music ? music.name : prev && prev.musicName || '', mainIdx: prev && prev.mainIdx != null ? prev.mainIdx : vids.reduce((bi, f, i, a) => ((f.size || 0) > (a[bi].size || 0) ? i : bi), 0) });
+  const S = Object.assign({ mode: 'lances', len: 60, q: '', lt: true }, saved, prev || {}, fx ? { mode: fx.fixed, len: fx.len || 60, q: fx.q || '' } : {}, { music: music || null, musicName: music ? music.name : prev && prev.musicName || '', mainIdx: prev && prev.mainIdx != null ? prev.mainIdx : vids.reduce((bi, f, i, a) => ((f.size || 0) > (a[bi].size || 0) ? i : bi), 0) });
   S.names = vids.map((f, i) => (prev && prev.names && prev.names[i] != null ? prev.names[i] : guessName(f.name || '')));
   const box = el('div', 'mm');
   const modes = el('div', 'mm-modes'); modes.setAttribute('role', 'group'); modes.setAttribute('aria-label', 'Tipo de edição');
   for (const k of ['lances', 'after', 'apoio', 'depo']) { const b = el('button', 'mm-mode'); b.type = 'button'; b.dataset.k = k; b.append(el('b', null, MULTI_NAMES[k]), el('span', null, MULTI_DESC[k])); b.onclick = () => { S.mode = k; upd(); }; modes.appendChild(b); }
   const fLen = el('div', 'field'); fLen.dataset.for = 'lances after depo'; fLen.append(el('span', 'lbl', 'Duração da edição'));
   const seg = el('div', 'seg seg-full'); for (const [v, t] of [[30, 'Até 30 s'], [60, 'Até 60 s'], [90, 'Até 90 s']]) { const b = el('button', null, t); b.type = 'button'; b.dataset.v = v; b.onclick = () => { S.len = v; upd(); }; seg.appendChild(b); } fLen.appendChild(seg);
-  const fQ = el('div', 'field'); fQ.dataset.for = 'lances depo'; const lq = el('label', null, 'O que procurar '); lq.appendChild(el('small', 'fine', 'opcional')); const iq = el('input'); iq.type = 'text'; iq.maxLength = 120; iq.placeholder = 'Ex.: gols · bolas de 3 · quando falam da SULTS'; iq.value = S.q || ''; iq.id = 'mmQ'; lq.htmlFor = 'mmQ'; iq.addEventListener('input', () => { S.q = iq.value; }); iq.addEventListener('keydown', e => e.stopPropagation()); fQ.append(lq, iq);
+  const fQ = el('div', 'field'); fQ.dataset.for = 'lances depo'; const lq = el('label', null, 'O que procurar '); lq.appendChild(el('small', 'fine', 'opcional')); const iq = el('input'); iq.type = 'text'; iq.maxLength = 120; iq.placeholder = 'Ex.: os gols · as risadas · quando falam de preço'; iq.value = S.q || ''; iq.id = 'mmQ'; lq.htmlFor = 'mmQ'; iq.addEventListener('input', () => { S.q = iq.value; }); iq.addEventListener('keydown', e => e.stopPropagation()); fQ.append(lq, iq);
   const fMain = el('div', 'field'); fMain.dataset.for = 'apoio'; const lm = el('label', null, 'Quem fala (vídeo principal)'); const sm = el('select'); sm.id = 'mmMain'; lm.htmlFor = 'mmMain'; vids.forEach((f, i) => { const o = el('option', null, f.name); o.value = i; sm.appendChild(o); }); sm.value = String(S.mainIdx); sm.addEventListener('change', () => { S.mainIdx = +sm.value; upd(); }); fMain.append(lm, sm);
   const fMus = el('div', 'field'); fMus.append(el('span', 'lbl', 'Música (opcional)'));
   const mr = el('div', 'row'); const mname = el('span', 'fine'); const mpick = el('label', 'btn'); mpick.style.position = 'relative'; mpick.style.overflow = 'hidden'; mpick.append('Escolher música'); const mi = el('input'); mi.type = 'file'; mi.accept = 'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac'; Object.assign(mi.style, { position: 'absolute', inset: '0', opacity: '0', cursor: 'pointer' }); mpick.appendChild(mi);
@@ -6378,6 +6624,7 @@ async function multiDialog(vids, music, prev) {
   fNames.append(ltSw, nameList);
   const note = el('p', 'fine mm-note');
   box.append(modes, fLen, fQ, fMain, fMus, fNames, note);
+  if (fx) { modes.hidden = true; fMus.hidden = true; }
   const renderNames = () => {
     nameList.innerHTML = '';
     if (!S.lt) return;
@@ -6387,14 +6634,14 @@ async function multiDialog(vids, music, prev) {
   const upd = () => {
     $$('.mm-mode', modes).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === S.mode)));
     $$('button', seg).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === +S.len)));
-    for (const f of [fLen, fQ, fMain, fNames]) f.hidden = !f.dataset.for.split(' ').includes(S.mode);
+    for (const f of [fLen, fQ, fMain, fNames]) f.hidden = !f.dataset.for.split(' ').includes(S.mode) || (!!fx && (f === fLen || f === fQ));
     mname.textContent = S.musicName ? S.musicName : (S.mode === 'after' ? 'Sem música, o aftermovie usa o som dos vídeos.' : 'Sem música.');
     mclear.hidden = !S.musicName;
     note.textContent = MULTI_NOTE[S.mode] + (S.mode === 'apoio' && vids.length < 2 ? ' Precisa de pelo menos 2 vídeos.' : '');
     renderNames();
     const go = $('#dlgActions button[value="go"]'); if (go) go.disabled = (S.mode === 'apoio' || S.mode === 'depo') && vids.length < 2;
   };
-  const pr = openModal(`Montar com ${vids.length} ${vids.length === 1 ? 'vídeo' : 'vídeos'}`, box, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: prev ? 'Montar de novo' : 'Montar', value: 'go', primary: true }], false);
+  const pr = openModal(fx ? `${MULTI_NAMES[S.mode]} · confira antes de montar` : `Montar com ${vids.length} ${vids.length === 1 ? 'vídeo' : 'vídeos'}`, box, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: prev ? 'Montar de novo' : 'Montar', value: 'go', primary: true }], false);
   upd();
   const r = await pr;
   if (r !== 'go') return null;

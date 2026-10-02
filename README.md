@@ -7,12 +7,21 @@ com a sua marca. Exporta mais rápido que o tempo real. O vídeo não sai do com
 O vídeo sempre abre como foi gravado: a edição inteligente só entra quando você clica em **Edição inteligente**
 (no alto da tela), escolhe o que entra e aplica. Dá para desfazer ou voltar ao original a qualquer momento.
 
-## Juntar vários vídeos
-Na tela inicial, "Juntar vários vídeos" (pode soltar uma música junto) monta uma edição só, de quatro jeitos:
+## Módulos
+A tela inicial pergunta o que você quer fazer. Cada módulo abre um passo com só o que ele precisa e o lugar de soltar.
+
+Um vídeo:
+- **Cortes para Reels:** vídeo longo (podcast, live, aula, jogo) vira vários cortes curtos, com nota. Serve para qualquer
+  assunto: pesa o começo forte da fala, a ideia que fecha e o som que sobe (risada, torcida); com pouca fala, corta pelos picos do som.
+- **Achar um momento:** escreva o que procura ("os gols", "quando fala de preço", "as risadas") e solte o vídeo.
+- **Editar um vídeo:** abre inteiro na linha do tempo, como foi gravado.
+- **Legendar vídeo:** escolha o estilo; a legenda entra no vídeo inteiro, sem cortar nada. Sai o vídeo legendado ou o .srt.
+
+Vários vídeos numa edição só (pode soltar uma música junto):
 - **Melhores lances:** acha os gritos da torcida e a narração (e as palavras de "O que procurar") e junta os lances.
 - **Aftermovie:** escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem de gravação.
-- **Fala com imagens de apoio:** o vídeo de quem fala fica inteiro, com cenas dos outros por cima, sem som.
 - **Depoimentos:** transcreve todos e junta as melhores frases de cada pessoa, alternando quem fala, com o nome de cada uma.
+- **Fala + imagens de apoio:** o vídeo de quem fala fica inteiro, com cenas dos outros por cima, sem som.
 
 Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
 A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
