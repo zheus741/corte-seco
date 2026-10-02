@@ -1715,6 +1715,7 @@ function stage(name, state, det) {
   if (det != null) li.querySelector('.det').textContent = det;
 }
 function cancelWork() {
+  busyClear();
   if (!work) return;
   work.cancelled = true;
   if (DESK && deskModels) DESK.asr.cancel().catch(() => {});
@@ -1723,22 +1724,62 @@ function cancelWork() {
 }
 $('#cancelBtn').addEventListener('click', () => { cancelWork(); resetAll(); show('scrStart'); });
 
-function loadVideoMeta(url) {
+/* ---- celular: menos memória por vez, e um aviso claro se o navegador fechar a página no meio ---- */
+function isMobile() { return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1); }
+function lowMem() { return isMobile() || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || !!store.get('cs:lowmem', false); }
+function deviceLabel() { const u = navigator.userAgent; const os = /iPhone/.test(u) ? 'iPhone' : /iPad|Macintosh.*Mobile/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1) ? 'iPad' : /Android/.test(u) ? 'Android' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows' : 'outro'; const br = /CriOS|Chrome\//.test(u) && !/Edg/.test(u) ? 'Chrome' : /Edg/.test(u) ? 'Edge' : /Firefox|FxiOS/.test(u) ? 'Firefox' : /Safari/.test(u) ? 'Safari' : 'navegador'; const v = (u.match(/OS (\d+)_/) || u.match(/Android (\d+)/) || [])[1]; return `${os}${v ? ' ' + v : ''} · ${br}${DESK ? ' · app' : ''}`; }
+function busyMark(name, size) { try { sessionStorage.setItem('cs:busy', JSON.stringify({ n: name, s: size, at: Date.now() })); } catch (e) {} }
+function busyClear() { try { sessionStorage.removeItem('cs:busy'); } catch (e) {} }
+addEventListener('pagehide', busyClear); // recarregar ou sair de propósito não é queda
+(() => {
+  let b = null; try { b = JSON.parse(sessionStorage.getItem('cs:busy') || 'null'); } catch (e) {}
+  busyClear();
+  if (!b || Date.now() - b.at > 40 * 60e3) return;
+  store.set('cs:lowmem', true);
+  const fast = !DESK && st.opts.model !== 'tiny' && !!$('#optModel button[data-v="tiny"]');
+  if (fast) { st.opts.model = 'tiny'; store.set('cs:opts', st.opts); syncModelSeg(); }
+  setTimeout(() => {
+    const p = document.createElement('p'); p.textContent = `O navegador fechou a página enquanto analisava “${b.n}”. No celular, quase sempre é falta de memória. Liguei o modo leve${fast ? ' e a transcrição Rápida' : ''}: a análise usa menos memória (fica um pouco mais lenta). Tente de novo; se acontecer outra vez, use um vídeo mais curto, ou gravado em 1080p em vez de 4K.`;
+    openModal('A análise não terminou', p, [{ label: 'Entendi', value: 'ok', primary: true }]);
+  }, 700);
+})();
+/* metadados do vídeo: o elemento <video> às vezes não carrega sozinho (iPhone com pouca bateria, vídeo de arquivo);
+   depois de alguns segundos, tenta tocar sem som e, se ainda assim não vier, lê direto do arquivo */
+function loadVideoMeta(url, file) {
+  vid.__probe = null;
   return new Promise((res, rej) => {
-    const onMeta = () => { cleanup(); res(); };
-    const onErr = () => { cleanup(); rej(new Error('video')); };
+    let done = false, t1 = 0;
+    const finish = (ok, err) => { if (done) return; done = true; clearTimeout(t1); cleanup(); if (ok) res(); else rej(err); };
+    const onMeta = () => finish(true);
+    const onErr = () => finish(false, new Error('video'));
     const cleanup = () => { vid.removeEventListener('loadedmetadata', onMeta); vid.removeEventListener('error', onErr); };
     vid.addEventListener('loadedmetadata', onMeta); vid.addEventListener('error', onErr);
     vid.src = url; vid.load();
+    t1 = setTimeout(async () => {
+      if (done) return;
+      try { vid.muted = true; const pr = vid.play(); if (pr) await Promise.race([pr, new Promise(r => setTimeout(r, 1500))]); vid.pause(); } catch (e) {} finally { vid.muted = false; }
+      if (done) return;
+      if (vid.readyState >= 1) return finish(true);
+      if (!file) return finish(false, new Error('o vídeo não carregou'));
+      try { vid.__probe = await probeMeta(file); finish(true); } catch (e) { finish(false, e); }
+    }, 6000);
   });
 }
+async function probeMeta(file) {
+  const MB = await loadMB();
+  const input = new MB.Input({ source: new MB.BlobSource(file), formats: MB.ALL_FORMATS });
+  const dur = await input.computeDuration(), vt = await input.getPrimaryVideoTrack();
+  if (!(dur > 0)) throw new Error('sem duração');
+  return { dur, w: vt ? vt.displayWidth : 0, h: vt ? vt.displayHeight : 0 };
+}
+function vidMeta() { const p = vid.__probe; return { dur: isFinite(vid.duration) && vid.duration > 0 ? vid.duration : p ? p.dur : 0, w: vid.videoWidth || (p ? p.w : 0), h: vid.videoHeight || (p ? p.h : 0) }; }
 
 /* big files: decode the audio track piece by piece instead of loading the whole file in memory */
-async function decodeAudioStream(file) {
+async function decodeAudioStream(file, onP) {
   const MB = await loadMB();
   const input = new MB.Input({ source: new MB.BlobSource(file), formats: MB.ALL_FORMATS });
   const tr = await input.getPrimaryAudioTrack(); if (!tr) throw new Error('sem áudio');
-  if (!(await tr.canDecode())) throw new Error('codec de áudio');
+  if (!(await tr.canDecode())) { if (tr.codec === 'aac') return decodeAudioADTS(input, tr, onP); throw new Error('codec de áudio ' + tr.codec); }
   const dur = await input.computeDuration();
   const out = new Float32Array(Math.ceil(dur * 16000) + 32000);
   const sink = new MB.AudioBufferSink(tr);
@@ -1759,14 +1800,56 @@ async function decodeAudioStream(file) {
   for await (const wb of sink.buffers()) {
     if (bStart == null) { bStart = Math.max(0, wb.timestamp); sr = wb.buffer.sampleRate; }
     batch.push(wb.buffer); bLen += wb.buffer.duration;
-    if (bLen >= 30) await flush();
+    if (bLen >= 30) { await flush(); if (onP && dur > 0) onP(Math.min(1, wb.timestamp / dur)); }
   }
   await flush();
   return out.subarray(0, Math.min(out.length, Math.ceil(dur * 16000)));
 }
-async function decodeAudio(file) {
-  if (file.size > 400e6) return decodeAudioStream(file);
-  try { return await decodeAudioBuffer(file); } catch (e) { return decodeAudioStream(file); }
+/* navegador sem decodificador de áudio (iPhone antes do iOS 26): o AAC sai do arquivo em pedaços de ~20 s,
+   cada pedaço vira um arquivo .aac (ADTS) pequeno e o próprio navegador decodifica. Nunca carrega o vídeo inteiro. */
+async function decodeAudioADTS(input, tr, onP) {
+  const cfg = await tr.getDecoderConfig(); const asc = cfg && cfg.description ? new Uint8Array(cfg.description.buffer ? cfg.description.buffer.slice(cfg.description.byteOffset || 0, (cfg.description.byteOffset || 0) + cfg.description.byteLength) : cfg.description) : null;
+  const FREQS = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+  let aot = 2, fi = FREQS.indexOf(tr.sampleRate), ch = tr.numberOfChannels || 2;
+  if (asc && asc.length >= 2) { aot = asc[0] >> 3; fi = ((asc[0] & 7) << 1) | (asc[1] >> 7); ch = (asc[1] >> 3) & 15; }
+  if (aot > 4 || aot < 1) aot = 2; if (fi < 0 || fi > 12) fi = Math.max(0, FREQS.indexOf(48000)); if (ch < 1 || ch > 7) ch = 2;
+  const dur = await input.computeDuration();
+  const out = new Float32Array(Math.ceil(dur * 16000) + 32000);
+  const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const sink = new MB_CACHE.EncodedPacketSink(tr);
+  let frames = [], bytes = 0, t0 = null, tl = 0;
+  const flush = async () => {
+    if (!frames.length) return;
+    const buf = new Uint8Array(bytes); let o = 0;
+    for (const f of frames) { buf.set(f, o); o += f.length; }
+    let r = null;
+    try { r = await new AC(1, 16000, 16000).decodeAudioData(buf.buffer); } catch (e) { r = null; }
+    if (r) {
+      const n = r.length, k = r.numberOfChannels, at = Math.max(0, Math.round(t0 * 16000));
+      const mono = new Float32Array(n); for (let c = 0; c < k; c++) { const d = r.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / k; }
+      out.set(mono.subarray(0, Math.max(0, Math.min(n, out.length - at))), at);
+    }
+    frames = []; bytes = 0; t0 = null;
+  };
+  for await (const pk of sink.packets()) {
+    const d = pk.data, len = d.length + 7, h = new Uint8Array(len);
+    h[0] = 0xFF; h[1] = 0xF1; h[2] = ((aot - 1) << 6) | (fi << 2) | ((ch >> 2) & 1); h[3] = ((ch & 3) << 6) | ((len >> 11) & 3); h[4] = (len >> 3) & 0xFF; h[5] = ((len & 7) << 5) | 0x1F; h[6] = 0xFC;
+    h.set(d, 7);
+    if (t0 == null) t0 = Math.max(0, pk.timestamp);
+    frames.push(h); bytes += len; tl = pk.timestamp;
+    if (tl - t0 >= 20) { await flush(); if (onP && dur > 0) onP(Math.min(1, tl / dur)); }
+  }
+  await flush();
+  return out.subarray(0, Math.min(out.length, Math.ceil(dur * 16000)));
+}
+var MB_CACHE = null;
+async function decodeAudio(file, onP) {
+  // no celular, nunca põe o vídeo inteiro na memória: lê o som em pedaços
+  if (file.size > (lowMem() ? 60e6 : 400e6)) {
+    try { return await decodeAudioStream(file, onP); }
+    catch (e) { if (/sem áudio/.test(e.message) || file.size > 400e6) throw e; return decodeAudioBuffer(file); }
+  }
+  try { return await decodeAudioBuffer(file); } catch (e) { return decodeAudioStream(file, onP); }
 }
 async function decodeAudioBuffer(file) {
   const ab = await file.arrayBuffer();
@@ -1799,18 +1882,19 @@ async function startAnalysis(file, force) {
   $('#workTitle').textContent = 'Analisando';
   $('#live').innerHTML = ''; $('#workErr').hidden = true; $('#workMeter').style.width = '0%';
   $$('#stages li').forEach(li => { li.classList.remove('on', 'done'); li.querySelector('.det').textContent = ''; });
+  busyMark(file.name, file.size);
   try {
-    await loadVideoMeta(st.url);
-    st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight;
+    await loadVideoMeta(st.url, file);
+    const mt = vidMeta(); st.dur = mt.dur; st.vw = mt.w; st.vh = mt.h;
     setFileInfo();
     $('#workClock').innerHTML = `00:00 <small>/ ${fmtClock(st.dur)}</small>`;
   } catch (e) {
-    return failWork(`Não consegui abrir esse vídeo ${HERE}. Tente exportar em MP4 (H.264) e soltar de novo.`);
+    return failWork(`Não consegui abrir esse vídeo ${HERE}. Tente exportar em MP4 (H.264) e soltar de novo.`, e);
   }
   stage('audio', 'on');
   let pcm;
-  try { pcm = await decodeAudio(file); }
-  catch (e) { return failWork('Não consegui ler o áudio desse arquivo. O vídeo tem som? Se for muito longo (mais de 1 hora), corte em partes antes.'); }
+  try { pcm = await decodeAudio(file, (f, t) => stage('audio', 'on', t || `${Math.round(f * 100)}%`)); }
+  catch (e) { return failWork(/sem áudio|no audio/i.test(String(e && e.message)) ? 'Esse vídeo não tem som. A análise precisa da fala: escolha um vídeo com som (ou use “Abrir o editor” para montar sem transcrever).' : 'Não consegui ler o áudio desse arquivo. Se for muito longo (mais de 1 hora), corte em partes antes.', e); }
   if (myWork.cancelled) return false;
   st.env = WhisperCore.envelope(pcm, 16000);
   stage('audio', 'done', fmtT(pcm.length / 16000));
@@ -1839,7 +1923,7 @@ async function startAnalysis(file, force) {
       await runASR(pcm, myWork);
     } catch (e) {
       if (myWork.cancelled) return false;
-      return failWork(asrErrorText(e));
+      return failWork(asrErrorText(e), e);
     }
     if (myWork.cancelled) return false;
   }
@@ -1861,7 +1945,7 @@ async function startAnalysis(file, force) {
   if (goalEdit) { st.cur = 'full'; if (!st.clips.find(c => c.id === 'full')) st.clips.unshift(fullClip()); }
   refreshClip();
   { const pv = smartSecs(smartPick, fullClip()); stage('cuts', 'done', goalEdit ? (pv > 0.05 ? `${fmtT(pv)} de pausas e vícios marcados` : 'pronto') : found ? `${found} para “${findQ0}”` : `${st.clips.length - 1} sugestões`); }
-  work = null;
+  work = null; busyClear();
   saveProject();
   openEditor();
   if (goalEdit || st.multi) setMode('mont');
@@ -1885,15 +1969,17 @@ function asrErrorText(e) {
   if (/memory|allocation|RangeError/i.test(m)) return 'Faltou memória para transcrever. Feche outras abas, escolha a transcrição Rápida ou corte o vídeo em partes menores.';
   return 'A transcrição parou: ' + m.slice(0, 200);
 }
-function failWork(msg) {
-  cancelWork();
+function failWork(msg, err) {
+  cancelWork(); busyClear();
   $$('#stages li.on').forEach(li => li.classList.remove('on'));
   const box = $('#workErr'); box.hidden = false; box.className = 'err';
   box.innerHTML = '';
   const p = document.createElement('p'); p.textContent = msg;
   const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'Voltar e tentar outro arquivo';
   b.onclick = () => { resetAll(); show('scrStart'); };
-  box.append(p, b);
+  const det = document.createElement('p'); det.className = 'fine err-det';
+  const f = st.file; det.textContent = `Detalhe para o suporte: ${err ? String(err.message || err).slice(0, 160) : '—'} · ${deviceLabel()}${f ? ` · ${f.name} · ${(f.size / 1e6).toFixed(f.size < 1e7 ? 1 : 0)} MB` : ''}${lowMem() ? ' · modo leve' : ''}`;
+  box.append(p, b, det);
   return false;
 }
 
@@ -1980,9 +2066,10 @@ function runChunk(w, id, pcm, lang) {
 /* quantos motores e quantos núcleos em cada: vídeo curto usa menos motores com mais núcleos cada */
 function asrPlan(name, nChunks) {
   const cores = navigator.hardwareConcurrency || 4, cap = name === 'base' ? 3 : 4;
-  const nW = clamp(Math.min(Math.floor(cores / 2), nChunks || 99), 1, cap);
+  const low = lowMem(); // celular: um motor só (cada motor carrega o modelo inteiro na memória)
+  const nW = low ? 1 : clamp(Math.min(Math.floor(cores / 2), nChunks || 99), 1, cap);
   const iso = self.crossOriginIsolated === true, forced = +store.get('cs:asrThreads', 0);
-  const threads = forced > 0 ? forced : iso ? clamp(Math.floor((cores - 1) / nW), 1, 4) : 1;
+  const threads = forced > 0 ? forced : iso ? clamp(Math.floor((cores - 1) / nW), 1, low ? 2 : 4) : 1;
   return { nW, threads: iso ? threads : 1, cores };
 }
 async function asrEngine(name, myWork, nChunks) {
@@ -4248,7 +4335,7 @@ $('#copySrt').addEventListener('click', async () => {
 let MBP = null;
 function loadMB() {
   if (!MBP) MBP = (async () => {
-    const MB = await import(BASE + 'lib/mediabunny.js');
+    const MB = await import(BASE + 'lib/mediabunny.js'); MB_CACHE = MB;
     let aac = false;
     try { aac = await MB.canEncodeAudio('aac'); } catch (e) {}
     if (!aac) { try { const X = await import(BASE + 'lib/mediabunny-aac.js'); X.registerAacEncoder(); } catch (e) {} }
@@ -7746,8 +7833,9 @@ async function runMulti(vids, ch) {
     + (ch.music ? '<li data-s="mus"><span class="dot"></span><span>Batida da música</span><span class="det"></span></li>' : '')
     + (ch.mode === 'pod' ? '<li data-s="sync"><span class="dot"></span><span>Sincronizando as câmeras pelo som</span><span class="det"></span></li>' : '')
     + '<li data-s="mount"><span class="dot"></span><span>Escolhendo os trechos e montando</span><span class="det"></span></li>';
-  try { await loadVideoMeta(st.url); st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight; setFileInfo(); }
-  catch (e) { return failWork(`Não consegui abrir “${main.name}” ${HERE}. Tente exportar em MP4 (H.264).`); }
+  busyMark(main.name, main.size);
+  try { await loadVideoMeta(st.url, main); const mt = vidMeta(); st.dur = mt.dur; st.vw = mt.w; st.vh = mt.h; setFileInfo(); }
+  catch (e) { return failWork(`Não consegui abrir “${main.name}” ${HERE}. Tente exportar em MP4 (H.264).`, e); }
   const others = vids.filter(f => f !== main);
   const added = await importMedia(others.concat(ch.music ? [ch.music] : [], ch.audio ? [ch.audio] : []), { quiet: true });
   ensureMainMedia();
@@ -7803,7 +7891,7 @@ async function runMulti(vids, ch) {
   if (plan.empty) return failWork('Não achei trechos para montar com esses vídeos. Tente outro tipo de edição ou outra duração.');
   montages = { multi: { clips: plan.clips, hook: '', T: 0, v1Auto: plan.v1Auto } };
   stage('mount', 'done', plan.summary); $('#workMeter').style.width = '100%';
-  work = null;
+  work = null; busyClear();
   saveProject();
   openEditor(); setMode('mont'); zoomFit();
   setTimeout(() => { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); }, 900);
@@ -7894,9 +7982,9 @@ async function openBlank(files) {
 }
 async function livreMain(f) { // o primeiro vídeo importado vira o vídeo principal do projeto (é por ele que o projeto reabre)
   st.file = f; st.url = URL.createObjectURL(f); st.model = st.opts.model;
-  try { await loadVideoMeta(st.url); }
+  try { await loadVideoMeta(st.url, f); }
   catch (e) { URL.revokeObjectURL(st.url); st.file = null; st.url = null; throw e; }
-  st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight;
+  { const mt = vidMeta(); st.dur = mt.dur; st.vw = mt.w; st.vh = mt.h; }
   const fc = st.clips.find(c => c.id === 'full'); if (fc) fc.end = st.dur;
   const m = ensureMainMedia();
   setTimeout(() => { if (st.file === f) { const th = recentThumb(); touchRecent(th ? { thumb: th } : null); } }, 1500);
@@ -7970,7 +8058,9 @@ async function livreRun() {
       m.anal = { st: 'run', p: 0 }; LV.cur = mid; binStat(mid); renderBinCount();
       const ui = { key: 'lv', say: () => {}, progress: x => { if (m.anal && m.anal.st === 'run') { m.anal.p = x; binStat(mid); } } };
       let ax = null;
+      busyMark(m.name, m.file.size);
       try { ax = await analyzeSource(m.file, mid, { asr: true }, ui, job); } catch (e) { ax = null; }
+      busyClear();
       if (job.cancelled || LV.job !== job) return;
       LV.q.shift(); LV.cur = null;
       if (MEDIA.get(mid) !== m) continue; // o projeto mudou no meio
@@ -8181,6 +8271,6 @@ $('#emptyIn').addEventListener('change', async e => { const f = [...e.target.fil
   bb.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); bb.classList.remove('over'); endHomeDrag(); withHandles(e, fs => openBlank(fs)); });
 }
 
-window.__cs = { st, M, MEDIA, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
+window.__cs = { st, M, MEDIA, decodeAudio, decodeAudioBuffer, decodeAudioStream, decodeAudioADTS, loadMB, probeMeta, lowMem, asrPlan, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
 })();
 </script>
