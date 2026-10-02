@@ -423,6 +423,13 @@ details.more[open]>summary{margin-bottom:10px}
 
 .export-card{border:1px solid var(--line);border-radius:0;padding:14px;display:grid;gap:10px;background:var(--raise)}
 .srt-row{display:grid;gap:6px;justify-items:start}
+.snd-field{gap:4px}
+.snd-field .switch>span{display:grid;gap:2px}
+.snd-field .switch small{font-size:11.5px;color:var(--mute);line-height:1.35}
+.snd-ab{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}
+.snd-ab .btn{flex:1;min-width:96px}
+.snd-ab .fine{flex-basis:100%}
+#sndNote:empty{display:none}
 .srt-row .linkbtn{font-size:12px;color:var(--mute)}
 .srt-row .linkbtn:hover{color:var(--amber)}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
@@ -926,6 +933,12 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
               <label class="chip"><input type="checkbox" value="1:1"><span>1:1</span></label>
               <label class="chip"><input type="checkbox" value="16:9"><span>16:9 <small>YouTube</small></span></label>
             </div>
+          </div>
+          <div class="field snd-field" id="sndField"><span class="lbl">Som</span>
+            <label class="switch"><span>Volume de rede social<small>Igual do começo ao fim, no nível do Instagram e do TikTok, sem estourar.</small></span><input type="checkbox" id="sndLoud"></label>
+            <label class="switch"><span>Tirar ruído da voz<small>Ventilador, rua, chiado. Em jogo ou show, deixe desligado: tira a torcida junto.</small></span><input type="checkbox" id="sndDen"></label>
+            <div class="snd-ab"><span class="fine">Ouvir 8 s a partir do cursor:</span><button type="button" class="btn" id="sndBefore" aria-pressed="false">▶ Antes</button><button type="button" class="btn" id="sndAfter" aria-pressed="false">▶ Depois</button></div>
+            <span class="fine" id="sndNote"></span>
           </div>
           <button class="btn primary block" id="expBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 12l6 6 6-6M5 20h14"/></svg><span id="expBtnTxt">Exportar vídeo</span></button>
           <button class="btn block" id="expAllBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg><span id="expAllTxt">Exportar todos os cortes</span></button>
@@ -3915,12 +3928,214 @@ function montFrames(MB) {
     async close() { for (const k of Object.keys(act)) if (act[k]) await act[k].seq.close(); }
   };
 }
+/* ================= som de rede social: volume como nas redes e voz sem ruído ================= */
+/* ---- som de rede social: medidor de volume (BS.1770), limitador e redução de ruído ---- */
+const LUFS_TARGET = -14, PEAK_CEIL = Math.pow(10, -1.5 / 20), RNN_DELAY = 960, RNN_KEEP = 0.08; // 8% do som original: o fundo cai uns 22 dB sem virar silêncio de vácuo
+function kWeights(fs) { // filtro K da ITU-R BS.1770 para qualquer taxa de amostragem
+  const shelf = (() => { const G = 4, Q = Math.SQRT1_2, fc = 1500, A = Math.pow(10, G / 40), w = 2 * Math.PI * fc / fs, c = Math.cos(w), al = Math.sin(w) / (2 * Q), sA = 2 * Math.sqrt(A) * al;
+    const a0 = (A + 1) - (A - 1) * c + sA;
+    return { b0: A * ((A + 1) + (A - 1) * c + sA) / a0, b1: -2 * A * ((A - 1) + (A + 1) * c) / a0, b2: A * ((A + 1) + (A - 1) * c - sA) / a0, a1: 2 * ((A - 1) - (A + 1) * c) / a0, a2: ((A + 1) - (A - 1) * c - sA) / a0 }; })();
+  const hp = (() => { const Q = 0.5, fc = 38, w = 2 * Math.PI * fc / fs, c = Math.cos(w), al = Math.sin(w) / (2 * Q), a0 = 1 + al;
+    return { b0: (1 + c) / 2 / a0, b1: -(1 + c) / a0, b2: (1 + c) / 2 / a0, a1: -2 * c / a0, a2: (1 - al) / a0 }; })();
+  return [shelf, hp];
+}
+function loudMeter(sr) {
+  const [f1, f2] = kWeights(sr), sub = Math.max(1, Math.round(sr * 0.1));
+  const S = [0, 1].map(() => ({ x1: 0, x2: 0, y1: 0, y2: 0, u1: 0, u2: 0, v1: 0, v2: 0 }));
+  const E = []; let acc = 0, n = 0;
+  return {
+    push(chs, len) {
+      for (let i = 0; i < len; i++) {
+        let e = 0;
+        for (let c = 0; c < chs.length; c++) {
+          const s = S[c], x = chs[c][i];
+          const y = f1.b0 * x + f1.b1 * s.x1 + f1.b2 * s.x2 - f1.a1 * s.y1 - f1.a2 * s.y2; s.x2 = s.x1; s.x1 = x; s.y2 = s.y1; s.y1 = y;
+          const z = f2.b0 * y + f2.b1 * s.u1 + f2.b2 * s.u2 - f2.a1 * s.v1 - f2.a2 * s.v2; s.u2 = s.u1; s.u1 = y; s.v2 = s.v1; s.v1 = z;
+          e += z * z;
+        }
+        acc += e; if (++n === sub) { E.push(acc / sub); acc = 0; n = 0; }
+      }
+    },
+    lufs() { // blocos de 400 ms a cada 100 ms, portão absoluto (-70) e relativo (-10 LU)
+      const L = z => -0.691 + 10 * Math.log10(z), B = [];
+      for (let i = 0; i + 4 <= E.length; i++) B.push((E[i] + E[i + 1] + E[i + 2] + E[i + 3]) / 4);
+      const g1 = B.filter(z => z > 0 && L(z) > -70); if (!g1.length) return -Infinity;
+      const rel = L(g1.reduce((a, b) => a + b, 0) / g1.length) - 10;
+      const g2 = g1.filter(z => L(z) > rel); if (!g2.length) return -Infinity;
+      return L(g2.reduce((a, b) => a + b, 0) / g2.length);
+    }
+  };
+}
+/* limitador com 5 ms de antecipação: o ganho desce antes do pico chegar, nada passa do teto.
+   Atrasa o som em 5 ms internamente; a saída sai alinhada (o começo e o fim são compensados). */
+function makeLimiter(sr, gain) {
+  const L = Math.max(1, Math.round(sr * 0.005)), aAtt = 1 - Math.exp(-4 / L), aRel = 1 - Math.exp(-1 / (sr * 0.12));
+  const dl0 = new Float32Array(L), dl1 = new Float32Array(L), W = L + 2, qv = new Float32Array(W), qn = new Float64Array(W);
+  let di = 0, n = 0, g = 1, qh = 0, qt = 0, qc = 0, peak = 0, red = 0;
+  const step = (xl, xr, o0, o1, oi) => {
+    xl *= gain; xr *= gain;
+    const p = Math.max(Math.abs(xl), Math.abs(xr)), r = p > PEAK_CEIL ? PEAK_CEIL / p : 1;
+    while (qc && qv[(qt - 1 + W) % W] >= r) { qt = (qt - 1 + W) % W; qc--; }
+    qv[qt] = r; qn[qt] = n; qt = (qt + 1) % W; qc++;
+    while (qn[qh] < n - L) { qh = (qh + 1) % W; qc--; }
+    const m = qv[qh]; let wrote = 0;
+    if (n >= L) {
+      g += (m - g) * (m < g ? aAtt : aRel);
+      let yl = dl0[di] * g, yr = dl1[di] * g;
+      if (yl > PEAK_CEIL) yl = PEAK_CEIL; else if (yl < -PEAK_CEIL) yl = -PEAK_CEIL;
+      if (yr > PEAK_CEIL) yr = PEAK_CEIL; else if (yr < -PEAK_CEIL) yr = -PEAK_CEIL;
+      o0[oi] = yl; o1[oi] = yr; wrote = 1;
+      if (g < 1) red = Math.max(red, -20 * Math.log10(g));
+      peak = Math.max(peak, Math.abs(yl), Math.abs(yr));
+    }
+    dl0[di] = xl; dl1[di] = xr; di = (di + 1) % L; n++;
+    return wrote;
+  };
+  return {
+    run(c0, c1, len) {
+      const o0 = new Float32Array(len), o1 = new Float32Array(len); let k = 0;
+      for (let i = 0; i < len; i++) k += step(c0[i], c1[i], o0, o1, k);
+      return { c0: o0.subarray(0, k), c1: o1.subarray(0, k), len: k };
+    },
+    flush() {
+      const o0 = new Float32Array(L), o1 = new Float32Array(L); let k = 0;
+      for (let i = 0; i < L; i++) k += step(0, 0, o0, o1, k);
+      return { c0: o0.subarray(0, k), c1: o1.subarray(0, k), len: k };
+    },
+    stats() { return { peak, red }; }
+  };
+}
+/* RNNoise (rede neural da Xiph, 48 kHz, quadros de 10 ms): tira ventilador, rua e chiado da voz */
+function rnnDenoise(M, x) {
+  const st = M._rnnoise_create(), ip = M._malloc(480 * 4), op = M._malloc(480 * 4);
+  const n = x.length, out = new Float32Array(n), total = Math.ceil((n + RNN_DELAY) / 480) * 480;
+  try {
+    for (let o = 0; o < total; o += 480) {
+      let f = M.HEAPF32.subarray(ip >> 2, (ip >> 2) + 480);
+      for (let i = 0; i < 480; i++) { const k = o + i; f[i] = k < n ? x[k] * 32768 : 0; }
+      M._rnnoise_process_frame(st, op, ip);
+      f = M.HEAPF32.subarray(op >> 2, (op >> 2) + 480);
+      for (let i = 0; i < 480; i++) { const k = o + i - RNN_DELAY; if (k >= 0 && k < n) out[k] = f[i] / 32768 + RNN_KEEP * x[k]; }
+    }
+  } finally { M._free(ip); M._free(op); M._rnnoise_destroy(st); }
+  return out;
+}
+const SOUND = Object.assign({ loud: true, denoise: false }, store.get('cs:sound', {}));
+let RNNP = null;
+function loadRnn() {
+  if (!RNNP) RNNP = import(BASE + 'lib/rnnoise.js').then(async m => { const R = m.default(); if (R && R.ready) await R.ready; return R; }).catch(e => { RNNP = null; throw e; });
+  return RNNP;
+}
+/* trecho de uma mídia em mono, 48 kHz (o que a redução de ruído pede) */
+async function monoSegment(x, s0, s1, sr) {
+  const len = Math.max(1, Math.round((s1 - s0) * sr));
+  const oc = new OfflineAudioContext(1, len, sr);
+  for await (const wb of x.asink.buffers(s0, s1)) {
+    const buf = wb.buffer, bt = wb.timestamp, off = Math.max(0, s0 - bt), d = Math.min(buf.duration - off, s1 - (bt + off));
+    if (d <= 0) continue;
+    const src = oc.createBufferSource(); src.buffer = buf; src.connect(oc.destination); src.start(Math.max(0, bt + off - s0), off, d);
+  }
+  return (await oc.startRendering()).getChannelData(0);
+}
+const LOUD_CACHE = new Map();
+const planKey = plan => plan.map(g => [g.m.id, g.s0.toFixed(3), g.s1.toFixed(3), g.t0.toFixed(3), (+g.gain).toFixed(3), g.fin.toFixed(3), g.fout.toFixed(3), g.duck ? 1 : 0].join(',')).join('|');
+/* mede o volume da edição inteira (rápido: mixa a 24 kHz, sem gravar nada) */
+async function measureLoudness(MB, plan, dur, onP) {
+  const k = planKey(plan); if (LOUD_CACHE.has(k)) return LOUD_CACHE.get(k);
+  const sr = 24000, meter = loudMeter(sr), AW = 8;
+  for (let a = 0; a < dur - 1e-6; a += AW) {
+    if (exp && exp.cancelled) throw Object.assign(new Error('cancel'), { code: 'cancel' });
+    const b = Math.min(dur, a + AW), buf = await renderAudioWindow(MB, plan, a, b, sr);
+    meter.push([buf.getChannelData(0), buf.getChannelData(1)], buf.length);
+    if (onP) onP(b / dur);
+  }
+  plan.forEach(g => { g.duckState = 1; });
+  const I = meter.lufs(); LOUD_CACHE.set(k, I); return I;
+}
+async function soundPrep(MB, plan, dur, onP) {
+  if (!plan.length || !(SOUND.loud || SOUND.denoise)) return null;
+  const out = { den: null, lim: null, I: null, gainDb: 0 };
+  if (SOUND.denoise && plan.some(g => g.voice)) { try { out.den = await loadRnn(); } catch (e) { toast('Não deu para carregar a redução de ruído: o som sai como foi gravado.', 5000); } }
+  if (SOUND.loud) {
+    const I = await measureLoudness(MB, plan, dur, onP);
+    if (isFinite(I)) { out.I = I; out.gainDb = clamp(LUFS_TARGET - I, -20, 24); }
+    out.lim = makeLimiter(48000, Math.pow(10, out.gainDb / 20));
+    sndNote(out);
+  }
+  return out;
+}
+function toAudioBuffer(o, sr) { const ab = new AudioBuffer({ length: o.len, numberOfChannels: 2, sampleRate: sr }); ab.copyToChannel(o.c0, 0); ab.copyToChannel(o.c1, 1); return ab; }
+const fmtDb = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace('.', ',');
+function sndNote(o) {
+  const el = $('#sndNote'); if (!el) return;
+  el.textContent = o && o.I != null ? `Volume medido: ${fmtDb(o.I)} LUFS. Sai em ${fmtDb(LUFS_TARGET)} LUFS (${fmtDb(o.gainDb)} dB), sem passar de −1,5 dB.` : o && SOUND.loud ? 'Sem som para medir.' : '';
+}
+function syncSoundUI() {
+  const l = $('#sndLoud'), d = $('#sndDen'); if (!l) return;
+  l.checked = !!SOUND.loud; d.checked = !!SOUND.denoise;
+  $('#sndAfter').disabled = !(SOUND.loud || SOUND.denoise);
+}
+/* cursor em tempo de saída: onde começa a prévia de 8 s */
+function outPlayhead() {
+  if (MODE === 'mont') return M.T || 0;
+  let acc = 0; const t = vid.currentTime || 0;
+  for (const r of st.ranges) { if (t < r[0]) return acc; if (t <= r[1]) return acc + (t - r[0]); acc += r[1] - r[0]; }
+  return 0;
+}
+let sndPrev = null;
+function stopSoundPreview() {
+  if (!sndPrev) return;
+  try { sndPrev.src.onended = null; sndPrev.src.stop(); } catch (e) {}
+  try { sndPrev.ctx.close(); } catch (e) {}
+  sndPrev.btn.textContent = sndPrev.label; sndPrev.btn.setAttribute('aria-pressed', 'false'); sndPrev = null;
+}
+async function previewSound(after) {
+  const btn = $(after ? '#sndAfter' : '#sndBefore'), label = after ? '▶ Depois' : '▶ Antes';
+  const same = sndPrev && sndPrev.btn === btn; stopSoundPreview(); if (same) return;
+  if (exporting || btn.dataset.busy) return;
+  pause(); if (MODE === 'mont') montPause();
+  const plan = audioPlan(); if (!plan.length) { toast('Esta edição não tem som.'); return; }
+  const dur = MODE === 'mont' ? seqEnd() : sumRanges(st.ranges); if (!(dur > 0.1)) return;
+  const a = clamp(outPlayhead(), 0, Math.max(0, dur - 8)), b = Math.min(dur, a + 8);
+  btn.dataset.busy = '1'; btn.textContent = 'Preparando…';
+  try {
+    const MB = await loadMB(); let opt = null;
+    if (after) {
+      opt = { den: null, lim: null };
+      if (SOUND.denoise) { btn.textContent = 'Carregando…'; opt.den = await loadRnn().catch(() => null); }
+      if (SOUND.loud) {
+        const I = await measureLoudness(MB, plan, dur, f => { btn.textContent = `Medindo ${Math.round(f * 100)}%`; });
+        const gainDb = isFinite(I) ? clamp(LUFS_TARGET - I, -20, 24) : 0;
+        opt.lim = makeLimiter(48000, Math.pow(10, gainDb / 20)); sndNote({ I: isFinite(I) ? I : null, gainDb });
+      }
+    }
+    plan.forEach(g => { g.duckState = 1; });
+    let buf = await renderAudioWindow(MB, plan, a, b, 48000, opt);
+    if (opt && opt.lim) {
+      const r1 = opt.lim.run(buf.getChannelData(0), buf.getChannelData(1), buf.length), r2 = opt.lim.flush();
+      const c0 = new Float32Array(r1.len + r2.len), c1 = new Float32Array(r1.len + r2.len);
+      c0.set(r1.c0); c0.set(r2.c0, r1.len); c1.set(r1.c1); c1.set(r2.c1, r1.len);
+      buf = toAudioBuffer({ c0, c1, len: c0.length }, 48000);
+    }
+    const ctx = new AudioContext(), src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+    sndPrev = { ctx, src, btn, label };
+    src.onended = () => { if (sndPrev && sndPrev.src === src) stopSoundPreview(); };
+    btn.textContent = '■ Parar'; btn.setAttribute('aria-pressed', 'true');
+    src.start();
+  } catch (e) { toast('Não deu para preparar a prévia do som: ' + String(e.message || e).slice(0, 100), 5000); btn.textContent = label; }
+  finally { delete btn.dataset.busy; if (!sndPrev || sndPrev.btn !== btn) btn.textContent = label; }
+}
+$('#sndLoud').addEventListener('change', e => { SOUND.loud = e.target.checked; store.set('cs:sound', SOUND); syncSoundUI(); sndNote(null); });
+$('#sndDen').addEventListener('change', e => { SOUND.denoise = e.target.checked; store.set('cs:sound', SOUND); syncSoundUI(); if (SOUND.denoise) loadRnn().catch(() => {}); });
+$('#sndBefore').addEventListener('click', () => previewSound(false));
+$('#sndAfter').addEventListener('click', () => previewSound(true));
+syncSoundUI();
 /* ---- audio: what plays when, mixed offline in short windows ---- */
 function audioPlan() {
   const out = [];
   if (MODE !== 'mont') {
     const m = ensureMainMedia(); let t = 0;
-    for (const r of st.ranges) { out.push({ m, s0: r[0], s1: r[1], t0: t, gain: 1, fin: 0.008, fout: 0.008 }); t += r[1] - r[0]; }
+    for (const r of st.ranges) { out.push({ m, s0: r[0], s1: r[1], t0: t, gain: 1, fin: 0.008, fout: 0.008, voice: true }); t += r[1] - r[0]; }
     return out;
   }
   for (const c of M.clips) {
@@ -3928,7 +4143,7 @@ function audioPlan() {
     const m = MEDIA.get(c.media); if (!m || m.kind === 'image') continue;
     if ((c.track === 'V1' && M.trk.A1.mute) || (c.track === 'A2' && M.trk.A2.mute)) continue;
     const gain = c.vol != null ? c.vol : 1; if (gain <= 0.001) continue;
-    out.push({ m, s0: c.in, s1: c.out, t0: c.tl, gain, fin: Math.max(0.008, c.fadeIn || 0), fout: Math.max(0.008, c.fadeOut || 0), duck: c.track === 'A2' && !!c.duck, duckState: 1 });
+    out.push({ m, s0: c.in, s1: c.out, t0: c.tl, gain, fin: Math.max(0.008, c.fadeIn || 0), fout: Math.max(0.008, c.fadeOut || 0), duck: c.track === 'A2' && !!c.duck, duckState: 1, voice: c.track !== 'A2' });
   }
   return out;
 }
@@ -3945,7 +4160,7 @@ function gainCurve(g, ta, tb) {
   }
   return c;
 }
-async function renderAudioWindow(MB, plan, a, b, sr) {
+async function renderAudioWindow(MB, plan, a, b, sr, opt) {
   const len = Math.max(1, Math.round((b - a) * sr));
   const oc = new OfflineAudioContext(2, len, sr);
   for (const g of plan) {
@@ -3958,6 +4173,12 @@ async function renderAudioWindow(MB, plan, a, b, sr) {
     if (tb - ta < 1 / sr) continue;
     const gn = oc.createGain(); gn.connect(oc.destination);
     try { gn.gain.setValueCurveAtTime(gainCurve(g, ta, tb), ta - a, tb - ta); } catch (e) { gn.gain.value = g.gain; }
+    if (opt && opt.den && g.voice) { // voz sem ruído: o trecho passa pela RNNoise com meio segundo antes para ela aquecer
+      const pre = Math.min(0.5, sa), mono = await monoSegment(x, sa - pre, sb, 48000);
+      const clean = rnnDenoise(opt.den, mono).subarray(Math.round(pre * 48000));
+      if (clean.length) { const ab = new AudioBuffer({ length: clean.length, numberOfChannels: 1, sampleRate: 48000 }); ab.copyToChannel(clean, 0); const src = oc.createBufferSource(); src.buffer = ab; src.connect(gn); src.start(ta - a); }
+      continue;
+    }
     for await (const wb of x.asink.buffers(sa, sb)) {
       const buf = wb.buffer, bt = wb.timestamp;
       const off = Math.max(0, sa - bt);
@@ -4000,18 +4221,26 @@ async function renderToFile(MB, job) {
   if (acodec) { asrc = new MB.AudioBufferSource({ codec: acodec, bitrate: 192000 }); output.addAudioTrack(asrc); }
   const frames = mode === 'mont' ? montFrames(MB) : clipFrames(MB);
   const t0 = performance.now(); let lastUI = 0, nextA = 0; const AW = 4, SR = 48000;
+  let snd = null;
+  const addA = async (a, b) => {
+    const buf = await renderAudioWindow(MB, plan, a, b, SR, snd);
+    if (snd && snd.lim) { const o = snd.lim.run(buf.getChannelData(0), buf.getChannelData(1), buf.length); if (o.len) await asrc.add(toAudioBuffer(o, SR)); }
+    else await asrc.add(buf);
+  };
   try {
+    if (asrc) snd = await soundPrep(MB, plan, dur, f => job.onStage && job.onStage(`Medindo o volume… ${Math.round(f * 100)}%`));
     await output.start();
     for (let k = 0; k < N; k++) {
       if (exp.cancelled) throw Object.assign(new Error('cancel'), { code: 'cancel' });
       const T = k / fps;
-      while (asrc && nextA < dur - 1e-6 && nextA <= T + 0.5) { const b = Math.min(dur, nextA + AW); await asrc.add(await renderAudioWindow(MB, plan, nextA, b, SR)); nextA = b; }
+      while (asrc && nextA < dur - 1e-6 && nextA <= T + 0.5) { const b = Math.min(dur, nextA + AW); await addA(nextA, b); nextA = b; }
       await frames.draw(T);
       await vsrc.add(T, 1 / fps);
       const now = performance.now();
       if (now - lastUI > 120) { lastUI = now; job.onProgress((k + 1) / N, T, dur, T / Math.max(0.001, (now - t0) / 1000)); await new Promise(r => setTimeout(r, 0)); }
     }
-    while (asrc && nextA < dur - 1e-6) { const b = Math.min(dur, nextA + AW); await asrc.add(await renderAudioWindow(MB, plan, nextA, b, SR)); nextA = b; }
+    while (asrc && nextA < dur - 1e-6) { const b = Math.min(dur, nextA + AW); await addA(nextA, b); nextA = b; }
+    if (snd && snd.lim) { const o = snd.lim.flush(); if (o.len) await asrc.add(toAudioBuffer(o, SR)); }
     await frames.close();
     await output.finalize();
   } catch (e) {
@@ -4077,6 +4306,7 @@ async function exportVideo(opts = {}) {
         const label = `${total > 1 ? `${idx} de ${total} · ` : ''}${aspects.length > 1 ? a + ' · ' : ''}`;
         const r = await renderToFile(MB, {
           base, aspectTag: aspects.length > 1, sub: (DESK || siteDir) && (opts.all || aspects.length > 1 || opts.pack) ? videoBase : null,
+          onStage: t => { $('#expTxt').textContent = label + t; },
           onProgress: (f, T, dur, speed) => { $('#expBar').style.width = (f * 100).toFixed(1) + '%'; $('#expTxt').textContent = `${label}${Math.round(f * 100)}% · ${fmtT(T)} de ${fmtT(dur)} · ${speed >= 1 ? speed.toFixed(1).replace('.', ',') + '× mais rápido que o tempo real' : 'processando'}`; }
         });
         results.push(r);

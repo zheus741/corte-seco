@@ -26,6 +26,13 @@ Vários vídeos numa edição só (pode soltar uma música junto):
 Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
 A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
 
+## Som de rede social (em Exportar)
+- **Volume de rede social** (ligado): mede o volume da edição inteira (ITU-R BS.1770, o mesmo das plataformas) e
+  exporta em −14 LUFS, com um limitador que não deixa passar de −1,5 dB.
+- **Tirar ruído da voz** (desligado): passa a fala pela RNNoise (rede neural da Xiph, roda no computador). Tira
+  ventilador, rua e chiado; música da trilha A2 não passa por ela. Em jogo ou show, deixe desligado: tira a torcida junto.
+- "Antes" e "Depois" tocam 8 s a partir do cursor para comparar.
+
 ## Versão web
 **https://corte-seco.vercel.app** — abra no Chrome ou no Edge (no Mac ou no Windows). Tudo roda no navegador: o vídeo não é enviado para lugar nenhum.
 - Para ter um ícone no Dock: menu do Chrome → "Instalar Corte Seco". Depois da primeira visita, abre até sem internet.
