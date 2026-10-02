@@ -27,7 +27,9 @@ jobs:
           mkdir -p dmgroot && cp -R "$D/Corte Seco.app" dmgroot/ && ln -s /Applications dmgroot/Aplicativos
           hdiutil create -volname "Corte Seco" -srcfolder dmgroot -ov -format UDZO "dist/Corte-Seco-$V-mac-${{ matrix.arch }}.dmg"
       - uses: actions/upload-artifact@v4
-        with: { name: mac-${{ matrix.arch }}, path: "dist/Corte-Seco-*-mac-*" }
+        with:
+          name: mac-${{ matrix.arch }}
+          path: dist/Corte-Seco-*-mac-*
   windows:
     runs-on: windows-latest
     steps:
@@ -37,7 +39,9 @@ jobs:
       - run: npm ci
       - run: npx electron-builder --win nsis --x64 --publish never
       - uses: actions/upload-artifact@v4
-        with: { name: windows, path: "dist/Corte-Seco-*-windows-*.exe" }
+        with:
+          name: windows
+          path: dist/Corte-Seco-*-windows-*.exe
   release:
     needs: [mac, windows]
     runs-on: ubuntu-latest

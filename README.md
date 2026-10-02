@@ -22,9 +22,38 @@ Vários vídeos numa edição só (pode soltar uma música junto):
 - **Aftermovie:** escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem de gravação.
 - **Depoimentos:** transcreve todos e junta as melhores frases de cada pessoa, alternando quem fala, com o nome de cada uma.
 - **Fala + imagens de apoio:** o vídeo de quem fala fica inteiro, com cenas dos outros por cima, sem som.
+- **Podcast com várias câmeras:** uma câmera por pessoa e, se tiver, um plano aberto. Sincroniza as câmeras pelo som
+  (dá para soltar o som do gravador junto), corta para a câmera de quem fala, vai para o plano aberto quando falam ao
+  mesmo tempo ou quando alguém fala muito tempo seguido, e o som fica um só do começo ao fim. A legenda vem do som principal.
+  Funciona melhor com cada câmera gravando o próprio som (o microfone mais perto de cada pessoa decide o corte).
 
 Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
 A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
+
+## Transições, velocidade e cor (na Edição)
+- **Transição nos cortes:** Zoom, Chicote ou Flash. Acontece no próprio corte (0,2 s antes e depois), sem sobrepor
+  clipes. Clique num clipe do V1 para escolher a dele, ou, sem nada selecionado, aplique em todos os cortes.
+- **Velocidade:** 0,25× a 2× por clipe. O que vem depois anda junto; o som estica sem mudar o tom (WSOLA na
+  exportação, o próprio navegador na prévia).
+- **Cor:** brilho, contraste, saturação e temperatura por clipe. **Igualar a cor dos vídeos** mede quadros de cada
+  vídeo e iguala balanço de branco, brilho e contraste com o vídeo de referência (bom para câmeras diferentes).
+
+## Procurar na imagem (coluna Cortes)
+Para o que aparece e não é falado (o produto na mão, um gol sem narração): escreva o que procura e clique em
+**Procurar na imagem (IA)**. O Claude olha quadros pequenos do vídeo (um a cada 1,5 a 6 s, com a sua chave) e os
+quadros que mostram o pedido viram cortes. Antes de enviar, o app mostra quantos quadros vão e pede confirmação.
+
+## Legenda traduzida (aba Legenda)
+Escolha o idioma e clique em **Traduzir**: a IA do Claude traduz a fala trecho por trecho (só o texto é enviado).
+As palavras traduzidas ocupam o tempo da fala original do mesmo trecho, então a legenda continua acompanhando quem
+fala e some junto com o que a limpeza tirou. Dá para revisar a tradução, corrigir no monitor e voltar à original.
+O vídeo e o .srt saem no idioma que estiver na tela (o .srt ganha o código do idioma no nome).
+
+## Abertura e tela final (aba Logo e formato)
+- **Abertura:** vinheta com o logo ou com um título (o gancho do corte, se não escrever outro).
+- **Tela final:** chamada para ação ("Link na bio", "Siga para ver mais"...) e o seu @.
+Usam o logo, a fonte e a cor de destaque da legenda, e ficam salvos no kit de marca. Entram só no arquivo exportado;
+o .srt junto é empurrado pela abertura para continuar batendo com o vídeo.
 
 ## Som de rede social (em Exportar)
 - **Volume de rede social** (ligado): mede o volume da edição inteira (ITU-R BS.1770, o mesmo das plataformas) e
@@ -49,6 +78,8 @@ A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
 - **Windows:** rode o `instalador.exe`. Se o SmartScreen avisar: "Mais informações" → "Executar assim mesmo".
 
 ## Transcrição
+- No navegador (e no Mac Intel), vários motores trabalham ao mesmo tempo, cada um com mais de um núcleo quando a
+  página permite; vídeo curto é dividido em trechos menores para todos trabalharem juntos.
 - **Rápida** vem instalada.
 - **Precisa** (375 MB) e **Máxima** (1 GB, a melhor em português) baixam uma vez, na primeira vez que você usar.
 

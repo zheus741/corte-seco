@@ -177,7 +177,7 @@ details.more[open]>summary{margin-bottom:10px}
 .mod-group{display:grid;gap:10px}
 .mod-group h2{display:flex;align-items:center;gap:12px;font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
 .mod-group h2::after{content:"";flex:1;height:1px;background:var(--line)}
-.mods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:10px}
 .mod{position:relative;display:grid;grid-template-rows:auto auto 1fr;gap:5px;align-content:start;text-align:left;padding:16px 16px 15px;border:1px solid var(--line2);border-radius:0;background:var(--panel);color:var(--ink);cursor:pointer;min-height:156px;font:inherit;transition:border-color .15s,background .15s,transform .18s,box-shadow .15s;animation:modIn .5s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 45ms)}
 @keyframes modIn{from{opacity:0;transform:translateY(12px)}}
 .mod:hover,.mod:focus-visible,.mod.over{border-color:var(--amber);background:#1A1812;transform:translateY(-2px)}
@@ -223,6 +223,10 @@ details.more[open]>summary{margin-bottom:10px}
 :is(.mod:hover,.mod:focus-visible,.step-ico) .mi-talk .tb{animation:talk 1.3s .65s infinite}
 @keyframes talk{0%,40%{opacity:1}50%,90%{opacity:.3}}
 :is(.mod:hover,.mod:focus-visible,.step-ico) .mi-over .c1{animation:slideI 1.5s ease-in-out infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-pod .w1{animation:talk 1s infinite}
+:is(.mod:hover,.mod:focus-visible,.step-ico) .mi-pod .w2{animation:talk 1s .5s infinite}
+.mm-name.pod-cam{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) auto}
+@media (max-width:520px){ .mm-name.pod-cam{grid-template-columns:1fr} }
 @keyframes slideI{50%{transform:translate(-2px,1.5px)}}
 /* a module, open: what to do, the few options it needs and where to drop */
 .step{display:grid;gap:20px;animation:stepIn .38s cubic-bezier(.2,.7,.2,1) backwards}
@@ -423,6 +427,18 @@ details.more[open]>summary{margin-bottom:10px}
 
 .export-card{border:1px solid var(--line);border-radius:0;padding:14px;display:grid;gap:10px;background:var(--raise)}
 .srt-row{display:grid;gap:6px;justify-items:start}
+.card-opts{display:grid;gap:8px;padding:2px 0 8px 12px;border-left:2px solid var(--line2)}
+.card-opts .chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip-btn{padding:4px 8px;font-size:12px;border:1px solid var(--line2);border-radius:0;background:var(--well);color:var(--ink2);cursor:pointer}
+.chip-btn:hover{border-color:#4a4c52;color:var(--ink)}
+.chip-btn[aria-pressed="true"]{border-color:var(--amber);color:var(--ink);box-shadow:inset 0 0 0 1px var(--amber)}
+.card-row{align-items:center;gap:8px;flex-wrap:wrap}
+.card-row input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line2);background:none}
+.tr-field{gap:6px}
+.tr-field select{flex:1;min-width:0}
+.tr-review{display:grid;gap:10px;max-height:60vh;overflow:auto;padding-right:4px}
+.tr-row{display:grid;gap:4px}
+.tr-row textarea{width:100%;font:inherit;font-size:14px;padding:6px 8px;background:var(--well);color:var(--ink);border:1px solid var(--line2)}
 .snd-field{gap:4px}
 .snd-field .switch>span{display:grid;gap:2px}
 .snd-field .switch small{font-size:11.5px;color:var(--mute);line-height:1.35}
@@ -581,6 +597,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs id="ccDefs"></defs></svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <clipPath id="lmUp" clipPathUnits="userSpaceOnUse"><polygon points="0,0 100,0 100,19.4 0,69.4"/></clipPath>
   <clipPath id="lmDn" clipPathUnits="userSpaceOnUse"><polygon points="0,75.4 100,25.4 100,100 0,100"/></clipPath>
@@ -736,6 +753,8 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
       <p class="fine" id="findNote">Procura sem internet: palavras na fala e picos de som (torcida, narração, risada). Em branco, os melhores trechos.</p>
       <button class="btn ai block" id="aiBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.8 4.9L19 9.5l-5.2 1.7L12 16l-1.8-4.8L5 9.5l5.2-1.6z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Achar com a IA do Claude</span></button>
       <p class="fine" id="aiNote">Para pedidos mais abertos. Só o texto da transcrição vai para o Claude; o vídeo fica aqui.</p>
+      <button class="btn ai block" id="visBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Procurar na imagem (IA)</span></button>
+      <p class="fine" id="visNote">Para o que aparece e não é falado (o produto na tela, um gol sem narração). O Claude olha quadros pequenos do vídeo; só envia depois que você confirmar.</p>
     </div>
     <div class="clip-list" id="clipList"></div>
   </aside>
@@ -778,6 +797,12 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
       <div class="pane" data-p="clip" hidden><div class="ec" id="ecBox"></div></div>
       <div class="pane" data-p="cap">
         <label class="switch"><span>Mostrar legenda</span><input type="checkbox" data-bind="style.on"></label>
+        <div class="field tr-field" id="trField"><h4>Tradução</h4>
+          <div class="row" style="flex-wrap:nowrap"><select id="trLang" aria-label="Traduzir a legenda para"></select><button type="button" class="btn" id="trBtn">Traduzir</button></div>
+          <label class="switch" id="trShowRow" hidden><span>Mostrar a legenda traduzida</span><input type="checkbox" id="trShow"></label>
+          <span class="fine" id="trNote">A IA do Claude traduz a fala (precisa da sua chave). Só o texto é enviado; o vídeo fica no computador.</span>
+          <button type="button" class="linkbtn" id="trReview" hidden>Revisar a tradução</button>
+        </div>
         <div class="field"><h4>Estilos virais</h4><div class="presets" id="presets"></div></div>
         <div class="field"><h4>Estilos limpos</h4><div class="presets" id="presets2"></div></div>
         <div class="row"><button class="btn" id="savePreset">Salvar estilo atual</button><span class="fine" id="presetNote"></span></div>
@@ -845,6 +870,23 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
           <div class="row" style="flex-wrap:nowrap"><select id="kitSel"><option value="">Escolha um kit…</option></select><button class="btn" id="kitSave">Salvar atual</button></div>
           <div class="row"><button class="btn ghost" id="kitExport">Compartilhar kit (.json)</button><label class="btn ghost" style="position:relative;overflow:hidden">Importar kit<input type="file" id="kitIn" accept=".json,application/json" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label><button class="btn ghost" id="kitDel">Apagar</button></div>
         </div>
+        <div class="hr"></div>
+        <h4 id="cardHead">Abertura e final</h4>
+        <label class="switch"><span>Abertura <small class="fine">vinheta antes do vídeo</small></span><input type="checkbox" id="introOn" data-bind="fmt.intro"></label>
+        <div class="card-opts" data-show="fmt.intro">
+          <div class="seg seg-full" data-seg="fmt.introKind"><button data-v="logo">Logo</button><button data-v="title">Título</button></div>
+          <div class="field"><label for="introText">Texto do título</label><input type="text" id="introText" data-bind="fmt.introText" maxlength="80" placeholder="Usa o gancho do corte"></div>
+          <div class="field"><label>Duração <output data-out="fmt.introDur" data-fmt="s"></output></label><input type="range" min="0.8" max="4" step="0.1" data-bind="fmt.introDur"></div>
+        </div>
+        <label class="switch"><span>Tela final <small class="fine">chamada para ação depois do vídeo</small></span><input type="checkbox" id="outroOn" data-bind="fmt.outro"></label>
+        <div class="card-opts" data-show="fmt.outro">
+          <div class="chips" id="ctaChips"></div>
+          <div class="field"><label for="outroCta">Chamada</label><input type="text" id="outroCta" data-bind="fmt.outroCta" maxlength="60"></div>
+          <div class="field"><label for="outroHandle">Seu perfil <small class="fine">opcional</small></label><input type="text" id="outroHandle" data-bind="fmt.outroHandle" maxlength="40" placeholder="@seuperfil"></div>
+          <div class="field"><label>Duração <output data-out="fmt.outroDur" data-fmt="s"></output></label><input type="range" min="1.5" max="6" step="0.5" data-bind="fmt.outroDur"></div>
+        </div>
+        <div class="row card-row"><span class="fine">Fundo</span><input type="color" data-bind="fmt.cardBg" aria-label="Cor do fundo da abertura e do final"><button type="button" class="btn ghost" id="introPrev">▶ Abertura</button><button type="button" class="btn ghost" id="outroPrev">▶ Final</button></div>
+        <p class="fine">Usa o logo, a fonte e a cor de destaque da legenda (o kit de marca). Entra só no arquivo exportado.</p>
         <div class="hr"></div>
         <div class="field"><h4>Preenchimento</h4>
           <div class="seg" data-seg="fmt.fit"><button data-v="crop">Cortar</button><button data-v="blur">Fundo desfocado</button><button data-v="solid">Cor sólida</button></div>
@@ -1168,7 +1210,8 @@ const st = {
   opts: { lang: 'pt', model: 'base', clipLen: '15-30', goal: 'cuts' },
   cuts: { silence: true, thr: null, lvlD: 0, minSil: 0.45, pad: 0.08, fillers: true, fillerList: 'ahn, ãh, hã, hum, humm, hmm, éé, ééé, eee, uh, uhm, um', takes: true },
   style: Object.assign({ preset: 'impacto' }, STYLE_BASE, PRESETS.impacto),
-  fmt: { aspect: '9:16', fit: 'crop', bg: '#0E0F11', x: 0.5, y: 0.5, zoom: 1, autoZoom: true, zoomAmt: 1.12, hook: true, hookDur: 3, progress: false, autoFrame: true },
+  fmt: { aspect: '9:16', fit: 'crop', bg: '#0E0F11', x: 0.5, y: 0.5, zoom: 1, autoZoom: true, zoomAmt: 1.12, hook: true, hookDur: 3, progress: false, autoFrame: true,
+    intro: false, introKind: 'logo', introDur: 1.6, introText: '', outro: false, outroCta: 'Siga para ver mais', outroHandle: '', outroDur: 3, cardBg: '#0E0F11' },
   reframe: null, // {segs:[{a,b,cx}], n} from the face scan
   removed: [], removedKinds: { sil: 0, fill: 0, take: 0, del: 0 }, ranges: [], pages: [], autoWord: new Set(), takeSegs: new Set(),
   brand: { on: false, pos: 'tr', size: 0.16, opacity: 0.92, logo: null, tags: '' },
@@ -1355,6 +1398,7 @@ const MOD_ICONS = {
   lances: '<svg class="mi mi-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="ball"><circle cx="15" cy="12" r="6.2"/><path d="M15 9.3l2.4 1.75-.9 2.8h-3l-.9-2.8z"/></g><path class="trail" d="M2.5 9h3.5M1.5 12h4.5M2.5 15h3.5"/></svg>',
   after: '<svg class="mi mi-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="nt"><path d="M9 18V5.5l12-2.2v12.6"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></g><path class="fr" d="M9 9.5l12-2.2"/></svg>',
   depo: '<svg class="mi mi-talk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="ta" d="M3 4h11v8H8l-3 3v-3H3z"/><path class="tb" d="M17 8h4v9h-2v3l-3-3h-6v-2"/></svg>',
+  pod: '<svg class="mi mi-pod" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect class="mic" x="9.5" y="2.5" width="5" height="10" rx="2.5"/><path d="M6.5 10.5a5.5 5.5 0 0 0 11 0M12 16v4.5M8.5 20.5h7"/><path class="w1" d="M3 8v5"/><path class="w2" d="M21 8v5"/></svg>',
   apoio: '<svg class="mi mi-over" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M2 20c0-3.3 2.2-5.5 5-5.5s5 2.2 5 5.5"/><g class="c1"><rect x="13" y="3.5" width="8" height="6.5"/><path d="M13 9l2.5-2.2 2 1.6 3.5-3"/></g><rect x="15" y="13" width="6" height="7"/></svg>'
 };
 const MODS = {
@@ -1365,6 +1409,7 @@ const MODS = {
   lances: { g: 'many', multi: 'lances', t: 'Melhores lances', d: 'Jogos e eventos: junta os momentos em que o som explode.', how: ['Solte os vídeos', 'Ele acha torcida e narração', 'Sai um vídeo só com os lances'], long: 'Acha os gritos da torcida e a narração que explode em cada vídeo e junta os lances. Lance sem torcida nem narração passa batido.' },
   after: { g: 'many', multi: 'after', t: 'Aftermovie', d: 'Vídeos de celular de um evento, no ritmo da música.', how: ['Escolha a música', 'Solte os vídeos', 'Ele corta na batida'], long: 'Escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem em que foram gravados.' },
   depo: { g: 'many', multi: 'depo', t: 'Depoimentos', d: 'Várias pessoas falando: as melhores frases de cada uma.', how: ['Solte um vídeo por pessoa', 'Confira os nomes', 'Ele alterna as melhores frases'], long: 'Transcreve todos e junta as frases mais completas e fortes de cada pessoa, alternando quem fala, com o nome na tela.' },
+  pod: { g: 'many', multi: 'pod', t: 'Podcast com várias câmeras', d: 'Uma câmera por pessoa: corta para quem está falando.', how: ['Solte um vídeo por câmera', 'Diga quem aparece em cada uma', 'Ele sincroniza e corta para quem fala'], long: 'Sincroniza as câmeras pelo som, corta para a câmera de quem fala e vai para o plano aberto quando falam juntos. O som fica um só, do começo ao fim.' },
   apoio: { g: 'many', multi: 'apoio', t: 'Fala + imagens de apoio', d: 'Quem fala fica inteiro; as cenas entram por cima.', how: ['Solte a fala e as cenas', 'Confira quem fala', 'As cenas entram por cima, sem som'], long: 'O vídeo de quem fala fica inteiro e as cenas dos outros vídeos entram por cima a cada poucos segundos, sem som.' }
 };
 const MOD_GO = '<svg class="m-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
@@ -1405,7 +1450,7 @@ function openMod(k, files) {
   inp.accept = multi ? 'video/*,audio/*,.mov,.mp4,.webm,.mkv,.m4v,.mp3,.wav,.m4a,.aac,.ogg,.flac' : 'video/*,.mov,.mp4,.webm,.mkv,.m4v';
   inp.setAttribute('aria-label', multi ? 'Escolher os vídeos' : 'Escolher o vídeo');
   $('#dzTitle').textContent = multi ? 'Solte os vídeos aqui' : 'Solte o vídeo aqui';
-  $('#dzHint').textContent = multi ? `ou clique para escolher${k === 'depo' ? ' · um vídeo por pessoa' : k === 'apoio' ? ' · a fala e as cenas' : ''} · pode soltar a música junto` : 'ou clique para escolher · MP4, MOV ou WebM · vários de uma vez viram uma fila';
+  $('#dzHint').textContent = k === 'pod' ? 'ou clique para escolher · um vídeo por câmera · pode soltar o som do gravador junto' : multi ? `ou clique para escolher${k === 'depo' ? ' · um vídeo por pessoa' : k === 'apoio' ? ' · a fala e as cenas' : ''} · pode soltar a música junto` : 'ou clique para escolher · MP4, MOV ou WebM · vários de uma vez viram uma fila';
   $('#srtField').hidden = multi;
   syncSetSummary();
   $('#home').hidden = true;
@@ -1442,6 +1487,12 @@ function modGo(files) {
 async function multiGo(files) {
   const mode = MODS[curMod].multi;
   const auds = files.filter(f => mediaKindOfFile(f) === 'audio'), vids = files.filter(f => mediaKindOfFile(f) === 'video');
+  if (mode === 'pod') {
+    if (vids.length < 2) { toast('Solte pelo menos 2 vídeos: um por câmera.', 4000); return; }
+    vids.sort((a, b) => a.name.localeCompare(b.name));
+    const ch = await podDialog(vids, auds[0] || null, null); if (!ch) return;
+    return runMulti(vids, ch);
+  }
   if (auds[0]) setMStepMusic(auds[0]);
   if (!vids.length) { toast(auds.length ? 'Música escolhida. Agora solte os vídeos.' : 'Solte os vídeos (e, se quiser, uma música).'); return; }
   if ((mode === 'apoio' || mode === 'depo') && vids.length < 2) { toast(mode === 'depo' ? 'Solte pelo menos 2 vídeos: um por pessoa.' : 'Solte pelo menos 2 vídeos: a fala e uma cena.', 4000); return; }
@@ -1589,7 +1640,7 @@ function resetAll() {
   if (typeof montages !== 'undefined') { montages = {}; OFFLINE = new Map(); M.clips = []; M.key = null; for (const [id, m] of MEDIA) { if (id !== 'm0') { m.els.forEach(el => { el.pause(); el.remove(); }); URL.revokeObjectURL(m.url); } } MEDIA.clear(); }
   if (st.url) URL.revokeObjectURL(st.url);
   vid.removeAttribute('src'); vid.load();
-  Object.assign(st, { file: null, url: null, dur: 0, vw: 0, vh: 0, env: null, segs: [], words: [], clips: [], cur: null, sel: null, removed: [], ranges: [], pages: [], reframe: null, multi: null });
+  Object.assign(st, { file: null, url: null, dur: 0, vw: 0, vh: 0, env: null, segs: [], words: [], clips: [], cur: null, sel: null, removed: [], ranges: [], pages: [], reframe: null, multi: null, trl: null });
   if (typeof MX_PENDING !== 'undefined') MX_PENDING = new Map();
   if (typeof rfJob !== 'undefined' && rfJob) rfJob.cancel = true;
   setFileInfo();
@@ -1830,7 +1881,7 @@ async function loadModel(name, myWork) {
   return modelCache[name];
 }
 
-function spawnWorker(m, name) {
+function spawnWorker(m, name, threads) {
   return new Promise((res, rej) => {
     let w;
     try { w = new Worker(BASE + 'asr-worker.js'); } catch (e) { return rej(e); }
@@ -1840,7 +1891,7 @@ function spawnWorker(m, name) {
       else if (e.data.type === 'error') { clearTimeout(to); w.terminate(); rej(new Error(e.data.message)); }
     };
     w.onerror = e => { clearTimeout(to); rej(new Error(e.message || 'falha ao iniciar o motor')); };
-    w.postMessage({ type: 'init', base: BASE, model: name, enc: m.enc, dec: m.dec, tokens: m.tokens, wasmBinary: m.wasm.buffer.slice(0) });
+    w.postMessage({ type: 'init', base: BASE, model: name, enc: m.enc, dec: m.dec, tokens: m.tokens, wasmBinary: m.wasm.buffer.slice(0), threads: threads || 1 });
   });
 }
 
@@ -1857,7 +1908,15 @@ function runChunk(w, id, pcm, lang) {
 }
 
 /* the transcription engine: native (desktop) or Web Workers (browser); both run chunks in parallel */
-async function asrEngine(name, myWork) {
+/* quantos motores e quantos núcleos em cada: vídeo curto usa menos motores com mais núcleos cada */
+function asrPlan(name, nChunks) {
+  const cores = navigator.hardwareConcurrency || 4, cap = name === 'base' ? 3 : 4;
+  const nW = clamp(Math.min(Math.floor(cores / 2), nChunks || 99), 1, cap);
+  const iso = self.crossOriginIsolated === true, forced = +store.get('cs:asrThreads', 0);
+  const threads = forced > 0 ? forced : iso ? clamp(Math.floor((cores - 1) / nW), 1, 4) : 1;
+  return { nW, threads: iso ? threads : 1, cores };
+}
+async function asrEngine(name, myWork, nChunks) {
   if (DESK && deskModels) {
     const mi = deskModels.find(m => m.id === name) || deskModels[0];
     if (!mi.installed) {
@@ -1873,15 +1932,15 @@ async function asrEngine(name, myWork) {
   }
   const m = await loadModel(name, myWork);
   if (myWork.cancelled) throw new Error('cancel');
-  const cores = navigator.hardwareConcurrency || 4;
-  const nW = clamp(Math.floor(cores / 2), 1, name === 'base' ? 3 : 4);
+  const { nW, threads } = asrPlan(name, nChunks);
   stage('model', 'on', 'iniciando o motor');
-  const first = await spawnWorker(m, name);
+  const first = await spawnWorker(m, name, threads);
   myWork.workers.push(first);
-  stage('model', 'done', `${name === 'base' ? 'preciso' : 'rápido'} · ${nW} ${nW > 1 ? 'núcleos' : 'núcleo'}`);
+  const nc = nW * threads;
+  stage('model', 'done', `${name === 'base' ? 'preciso' : 'rápido'} · ${nc} ${nc > 1 ? 'núcleos' : 'núcleo'}`);
   // extra workers boot while the first one starts transcribing
   const extra = [];
-  for (let i = 1; i < nW; i++) extra.push(spawnWorker(m, name).then(w => { if (myWork.cancelled) { w.terminate(); return null; } myWork.workers.push(w); return w; }).catch(() => null));
+  for (let i = 1; i < nW; i++) extra.push(spawnWorker(m, name, threads).then(w => { if (myWork.cancelled) { w.terminate(); return null; } myWork.workers.push(w); return w; }).catch(() => null));
   return {
     slots: [Promise.resolve(first), ...extra],
     run: async (slot, i, pcm, lang) => runChunk(await slot, i, pcm, lang),
@@ -1892,9 +1951,14 @@ async function asrEngine(name, myWork) {
 async function runASR(pcm, myWork, o = {}) {
   const name = st.opts.model, SK = o.stageKey || 'asr', DUR = o.dur || st.dur;
   stage('model', 'on');
-  const E = await asrEngine(name, myWork);
+  // trechos de até 28 s; num vídeo curto, trechos menores para todos os motores trabalharem ao mesmo tempo
+  let chunks = WhisperCore.planChunks(pcm, 28);
+  if (!(DESK && deskModels)) {
+    const sp = chunks.reduce((a, c) => a + (c.end - c.start), 0), want = asrPlan(name, 99).nW;
+    if (want > 1 && chunks.length < want && sp > 24) chunks = WhisperCore.planChunks(pcm, clamp(sp / want + 1, 12, 28));
+  }
+  const E = await asrEngine(name, myWork, chunks.length);
   if (myWork.cancelled) return;
-  const chunks = WhisperCore.planChunks(pcm, 28);
   const speechTotal = chunks.reduce((a, c) => a + (c.end - c.start), 0) || 1;
   const results = new Array(chunks.length);
   let next = 0, flushed = 0, doneSec = 0;
@@ -2025,7 +2089,7 @@ function saveProject() {
       v: 1, lang: st.lang,
       segs: st.segs.map(s => ({ start: s.start, end: s.end, text: s.text, words: s.words.map(w => ({ w: w.w, start: w.start, end: w.end, del: w.del || undefined, nocap: w.nocap || undefined, emph: w.emph })) })),
       clips: st.clips, cur: st.cur, mont: montages, reframe: st.reframe, media: mediaMeta(), smart: smartNow(), lt: { on: !!st.lt.on },
-      multi: st.multi || undefined, mx: st.multi ? mxForProject() : undefined
+      multi: st.multi || undefined, mx: st.multi ? mxForProject() : undefined, trl: st.trl || undefined
     };
     const key = st.multi ? st.multi.key : projectKey(st.file, st.model);
     idb.putProj(key, data).then(ok => { if (!ok) store.set(key, data); else { try { localStorage.removeItem(key); } catch (e) {} } markSaved(); });
@@ -2044,6 +2108,7 @@ function restoreProject(d) {
   setSmart(d.smart && typeof d.smart === 'object' ? d.smart : smartPick);
   st.lt.on = !!(d.lt && d.lt.on);
   st.multi = d.multi && d.multi.key ? d.multi : null;
+  st.trl = d.trl && d.trl.map ? d.trl : null; if (typeof trInvalidate === 'function') trInvalidate();
   MX_PENDING = new Map(Object.entries(d.mx || {}));
   OFFLINE = new Map((d.media || []).filter(x => x && x.id).map(x => [x.id, x]));
   relinkOffline();
@@ -2390,6 +2455,74 @@ function applyFound(got, what) {
   st.clips = [full, ...got, ...st.clips.filter(c => c.src === 'manual')];
   selectClip(got[0].id);
 }
+/* ---------------- procurar na imagem: o Claude olha quadros pequenos do vídeo ---------------- */
+async function grabFrames(m, times, w) {
+  const MB = await loadMB(), x = await mbMedia(MB, m); if (!x.vsink) return [];
+  const h = Math.round(w * (m.h || st.vh || 9) / (m.w || st.vw || 16)), c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'), out = []; let k = 0;
+  for await (const smp of x.vsink.samplesAtTimestamps(times)) {
+    const t = times[k++];
+    if (!smp) continue;
+    try { smp.draw(g, 0, 0, w, h); out.push({ t, data: c.toDataURL('image/jpeg', 0.62).split(',')[1] }); } finally { smp.close(); }
+  }
+  return out;
+}
+async function visualFind(q, o = {}) {
+  const sample = window.__csAI || await sampleP;
+  if (!sample || (!sample.desk && !window.__csAI)) { toast('Procurar na imagem usa a IA do Claude com a sua chave, que não está disponível aqui.', 4500); return null; }
+  if (sample.desk && !window.__csAI && !(await SETTINGS.get()).claudeKey) { toast('Cole a sua chave do Claude para procurar na imagem.', 3500); if (SITE) window.openSiteSettings(); else openSettings(); return null; }
+  const m = ensureMainMedia(), dur = st.dur || m.dur || 0; if (!(dur > 1)) return null;
+  const step = clamp(dur / 150, 1.5, 6), times = []; for (let t = step / 2; t < dur; t += step) times.push(+t.toFixed(2));
+  if (!o.yes) {
+    const p = document.createElement('p'); p.textContent = `Para procurar “${q}” na imagem, ${times.length} quadros pequenos do vídeo (um a cada ${fmtOut(step, 's').replace('.', ',')}) vão para a IA do Claude, com a sua chave. O vídeo inteiro não sai do computador.`;
+    if ((await openModal('Procurar na imagem', p, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Enviar e procurar', value: 'go', primary: true }])) !== 'go') return null;
+  }
+  const btn = $('#visBtn'), lab = btn.querySelector('span'), old = lab.textContent; btn.disabled = true;
+  try {
+    lab.innerHTML = '<span class="spin"></span> Pegando os quadros…';
+    const frames = await grabFrames(m, times, 320);
+    if (!frames.length) { toast('Não consegui ler as imagens desse vídeo.'); return null; }
+    const hits = [];
+    for (let a = 0; a < frames.length; a += 24) {
+      const part = frames.slice(a, a + 24);
+      lab.innerHTML = `<span class="spin"></span> Olhando ${Math.min(a + 24, frames.length)} de ${frames.length}…`;
+      const prompt = `Acima estão quadros de um vídeo, cada um com o tempo (em segundos) em que aparece. Pedido de quem está editando: "${q.replace(/"/g, "'")}".
+Diga quais quadros mostram o que foi pedido. Seja exigente: só marque o que realmente aparece na imagem.
+Responda só com JSON: {"m":[{"t":12.5,"s":8,"o":"o que aparece, em poucas palavras"}]}  (s = certeza de 0 a 10; se nenhum quadro mostrar, responda {"m":[]})`;
+      const data = await sample.json(prompt, { modelTier: 'default', images: part.map(f => ({ label: `Quadro em ${f.t.toFixed(1)} s:`, data: f.data, mime: 'image/jpeg' })) });
+      const arr = (data && (data.m || data.matches)) || (Array.isArray(data) ? data : []);
+      for (const r of arr) { const t = +r.t, sc = +r.s; if (isFinite(t) && sc >= 6) hits.push({ t, s: sc, o: String(r.o || '').slice(0, 80) }); }
+    }
+    return { hits: hits.sort((x, y) => x.t - y.t), step };
+  } catch (e) {
+    const code = e && e.code; toast(code === 'bad_key' ? 'A chave do Claude não foi aceita. Confira em Configurações.' : 'Não deu para procurar na imagem: ' + String((e && (e.message || code)) || e).slice(0, 120), 6000); return null;
+  } finally { btn.disabled = false; lab.textContent = old; }
+}
+/* os quadros marcados viram cortes: quadros seguidos são um momento só */
+function visualClips(r, q) {
+  const [mn, mx] = lenRange(), moments = [];
+  for (const h of r.hits) { const l = moments[moments.length - 1]; if (l && h.t - l.b <= r.step * 1.6) { l.b = h.t; l.s = Math.max(l.s, h.s); if (!l.o) l.o = h.o; } else moments.push({ a: h.t, b: h.t, s: h.s, o: h.o }); }
+  const out = [];
+  for (const mo of moments.sort((x, y) => y.s - x.s).slice(0, 8)) {
+    const mid = (mo.a + mo.b) / 2, len = clamp(mo.b - mo.a + r.step * 2 + 4, mn, mx);
+    let a = clamp(mid - len / 2, 0, Math.max(0, st.dur - len)), b = Math.min(st.dur, a + len);
+    if (st.segs.length) { const si = st.segs.find(g => g.start <= a + 0.5 && g.end >= a); if (si && a - si.start < 3) a = Math.max(0, si.start - 0.1); b = capEnd(a, Math.min(st.dur, Math.max(b, a + mn)), mx); }
+    if (out.some(c => Math.min(c.end, b) - Math.max(c.start, a) > 0.4 * (b - a))) continue;
+    out.push({ id: newId(), title: mo.o ? mo.o.charAt(0).toUpperCase() + mo.o.slice(1) : `“${q}” aos ${fmtT(mid)}`, hook: '', start: +a.toFixed(3), end: +b.toFixed(3), score: Math.round(50 + mo.s * 4.5), src: 'busca', why: `A IA viu na imagem: ${mo.o || q} (aos ${fmtT(mo.a)}${mo.b > mo.a + 0.5 ? ` até ${fmtT(mo.b)}` : ''}).`, q });
+  }
+  return out.sort((x, y) => x.start - y.start);
+}
+async function visualFindCuts(o) {
+  const q = $('#findQ').value.trim();
+  if (!q) { toast('Escreva no campo acima o que procurar na imagem (ex.: o produto na mão, a bola entrando).', 4000); $('#findQ').focus(); return; }
+  st.opts.clipLen = $('#findLen').value; $('#optLen').value = st.opts.clipLen; store.set('cs:opts', st.opts);
+  const r = await visualFind(q, o); if (!r) return;
+  const got = visualClips(r, q);
+  if (!got.length) { toast(`A IA não viu “${q}” nas imagens. Nada mudou.`, 6000); return; }
+  applyFound(got, 'procurar na imagem');
+  toastAction(`${got.length} ${got.length === 1 ? 'corte' : 'cortes'} onde aparece “${q}”.`, 'Desfazer', undoLooks, 9000);
+}
+$('#visBtn').addEventListener('click', () => visualFindCuts());
 function findCuts() {
   if (!st.segs.length && !st.env) return;
   st.opts.clipLen = $('#findLen').value; $('#optLen').value = st.opts.clipLen; store.set('cs:opts', st.opts); syncSetSummary();
@@ -2487,7 +2620,7 @@ const capP = (name) => (window.claude && typeof window.claude.use === 'function'
 /* own site (not inside claude.ai, not the desktop app): folder export, API key, install, reopen by handle */
 const SITE = !DESK && !(window.claude && typeof window.claude.use === 'function');
 const SETTINGS = DESK ? DESK.settings : SITE ? { get: async () => store.get('cs:site', {}), set: async p => { const s = Object.assign({}, store.get('cs:site', {}), p); store.set('cs:site', s); return s; } } : null;
-async function claudeCall(key, prompt, model) {
+async function claudeCall(key, prompt, model) { // prompt: texto, ou a lista de blocos (imagens + texto)
   if (DESK) return DESK.ai.claude({ key, prompt, model, maxTokens: 6000 });
   const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model, max_tokens: 6000, messages: [{ role: 'user', content: prompt }] }) });
   const j = await r.json().catch(() => ({}));
@@ -2503,7 +2636,9 @@ function deskSampler() {
       if (!set.claudeKey) throw { code: 'no_key' };
       if (opts && opts.onText) opts.onText({});
       let text;
-      try { text = await claudeCall(set.claudeKey, prompt + '\n\nResponda somente com o JSON, sem texto antes ou depois.', set.claudeModel || 'claude-sonnet-5'); }
+      const tail = '\n\nResponda somente com o JSON, sem texto antes ou depois.';
+      const content = opts && opts.images && opts.images.length ? [...opts.images.flatMap(im => [{ type: 'text', text: im.label }, { type: 'image', source: { type: 'base64', media_type: im.mime || 'image/jpeg', data: im.data } }]), { type: 'text', text: prompt + tail }] : prompt + tail;
+      try { text = await claudeCall(set.claudeKey, content, set.claudeModel || 'claude-sonnet-5'); }
       catch (e) { const m = String(e && e.message || e); throw { code: /401|invalid x-api-key|authentication/i.test(m) ? 'bad_key' : /429|rate/i.test(m) ? 'rate_limited' : 'net', message: m }; }
       const m = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/); if (!m) throw { code: 'invalid_json' };
       try { return JSON.parse(m[0]); } catch (e) { throw { code: 'invalid_json' }; }
@@ -2695,7 +2830,8 @@ function buildPages() {
   const c = curClip(); st.pages = [];
   if (!c) return;
   const S = st.style;
-  const ws = st.words.filter(w => w.end > c.start && w.start < c.end && !w.del && !st.autoWord.has(w.i));
+  trInvalidate();
+  const ws = capWordsOf('m0').filter(w => { const o = w.src || w; return w.end > c.start && w.start < c.end && !o.del && !st.autoWord.has(o.i); });
   const max = Math.max(1, S.words | 0);
   let cur = [];
   const push = () => { if (cur.length) st.pages.push({ words: cur, start: cur[0].start, end: cur[cur.length - 1].end }); cur = []; };
@@ -2875,7 +3011,79 @@ function ltStylePicker(get, set) {
 
 /* draw a video frame: <video>/<img>/canvas via drawImage, decoded samples via their own draw (keeps rotation) */
 function blit(src, x, y, w, h) { if (src && typeof src.draw === 'function' && !(src instanceof Element)) src.draw(ctx, x, y, w, h); else ctx.drawImage(src, x, y, w, h); }
+/* ---------- abertura (vinheta) e tela final com chamada ---------- */
+const easeBack = k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const cardIn = () => st.fmt.intro ? clamp(+st.fmt.introDur || 1.6, 0.5, 4) : 0;
+const cardOut = () => st.fmt.outro ? clamp(+st.fmt.outroDur || 3, 1, 6) : 0;
+function wrapText(text, fs, maxW) { const out = []; let line = ''; for (const w of String(text).split(/\s+/).filter(Boolean)) { const t = line ? line + ' ' + w : w; if (line && ctx.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; } if (line) out.push(line); return out; }
+function drawCard(kind, t, D) {
+  const W = cv.width, H = cv.height, F = st.fmt, S = st.style, ac = S.hi || '#FFE14A', U = Math.min(W, H);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.save();
+  ctx.fillStyle = F.cardBg || '#0E0F11'; ctx.fillRect(0, 0, W, H);
+  const inE = easeOut(clamp(t / 0.5, 0, 1)), fade = kind === 'intro' ? clamp((D - t) / 0.25, 0, 1) : 1;
+  const font = (wt, px) => `${wt} ${px}px "${S.font}", "Arial Black", sans-serif`;
+  if (kind === 'intro') {
+    const c = MODE === 'mont' ? null : curClip();
+    const txt = (F.introText || (MODE === 'mont' ? M.hook : c && (c.hook || c.title)) || '').trim();
+    ctx.globalAlpha = fade;
+    if (F.introKind === 'logo' && logoImg) {
+      const sz = U * 0.4 * (0.82 + 0.18 * easeBack(clamp(t / 0.55, 0, 1))), r = logoImg.naturalWidth / Math.max(1, logoImg.naturalHeight);
+      const w = r >= 1 ? sz : sz * r, h = r >= 1 ? sz / r : sz;
+      ctx.globalAlpha = fade * inE; ctx.drawImage(logoImg, (W - w) / 2, H * 0.46 - h / 2, w, h);
+      const bw = U * 0.3 * easeOut(clamp((t - 0.25) / 0.5, 0, 1)); ctx.fillStyle = ac; ctx.fillRect((W - bw) / 2, H * 0.46 + h / 2 + U * 0.05, bw, U * 0.012);
+    } else {
+      const fs = U * (txt.length > 40 ? 0.085 : 0.11); ctx.font = font(S.weight || 900, fs); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+      const lines = wrapText(S.upper ? txt.toUpperCase() : txt, fs, W * 0.84).slice(0, 4), lh = fs * 1.08, y0 = H / 2 - (lines.length - 1) * lh / 2 + fs * 0.35;
+      lines.forEach((ln, i) => { const e = easeOut(clamp((t - i * 0.09) / 0.45, 0, 1)); ctx.globalAlpha = fade * e; ctx.fillStyle = i === lines.length - 1 && lines.length > 1 ? ac : (S.color || '#fff'); ctx.fillText(ln, W / 2, y0 + i * lh + (1 - e) * fs * 0.6); });
+      if (!lines.length && logoImg) { const sz = U * 0.36, r = logoImg.naturalWidth / Math.max(1, logoImg.naturalHeight); ctx.globalAlpha = fade * inE; ctx.drawImage(logoImg, (W - sz * Math.min(1, r)) / 2, (H - sz / Math.max(1, r)) / 2, sz * Math.min(1, r), sz / Math.max(1, r)); }
+      const bw = U * 0.22 * easeOut(clamp((t - 0.2) / 0.5, 0, 1)); ctx.globalAlpha = fade; ctx.fillStyle = ac; ctx.fillRect((W - bw) / 2, y0 + (lines.length - 1) * lh + fs * 0.45, bw, U * 0.012);
+    }
+  } else {
+    if (logoImg) { const sz = U * 0.16, r = logoImg.naturalWidth / Math.max(1, logoImg.naturalHeight), w = r >= 1 ? sz : sz * r, h = r >= 1 ? sz / r : sz; ctx.globalAlpha = inE; ctx.drawImage(logoImg, (W - w) / 2, H * 0.24 - h / 2, w, h); }
+    const cta = (F.outroCta || 'Siga para ver mais').trim(), fs = U * (cta.length > 22 ? 0.075 : 0.095);
+    ctx.font = font(S.weight || 900, fs); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lines = wrapText(S.upper ? cta.toUpperCase() : cta, fs, W * 0.78).slice(0, 3), lh = fs * 1.12;
+    const bw = Math.max(...lines.map(l => ctx.measureText(l).width)) + fs * 1.1, bh = lines.length * lh + fs * 0.7, cy = H * 0.5;
+    const k = easeBack(clamp(t / 0.5, 0, 1)); ctx.globalAlpha = clamp(t / 0.2, 0, 1);
+    ctx.translate(W / 2, cy); ctx.scale(0.7 + 0.3 * k, 0.7 + 0.3 * k); ctx.translate(-W / 2, -cy);
+    ctx.fillStyle = ac; roundRect(W / 2 - bw / 2, cy - bh / 2, bw, bh, fs * 0.35); ctx.fill();
+    ctx.fillStyle = lum(ac) > 0.6 ? '#111111' : '#FFFFFF'; lines.forEach((ln, i) => ctx.fillText(ln, W / 2, cy - (lines.length - 1) * lh / 2 + i * lh));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const hd = (F.outroHandle || '').trim();
+    if (hd) { const e = easeOut(clamp((t - 0.25) / 0.45, 0, 1)); ctx.globalAlpha = e; ctx.font = font(700, U * 0.06); ctx.fillStyle = S.color || '#fff'; ctx.fillText(hd, W / 2, cy + bh / 2 + U * 0.09 + (1 - e) * U * 0.03); }
+    const ay = cy + bh / 2 + U * (hd ? 0.19 : 0.1) + Math.sin(t * 7) * U * 0.012, as = U * 0.035; // setinha que pula
+    ctx.globalAlpha = clamp((t - 0.4) / 0.3, 0, 1); ctx.fillStyle = ac; ctx.beginPath(); ctx.moveTo(W / 2 - as, ay - as * 0.5); ctx.lineTo(W / 2 + as, ay - as * 0.5); ctx.lineTo(W / 2, ay + as * 0.6); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.textAlign = 'start';
+}
+var cardPrev = null; // var: drawFrame pode rodar antes desta linha
+function previewCard(kind) {
+  if (exporting) return;
+  if ((kind === 'intro' && !st.fmt.intro) || (kind === 'outro' && !st.fmt.outro)) { setPath(kind === 'intro' ? 'fmt.intro' : 'fmt.outro', true); onChange(kind === 'intro' ? 'fmt.intro' : 'fmt.outro'); }
+  pause(); if (MODE === 'mont') montPause();
+  if (kind === 'intro' && st.fmt.introKind === 'title' || kind === 'intro' && !logoImg) ensureFont(st.style.font, st.style.weight);
+  const D = kind === 'intro' ? cardIn() : cardOut(), me = { kind, t0: performance.now() };
+  cardPrev = me;
+  const tick = now => { if (cardPrev !== me) return; const t = (now - me.t0) / 1000; if (t > D + 0.4) { cardPrev = null; dirty = true; M.dirty = true; return; } drawCard(kind, Math.min(t, D), D); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+{
+  const box = $('#ctaChips');
+  for (const t of ['Siga para ver mais', 'Link na bio', 'Comente aqui embaixo', 'Salve para ver depois', 'Mande para alguém']) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn'; b.textContent = t;
+    b.onclick = () => { st.fmt.outroCta = t; onChange('fmt.outroCta'); };
+    box.appendChild(b);
+  }
+  $('#introPrev').addEventListener('click', () => previewCard('intro'));
+  $('#outroPrev').addEventListener('click', () => previewCard('outro'));
+}
+function shiftSRT(srt, d) {
+  if (!d) return srt;
+  const f = x => { const m = x.match(/(\d+):(\d+):(\d+),(\d+)/); return fmtSRT(+m[1] * 3600 + +m[2] * 60 + +m[3] + +m[4] / 1000 + d); };
+  return srt.replace(/(\d+:\d+:\d+,\d+) --> (\d+:\d+:\d+,\d+)/g, (_, a, b) => `${f(a)} --> ${f(b)}`);
+}
 function drawFrame(off) {
+  if (cardPrev && !off) return;
   const W = cv.width, H = cv.height, F = st.fmt;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = F.fit === 'solid' ? F.bg : '#000'; ctx.fillRect(0, 0, W, H);
@@ -2936,6 +3144,7 @@ function isEmph(w, S) {
   if (/\d/.test(raw) || /R\$|%|US\$/.test(raw)) return true;
   if (EMPH_WORDS.has(norm(raw))) return true;
   if (/^\p{Lu}{2,}/u.test(raw.replace(/[^\p{L}]/gu, '')) && raw.replace(/[^\p{L}]/gu, '').length >= 3) return true; // SIGLAS, MARCAS
+  if (src.tr) return false;
   const arr = src.mid ? wordsOf(src.mid) || [] : st.words, prev = src.i > 0 ? arr[src.i - 1] : null;
   if (/^\p{Lu}/u.test(raw) && prev && prev.seg === src.seg && !/[.!?:]$/.test(prev.w)) return true; // nome próprio no meio da frase
   return false;
@@ -3443,6 +3652,8 @@ function syncControls() {
   $$('[data-out]').forEach(o => { o.textContent = fmtOut(getPath(o.dataset.out), o.dataset.fmt); });
   $$('[data-seg]').forEach(g => $$('button', g).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === getPath(g.dataset.seg)))));
   $('#bgRow').hidden = st.fmt.fit !== 'solid';
+  $$('[data-show]').forEach(e => { e.hidden = !getPath(e.dataset.show); });
+  $$('#ctaChips button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === st.fmt.outroCta)));
   const thr = curThr();
   $('#thrIn').value = thr; $('#thrOut').textContent = `${thr} dB${st.cuts.thr == null ? ' · automático' : ''}`;
   const lv = curLevel(); $$('#cutLevel button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === lv)));
@@ -3595,6 +3806,7 @@ $('#savePreset').addEventListener('click', () => {
 /* ---------------- editor open ---------------- */
 function openEditor() {
   show('scrEdit');
+  syncTrUI();
   fillFontSelect();
   renderPresets();
   ensureFont(st.style.font, st.style.weight);
@@ -3628,6 +3840,7 @@ function updateExportCard() {
   const kv = MODE === 'mont'
     ? [['Vídeo', $('#seqName').textContent || c.title], ['Formato', fm], ['Duração', fmtT(seqEnd())], ['Legendas', st.style.on && !M.trk.C1.hide ? `${M.pages.length} blocos` : 'desligadas'], ['Logo', logo], ['Junto', pack ? '.srt, capa e texto' : 'só o vídeo']]
     : [['Corte', c.title || '—'], ['Formato', fm], ['Duração final', fmtT(sumRanges(st.ranges))], ['Legendas', st.style.on ? `${st.pages.length} blocos · ${st.style.font}` : 'desligadas'], ['Logo', logo], ['Junto', pack ? '.srt, capa e texto' : 'só o vídeo']];
+  if (cardIn() || cardOut()) kv.push(['Extras', [cardIn() ? `abertura ${fmtOut(cardIn(), 's')}` : '', cardOut() ? `final ${fmtOut(cardOut(), 's')}` : ''].filter(Boolean).join(' + ')]);
   const dl = $('#expKv'); dl.innerHTML = '';
   for (const [k, v] of kv) {
     const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v;
@@ -3729,6 +3942,105 @@ async function finishExport() {
 
 /* .srt padrão: frases de até 2 linhas de ~42 caracteres, que é o que YouTube, Instagram, Premiere e CapCut esperam.
    ws: [{w, a, b}] já no tempo do vídeo exportado */
+/* ================= legenda traduzida (IA do Claude) ================= */
+/* A tradução fica por trecho falado. As palavras traduzidas ocupam o tempo das palavras originais do
+   mesmo trecho, então a legenda continua acompanhando a fala e some junto com o que a limpeza tirou. */
+const TR_LANGS = [['en', 'Inglês', 'English'], ['es', 'Espanhol', 'Spanish'], ['pt', 'Português', 'Brazilian Portuguese'], ['fr', 'Francês', 'French'], ['it', 'Italiano', 'Italian'], ['de', 'Alemão', 'German']];
+function trOn() { return !!(st.trl && st.trl.on && st.trl.map); }
+var TRW = new Map(); // var: buildPages pode rodar antes desta linha
+function trInvalidate() { if (TRW) TRW.clear(); }
+function segsOf(mid) { if (mid === 'm0') return st.segs; const m = MEDIA.get(mid); return (m && m.ax && m.ax.segs) || []; }
+function trWordsOf(mid) {
+  if (TRW.has(mid)) return TRW.get(mid);
+  const W = wordsOf(mid) || [], map = (st.trl && st.trl.map && st.trl.map[mid]) || {}, out = [];
+  for (let i = 0; i < W.length;) {
+    const sg = W[i].seg; let j = i; while (j < W.length && W[j].seg === sg) j++;
+    const orig = W.slice(i, j), t = map[sg];
+    if (t == null) for (const w of orig) out.push({ w: w.w, start: w.start, end: w.end, seg: sg, src: w, tr: true, nocap: w.nocap, i: out.length, tmid: mid });
+    else {
+      const toks = String(t).split(/\s+/).filter(Boolean), K = orig.length, N = toks.length;
+      const at = u => { const k = Math.min(K - 1, Math.floor(u)), w = orig[k]; return w.start + (w.end - w.start) * Math.min(1, u - k); };
+      toks.forEach((tok, k) => { const u0 = k * K / N, u1 = (k + 1) * K / N, a = at(u0), b = u1 >= K - 1e-9 ? orig[K - 1].end : at(u1); out.push({ w: tok, start: a, end: Math.max(a + 0.05, b), seg: sg, src: orig[Math.min(K - 1, Math.floor((u0 + u1) / 2))], tr: true, i: out.length, tmid: mid }); });
+    }
+    i = j;
+  }
+  TRW.set(mid, out); return out;
+}
+function capWordsOf(mid) { return trOn() ? trWordsOf(mid) : wordsOf(mid); }
+function trCommit() { // corrigiu a legenda traduzida no monitor: o texto do trecho passa a ser o corrigido
+  if (!st.trl) return;
+  for (const [mid, toks] of TRW) { const map = st.trl.map[mid] || (st.trl.map[mid] = {}), by = new Map(); for (const t of toks) { if (!by.has(t.seg)) by.set(t.seg, []); if (!t.nocap && t.w) by.get(t.seg).push(t.w); } for (const [sg, arr] of by) map[sg] = arr.join(' '); }
+  trInvalidate();
+}
+function trMids() { return MODE === 'mont' && !(st.multi && st.multi.mode === 'pod') ? [...new Set(trackClips('V1').map(c => c.media).filter(m => m && (wordsOf(m) || []).length))] : ['m0']; }
+function syncTrUI() {
+  const sel = $('#trLang'); if (!sel) return;
+  if (!sel.options.length) for (const [v, t] of TR_LANGS) { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); }
+  const has = !!(st.trl && st.trl.map && Object.keys(st.trl.map).length);
+  if (has) sel.value = st.trl.lang; else if (!sel.dataset.touched) sel.value = (st.lang || 'pt') === 'en' ? 'pt' : 'en';
+  $('#trShowRow').hidden = !has; $('#trShow').checked = trOn(); $('#trReview').hidden = !has;
+  $('#trBtn').textContent = has && sel.value === st.trl.lang ? 'Traduzir de novo' : 'Traduzir';
+  $('#trNote').textContent = has ? (trOn() ? `A legenda está em ${st.trl.name}. O .srt também sai em ${st.trl.name}.` : `Tradução para ${st.trl.name} guardada; a legenda mostra a fala original.`) : 'A IA do Claude traduz a fala (precisa da sua chave). Só o texto é enviado; o vídeo fica no computador.';
+}
+function trRefresh() { trInvalidate(); buildPages(); if (MODE === 'mont') { buildMontPages(); M.dirty = true; } dirty = true; saveProject(); syncTrUI(); }
+async function translateCaptions() {
+  const lang = $('#trLang').value, L = TR_LANGS.find(x => x[0] === lang); if (!L) return;
+  const sample = window.__csAI || await sampleP;
+  if (!sample) { toast('A tradução usa a IA do Claude, que não está disponível aqui.', 4000); return; }
+  if (sample.desk && !window.__csAI && !(await SETTINGS.get()).claudeKey) { toast('Cole a sua chave do Claude para traduzir. É opcional.', 3500); if (SITE) window.openSiteSettings(); else openSettings(); return; }
+  const items = [];
+  for (const mid of trMids()) segsOf(mid).forEach((sg, si) => { const t = sg.words.filter(w => w.w && !w.nocap).map(w => w.w).join(' ').trim(); if (t) items.push({ mid, si, text: t }); });
+  if (!items.length) { toast('Não tem fala para traduzir.'); return; }
+  const btn = $('#trBtn'); btn.disabled = true;
+  const map = {}; let got = 0;
+  try {
+    for (let a = 0; a < items.length; a += 60) {
+      const part = items.slice(a, a + 60);
+      btn.innerHTML = `<span class="spin"></span> ${Math.round(a / items.length * 100)}%`;
+      const prompt = `Traduza para ${L[2]} as legendas abaixo, de um vídeo para redes sociais. Cada linha é um trecho falado, com um número.
+Regras:
+- Tradução natural, como alguém falaria em ${L[2]}; frases curtas, fáceis de ler em legenda.
+- Mantenha nomes próprios, marcas e números.
+- Uma tradução para cada número, na mesma ordem; não junte nem separe linhas.
+- Se a linha já estiver em ${L[2]}, repita como está.
+Responda só com JSON, neste formato: {"t":[{"i":0,"x":"tradução"}]}
+
+${part.map((it, k) => `[${a + k}] ${it.text}`).join('\n')}`;
+      const data = await sample.json(prompt, { modelTier: 'default' });
+      const arr = Array.isArray(data) ? data : (data && (data.t || data.translations)) || [];
+      for (const r of arr) { const it = items[parseInt(r.i, 10)]; const x = r && r.x != null ? String(r.x).trim() : ''; if (it && x) { (map[it.mid] || (map[it.mid] = {}))[it.si] = x; got++; } }
+    }
+  } catch (e) {
+    const code = e && e.code; toast(code === 'bad_key' ? 'A chave do Claude não foi aceita. Confira em Configurações.' : code === 'rate_limited' ? 'Muitos pedidos agora. Tente de novo em um minuto.' : 'A tradução parou: ' + String((e && (e.message || code)) || e).slice(0, 120), 6000);
+    return;
+  } finally { btn.disabled = false; syncTrUI(); }
+  if (!got) { toast('A IA não devolveu a tradução. Tente de novo.', 4000); return; }
+  const prev = st.trl ? JSON.parse(JSON.stringify(st.trl)) : null;
+  st.trl = { lang, name: L[1], on: true, map };
+  if (!st.style.on) applySmart(Object.assign(smartNow(), { captions: true }), { quiet: true });
+  trRefresh();
+  toastAction(`Legenda traduzida para ${L[1]}: ${got} de ${items.length} trechos.${got < items.length ? ' Os que faltaram ficam na língua original.' : ''}`, 'Desfazer', () => { st.trl = prev; trRefresh(); }, 9000);
+}
+async function reviewTranslation() {
+  if (!st.trl) return;
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const box = el('div', 'tr-review'), edits = [];
+  for (const mid of Object.keys(st.trl.map)) segsOf(mid).forEach((sg, si) => {
+    const tx = st.trl.map[mid][si]; if (tx == null) return;
+    const r = el('div', 'tr-row'); r.append(el('span', 'fine', sg.words.map(w => w.w).join(' ')));
+    const ta = el('textarea'); ta.rows = 2; ta.value = tx; ta.addEventListener('keydown', e => e.stopPropagation()); r.appendChild(ta); box.appendChild(r);
+    edits.push([mid, si, ta]);
+  });
+  const r = await openModal(`Revisar a tradução (${st.trl.name})`, box, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: 'Salvar', value: 'save', primary: true }], false);
+  if (r !== 'save') return;
+  let n = 0; for (const [mid, si, ta] of edits) { const v = ta.value.trim(); if (v !== st.trl.map[mid][si]) { st.trl.map[mid][si] = v; n++; } }
+  if (n) { trRefresh(); toast(`${n} ${n === 1 ? 'trecho corrigido' : 'trechos corrigidos'}.`, 2000); }
+}
+$('#trBtn').addEventListener('click', translateCaptions);
+$('#trLang').addEventListener('change', e => { e.target.dataset.touched = '1'; syncTrUI(); });
+$('#trShow').addEventListener('change', e => { if (!st.trl) return; st.trl.on = e.target.checked; trRefresh(); });
+$('#trReview').addEventListener('click', reviewTranslation);
+syncTrUI();
 function twoLines(t) {
   if (t.length <= 42) return t;
   const mid = t.length / 2; let best = -1;
@@ -3758,8 +4070,9 @@ function srtFromWords(ws) {
 function buildSRT(c) {
   const save = st.ranges; st.ranges = rangesFor(c);
   const ws = [];
-  for (const w of st.words) {
-    if (w.end <= c.start || w.start >= c.end || w.del || w.nocap || !w.w || st.autoWord.has(w.i)) continue;
+  for (const w of capWordsOf('m0')) {
+    const o = w.src || w;
+    if (w.end <= c.start || w.start >= c.end || o.del || w.nocap || !w.w || st.autoWord.has(o.i)) continue;
     const a = outAt(Math.max(w.start, c.start)), b = outAt(Math.min(w.end, c.end));
     if (b - a < 0.02) continue;
     ws.push({ w: w.w, a, b });
@@ -3778,12 +4091,12 @@ async function saveSrt(name, data) {
 }
 $('#srtBtn').addEventListener('click', async () => {
   if (MODE === 'mont') {
-    const srt = buildMontSRT(); if (!srt.trim()) { toast('Não tem fala na edição para legendar.'); return; }
-    await saveSrt(`${slug($('#seqName').textContent || 'edicao')}.srt`, srt); return;
+    const srt = shiftSRT(buildMontSRT(), cardIn()); if (!srt.trim()) { toast('Não tem fala na edição para legendar.'); return; }
+    await saveSrt(`${slug($('#seqName').textContent || 'edicao')}${trOn() ? '-' + st.trl.lang : ''}.srt`, srt); return;
   }
   const c = curClip(); if (!c) return;
-  const srt = buildSRT(c); if (!srt.trim()) { toast('Esse corte não tem fala para legendar.'); return; }
-  await saveSrt(`${slug(c.title)}.srt`, srt);
+  const srt = shiftSRT(buildSRT(c), cardIn()); if (!srt.trim()) { toast('Esse corte não tem fala para legendar.'); return; }
+  await saveSrt(`${slug(c.title)}${trOn() ? '-' + st.trl.lang : ''}.srt`, srt);
 });
 $('#srtFullBtn').addEventListener('click', async () => {
   if (!st.words.length) { toast('Não tem transcrição neste vídeo.'); return; }
@@ -3920,7 +4233,7 @@ function montFrames(MB) {
         if (m.kind === 'image') { frames.set(c.id, m.img); continue; }
         if (m.kind !== 'video') continue;
         if (!a) { const x = await mbMedia(MB, m); if (!x.vsink) continue; a = act[tid] = { c, seq: new SeqFrames(x.vsink, c.in, c.out + 0.1) }; }
-        const f = await a.seq.at(c.in + (T - c.tl));
+        const f = await a.seq.at(srcT(c, T));
         if (f) frames.set(c.id, f);
       }
       drawMont({ T, frames });
@@ -4038,7 +4351,7 @@ async function monoSegment(x, s0, s1, sr) {
   return (await oc.startRendering()).getChannelData(0);
 }
 const LOUD_CACHE = new Map();
-const planKey = plan => plan.map(g => [g.m.id, g.s0.toFixed(3), g.s1.toFixed(3), g.t0.toFixed(3), (+g.gain).toFixed(3), g.fin.toFixed(3), g.fout.toFixed(3), g.duck ? 1 : 0].join(',')).join('|');
+const planKey = plan => plan.map(g => [g.m.id, g.s0.toFixed(3), g.s1.toFixed(3), g.t0.toFixed(3), (+g.gain).toFixed(3), g.fin.toFixed(3), g.fout.toFixed(3), g.duck ? 1 : 0, g.rate || 1].join(',')).join('|');
 /* mede o volume da edição inteira (rápido: mixa a 24 kHz, sem gravar nada) */
 async function measureLoudness(MB, plan, dur, onP) {
   const k = planKey(plan); if (LOUD_CACHE.has(k)) return LOUD_CACHE.get(k);
@@ -4130,6 +4443,47 @@ $('#sndDen').addEventListener('change', e => { SOUND.denoise = e.target.checked;
 $('#sndBefore').addEventListener('click', () => previewSound(false));
 $('#sndAfter').addEventListener('click', () => previewSound(true));
 syncSoundUI();
+/* WSOLA: muda a velocidade do som sem mudar o tom (quadros de 40 ms que se encaixam pela forma da onda) */
+function wsola(chs, rate, sr) {
+  const n = chs[0].length, N = Math.round(sr * 0.04) & ~1, Hs = N >> 1, Ha = Hs * rate, D = Math.round(sr * 0.012), Q = 4;
+  const outLen = Math.max(1, Math.round(n / rate));
+  const out = chs.map(() => new Float32Array(outLen + N)), wsum = new Float32Array(outLen + N), win = new Float32Array(N);
+  for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+  const m = new Float32Array(Math.ceil(n / Q) + 1); for (let i = 0; i * Q < n; i++) { let v = 0; for (const c of chs) v += c[i * Q]; m[i] = v; }
+  const L = (N >> 1) / Q | 0; let prev = 0;
+  for (let k = 0; k * Hs < outLen; k++) {
+    const o = k * Hs, ideal = Math.round(k * Ha); let pos = Math.min(ideal, Math.max(0, n - N));
+    if (k > 0) {
+      const nat = (prev + Hs) / Q | 0; let best = -Infinity;
+      for (let d = -D; d <= D; d += Q) {
+        const p = ideal + d; if (p < 0 || p + N > n) continue;
+        const a0 = p / Q | 0; let sum = 0, ea = 1e-9;
+        for (let j = 0; j < L; j++) { const va = m[a0 + j]; sum += va * (m[nat + j] || 0); ea += va * va; }
+        const sc = sum / Math.sqrt(ea); if (sc > best) { best = sc; pos = p; }
+      }
+    }
+    for (let c = 0; c < chs.length; c++) { const src = chs[c], dst = out[c]; for (let i = 0; i < N && pos + i < n; i++) dst[o + i] += src[pos + i] * win[i]; }
+    for (let i = 0; i < N; i++) wsum[o + i] += win[i];
+    prev = pos;
+  }
+  for (const d of out) for (let i = 0; i < outLen; i++) if (wsum[i] > 0.05) d[i] /= wsum[i];
+  return out.map(d => d.subarray(0, outLen));
+}
+const STRETCH = new Map();
+async function stretched(x, g) {
+  const key = `${g.m.id}|${g.s0.toFixed(3)}|${g.s1.toFixed(3)}|${g.rate}`;
+  let r = STRETCH.get(key); if (r) return r;
+  const sr = 48000, oc = new OfflineAudioContext(2, Math.max(1, Math.round((g.s1 - g.s0) * sr)), sr);
+  for await (const wb of x.asink.buffers(g.s0, g.s1)) {
+    const buf = wb.buffer, bt = wb.timestamp, off = Math.max(0, g.s0 - bt), d = Math.min(buf.duration - off, g.s1 - (bt + off));
+    if (d <= 0) continue;
+    const src = oc.createBufferSource(); src.buffer = buf; src.connect(oc.destination); src.start(Math.max(0, bt + off - g.s0), off, d);
+  }
+  const buf = await oc.startRendering();
+  r = wsola([buf.getChannelData(0), buf.getChannelData(1)], g.rate, sr);
+  if (STRETCH.size >= 24) STRETCH.delete(STRETCH.keys().next().value);
+  STRETCH.set(key, r); return r;
+}
 /* ---- audio: what plays when, mixed offline in short windows ---- */
 function audioPlan() {
   const out = [];
@@ -4143,13 +4497,13 @@ function audioPlan() {
     const m = MEDIA.get(c.media); if (!m || m.kind === 'image') continue;
     if ((c.track === 'V1' && M.trk.A1.mute) || (c.track === 'A2' && M.trk.A2.mute)) continue;
     const gain = c.vol != null ? c.vol : 1; if (gain <= 0.001) continue;
-    out.push({ m, s0: c.in, s1: c.out, t0: c.tl, gain, fin: Math.max(0.008, c.fadeIn || 0), fout: Math.max(0.008, c.fadeOut || 0), duck: c.track === 'A2' && !!c.duck, duckState: 1, voice: c.track !== 'A2' });
+    out.push({ m, s0: c.in, s1: c.out, t0: c.tl, gain, fin: Math.max(0.008, c.fadeIn || 0), fout: Math.max(0.008, c.fadeOut || 0), duck: c.track === 'A2' && !!c.duck, duckState: 1, voice: c.track !== 'A2', rate: spd(c) });
   }
   return out;
 }
 function gainCurve(g, ta, tb) {
   const step = 0.01, n = Math.max(2, Math.ceil((tb - ta) / step) + 1), c = new Float32Array(n);
-  const t1 = g.t0 + (g.s1 - g.s0), k = 1 - Math.pow(1 - 0.12, step / 0.0167);
+  const t1 = g.t0 + (g.s1 - g.s0) / (g.rate || 1), k = 1 - Math.pow(1 - 0.12, step / 0.0167);
   for (let i = 0; i < n; i++) {
     const T = ta + (tb - ta) * i / (n - 1);
     let v = g.gain;
@@ -4164,7 +4518,7 @@ async function renderAudioWindow(MB, plan, a, b, sr, opt) {
   const len = Math.max(1, Math.round((b - a) * sr));
   const oc = new OfflineAudioContext(2, len, sr);
   for (const g of plan) {
-    const t1 = g.t0 + (g.s1 - g.s0);
+    const t1 = g.t0 + (g.s1 - g.s0) / (g.rate || 1);
     if (t1 <= a || g.t0 >= b) continue;
     let x; try { x = await mbMedia(MB, g.m); } catch (e) { continue; }
     if (!x.asink) continue;
@@ -4173,6 +4527,17 @@ async function renderAudioWindow(MB, plan, a, b, sr, opt) {
     if (tb - ta < 1 / sr) continue;
     const gn = oc.createGain(); gn.connect(oc.destination);
     try { gn.gain.setValueCurveAtTime(gainCurve(g, ta, tb), ta - a, tb - ta); } catch (e) { gn.gain.value = g.gain; }
+    if (g.rate && g.rate !== 1) { // câmera lenta ou acelerado: o som do clipe inteiro é esticado uma vez, sem mudar o tom
+      const S = await stretched(x, g), R = 48000;
+      const i0 = Math.max(0, Math.round((ta - g.t0) * R)), i1 = Math.min(S[0].length, Math.round((tb - g.t0) * R));
+      if (i1 > i0) {
+        let c0 = S[0].subarray(i0, i1), c1 = S[1].subarray(i0, i1);
+        if (opt && opt.den && g.voice) { const pre = Math.min(i0, R / 2), mono = new Float32Array(i1 - i0 + pre); for (let k = 0; k < mono.length; k++) mono[k] = (S[0][i0 - pre + k] + S[1][i0 - pre + k]) / 2; c0 = c1 = rnnDenoise(opt.den, mono).subarray(pre); }
+        const ab = new AudioBuffer({ length: i1 - i0, numberOfChannels: 2, sampleRate: R }); ab.copyToChannel(c0, 0); ab.copyToChannel(c1, 1);
+        const src = oc.createBufferSource(); src.buffer = ab; src.connect(gn); src.start(ta - a);
+      }
+      continue;
+    }
     if (opt && opt.den && g.voice) { // voz sem ruído: o trecho passa pela RNNoise com meio segundo antes para ela aquecer
       const pre = Math.min(0.5, sa), mono = await monoSegment(x, sa - pre, sb, 48000);
       const clean = rnnDenoise(opt.den, mono).subarray(Math.round(pre * 48000));
@@ -4191,6 +4556,27 @@ async function renderAudioWindow(MB, plan, a, b, sr, opt) {
   }
   return oc.startRendering();
 }
+/* o codificador de AAC põe alguns milissegundos de "aquecimento" no começo do som; mede uma vez quanto é
+   (codifica um estalo, decodifica e vê onde ele caiu) para o som do arquivo sair alinhado com a imagem */
+const PRIMING = new Map();
+async function audioPriming(MB, codec) {
+  if (PRIMING.has(codec)) return PRIMING.get(codec);
+  let d = 0;
+  try {
+    const sr = 48000, ab = new AudioBuffer({ length: sr / 4, numberOfChannels: 2, sampleRate: sr }), at = Math.round(sr * 0.1);
+    for (const c of [0, 1]) { const x = ab.getChannelData(c); for (let i = 0; i < 48; i++) x[at + i] = Math.sin(Math.PI * i / 48) * 0.9; }
+    const target = new MB.BufferTarget(), out = new MB.Output({ format: new MB.Mp4OutputFormat(), target });
+    const src = new MB.AudioBufferSource({ codec, bitrate: 128000 }); out.addAudioTrack(src);
+    await out.start(); await src.add(ab); await out.finalize();
+    const input = new MB.Input({ source: new MB.BufferSource(target.buffer), formats: MB.ALL_FORMATS });
+    const sink = new MB.AudioBufferSink(await input.getPrimaryAudioTrack());
+    let best = 0, bt = null;
+    for await (const wb of sink.buffers()) { const x = wb.buffer.getChannelData(0); for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > best) { best = Math.abs(x[i]); bt = wb.timestamp + i / wb.buffer.sampleRate; } }
+    if (bt != null && best > 0.2) d = bt - (at + 24) / sr;
+  } catch (e) { d = 0; }
+  d = d > 0.001 && d < 0.2 ? d : 0;
+  PRIMING.set(codec, d); return d;
+}
 /* ---- one render to one file ---- */
 function outName(base, aspect, ext) { return `${base}${aspect ? '-' + aspect.replace(':', 'x') : ''}.${ext}`; }
 async function renderToFile(MB, job) {
@@ -4198,12 +4584,14 @@ async function renderToFile(MB, job) {
   const fps = +$('#fpsSel').value || 30;
   const dur = mode === 'mont' ? seqEnd() : sumRanges(st.ranges);
   if (!(dur > 0.05)) throw Object.assign(new Error('vazio'), { code: 'empty' });
-  const N = Math.max(1, Math.round(dur * fps));
+  const IN = cardIn(), OUTD = cardOut(), total = IN + dur + OUTD; // abertura e tela final entram só no arquivo
+  if (IN || OUTD) { await ensureFont(st.style.font, st.style.weight); }
+  const N = Math.max(1, Math.round(total * fps));
   sizeCanvas(1);
   const [W, H] = DIMS[st.fmt.aspect];
   const vcodec = await MB.getFirstEncodableVideoCodec(['avc', 'hevc', 'vp9', 'av1'], { width: W, height: H });
   if (!vcodec) throw Object.assign(new Error('Este computador não tem codificador de vídeo disponível.'), { code: 'encode' });
-  const plan = audioPlan();
+  const plan = (() => { const p = audioPlan(); return IN ? p.map(g => Object.assign({}, g, { t0: g.t0 + IN })) : p; })();
   const acodec = plan.length ? await MB.getFirstEncodableAudioCodec(['aac', 'opus'], { numberOfChannels: 2, sampleRate: 48000, bitrate: 192000 }) : null;
   const name = outName(job.base, job.aspectTag ? st.fmt.aspect : null, 'mp4');
   let fh = null, target, sf = null, sw = null;
@@ -4218,7 +4606,7 @@ async function renderToFile(MB, job) {
   const vsrc = new MB.CanvasSource(cv, { codec: vcodec, bitrate: Math.round(W * H * fps * 0.14), keyFrameInterval: 2, latencyMode: 'quality' });
   output.addVideoTrack(vsrc, { frameRate: fps });
   let asrc = null;
-  if (acodec) { asrc = new MB.AudioBufferSource({ codec: acodec, bitrate: 192000 }); output.addAudioTrack(asrc); }
+  if (acodec) { const pr = await audioPriming(MB, acodec); asrc = new MB.AudioBufferSource({ codec: acodec, bitrate: 192000 }, pr ? { startTimestamp: -pr } : {}); output.addAudioTrack(asrc); }
   const frames = mode === 'mont' ? montFrames(MB) : clipFrames(MB);
   const t0 = performance.now(); let lastUI = 0, nextA = 0; const AW = 4, SR = 48000;
   let snd = null;
@@ -4228,18 +4616,20 @@ async function renderToFile(MB, job) {
     else await asrc.add(buf);
   };
   try {
-    if (asrc) snd = await soundPrep(MB, plan, dur, f => job.onStage && job.onStage(`Medindo o volume… ${Math.round(f * 100)}%`));
+    if (asrc) snd = await soundPrep(MB, plan, total, f => job.onStage && job.onStage(`Medindo o volume… ${Math.round(f * 100)}%`));
     await output.start();
     for (let k = 0; k < N; k++) {
       if (exp.cancelled) throw Object.assign(new Error('cancel'), { code: 'cancel' });
       const T = k / fps;
-      while (asrc && nextA < dur - 1e-6 && nextA <= T + 0.5) { const b = Math.min(dur, nextA + AW); await addA(nextA, b); nextA = b; }
-      await frames.draw(T);
+      while (asrc && nextA < total - 1e-6 && nextA <= T + 0.5) { const b = Math.min(total, nextA + AW); await addA(nextA, b); nextA = b; }
+      if (T < IN) drawCard('intro', T, IN);
+      else if (T >= IN + dur - 1e-6 && OUTD) drawCard('outro', T - IN - dur, OUTD);
+      else await frames.draw(Math.min(dur - 1e-3, T - IN));
       await vsrc.add(T, 1 / fps);
       const now = performance.now();
-      if (now - lastUI > 120) { lastUI = now; job.onProgress((k + 1) / N, T, dur, T / Math.max(0.001, (now - t0) / 1000)); await new Promise(r => setTimeout(r, 0)); }
+      if (now - lastUI > 120) { lastUI = now; job.onProgress((k + 1) / N, T, total, T / Math.max(0.001, (now - t0) / 1000)); await new Promise(r => setTimeout(r, 0)); }
     }
-    while (asrc && nextA < dur - 1e-6) { const b = Math.min(dur, nextA + AW); await addA(nextA, b); nextA = b; }
+    while (asrc && nextA < total - 1e-6) { const b = Math.min(total, nextA + AW); await addA(nextA, b); nextA = b; }
     if (snd && snd.lim) { const o = snd.lim.flush(); if (o.len) await asrc.add(toAudioBuffer(o, SR)); }
     await frames.close();
     await output.finalize();
@@ -4251,9 +4641,9 @@ async function renderToFile(MB, job) {
     throw e;
   }
   const secs = (performance.now() - t0) / 1000;
-  if (fh) { const p = await DESK.files.close(fh.handle); return { path: p, name, secs, dur }; }
-  if (sf) { siteSaved = sf.where; return { path: null, where: sf.where, name: sf.name, secs, dur, saved: true }; }
-  return { blob: new Blob([target.buffer], { type: 'video/mp4' }), name, secs, dur };
+  if (fh) { const p = await DESK.files.close(fh.handle); return { path: p, name, secs, dur: total }; }
+  if (sf) { siteSaved = sf.where; return { path: null, where: sf.where, name: sf.name, secs, dur: total, saved: true }; }
+  return { blob: new Blob([target.buffer], { type: 'video/mp4' }), name, secs, dur: total };
 }
 /* ---- export entry point: one clip or all of them, in one or more formats ---- */
 function selectedAspects() { const on = $$('#expAspects input:checked').map(i => i.value); return on.length ? on : [st.fmt.aspect]; }
@@ -4349,7 +4739,7 @@ async function exportPack(c, aspect, videoBase, first) {
   const base = slug(c.title) + (selectedAspects().length > 1 ? '-' + aspect.replace(':', 'x') : '');
   const files = [];
   if (first) {
-    files.push({ name: `${slug(c.title)}.srt`, data: buildSRT(c) });
+    files.push({ name: `${slug(c.title)}.srt`, data: shiftSRT(buildSRT(c), cardIn()) });
     files.push({ name: `${slug(c.title)}-post.txt`, data: postText(c) });
   }
   const cover = await coverPNG(c);
@@ -4367,7 +4757,7 @@ async function exportPack(c, aspect, videoBase, first) {
 async function exportMontPack(c, aspect, videoBase, first) {
   const base = st.multi ? videoBase : `${videoBase}-editado`, tag = selectedAspects().length > 1 ? '-' + aspect.replace(':', 'x') : '';
   const files = [];
-  if (first) { files.push({ name: `${base}.srt`, data: buildMontSRT() }); files.push({ name: `${base}-post.txt`, data: postText(c) }); }
+  if (first) { files.push({ name: `${base}.srt`, data: shiftSRT(buildMontSRT(), cardIn()) }); files.push({ name: `${base}-post.txt`, data: postText(c) }); }
   let cover = null;
   const v1 = trackClips('V1').find(k => k.media === 'm0');
   if (v1) {
@@ -4565,6 +4955,22 @@ if (DESK) {
 }
 if (DESK) { $('#fontNote').textContent = 'Suas fontes ficam guardadas neste computador.'; }
 if (DESK) { $('#setBtn').hidden = false; $('#setBtn').addEventListener('click', openSettings); document.documentElement.classList.add('desk', 'desk-' + DESK.platform); }
+
+/* ---- app do computador: avisa quando sai uma versão nova (no máximo uma vez por dia) ---- */
+const verNewer = (a, b) => { const pa = String(a).split('.').map(Number), pb = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((pa[i] || 0) > (pb[i] || 0)) return true; if ((pa[i] || 0) < (pb[i] || 0)) return false; } return false; };
+async function checkUpdate(force) {
+  if (!DESK) return;
+  try {
+    if (!force && Date.now() - store.get('cs:updChecked', 0) < 20 * 3600e3) return;
+    store.set('cs:updChecked', Date.now());
+    const info = await DESK.info();
+    const r = await fetch('https://api.github.com/repos/zheus741/corte-seco/releases/latest', { headers: { Accept: 'application/vnd.github+json' } }); if (!r.ok) return;
+    const j = await r.json(), v = String(j.tag_name || '').replace(/^v/, '');
+    if (!/^\d+\.\d+/.test(v) || !verNewer(v, info.version)) return;
+    toastAction(`Saiu a versão ${v} do Corte Seco (você está na ${info.version}).`, 'Baixar', () => DESK.openExternal(j.html_url), 20000);
+  } catch (e) {}
+}
+setTimeout(checkUpdate, 9000);
 
 /* ---- queue: several videos, processed and exported one after the other ---- */
 const Q = { items: [], running: false, stop: false, opts: null };
@@ -4768,14 +5174,16 @@ async function saveKits() { await idb.putKV('kits', kits); }
 function kitFromCurrent(name) {
   const style = Object.assign({}, st.style); delete style.preset; delete style.on;
   const b = Object.assign({}, st.brand);
-  const fonts = [];
-  return { name, v: 1, style, brand: b, fonts };
+  const fonts = [], F = st.fmt;
+  const cards = { intro: F.intro, introKind: F.introKind, introDur: F.introDur, outro: F.outro, outroCta: F.outroCta, outroHandle: F.outroHandle, outroDur: F.outroDur, cardBg: F.cardBg };
+  return { name, v: 1, style, brand: b, fonts, cards };
 }
 async function applyKit(k) {
   if (!k) return;
   for (const f of k.fonts || []) if (f.data && !customFonts.includes(f.name)) { const bin = Uint8Array.from(atob(f.data), c => c.charCodeAt(0)); await addCustomFont(f.name, bin.buffer); idb.put({ name: f.name, data: bin.buffer }); }
   Object.assign(st.style, STYLE_BASE, k.style, { preset: null, on: st.style.on }); // o kit muda o visual; ligar a legenda é com a pessoa
   const b = Object.assign({}, k.brand); const logo = b.logo; delete b.logo; Object.assign(st.brand, b);
+  if (k.cards && typeof k.cards === 'object') for (const key of ['intro', 'introKind', 'introDur', 'outro', 'outroCta', 'outroHandle', 'outroDur', 'cardBg']) if (k.cards[key] != null) st.fmt[key] = k.cards[key];
   await setLogo(logo || null);
   fillFontSelect(); await ensureFont(st.style.font, st.style.weight);
   buildPages(); syncControls(); saveLooks(); dirty = true;
@@ -4974,8 +5382,12 @@ const M = {
 TRACKS.forEach(t => { M.trk[t.id] = { hide: false, mute: false, lock: false }; });
 let montages = {};
 let vid2 = null;
-const cdur = c => c.out - c.in;
+const spd = c => c.speed || 1;                       // velocidade do clipe (0,25× a 2×)
+const fmtSpd = v => String(v).replace('.', ',') + '×';
+const cdur = c => (c.out - c.in) / spd(c);
 const cend = c => c.tl + cdur(c);
+const srcT = (c, T) => c.in + (T - c.tl) * spd(c);    // tempo na linha do tempo → tempo no arquivo
+const tAtSrc = (c, s) => c.tl + (s - c.in) / spd(c);  // tempo no arquivo → tempo na linha do tempo
 function trackClips(id) { return M.clips.filter(c => c.track === id).sort((a, b) => a.tl - b.tl); }
 function clipAt(id, T) { let best = null; for (const c of M.clips) if (c.track === id && T >= c.tl - 1e-6 && T < cend(c) - 1e-6 && (!best || c.tl > best.tl)) best = c; return best; }
 function seqEnd() { let e = 0; for (const c of M.clips) e = Math.max(e, cend(c)); return e; }
@@ -5119,7 +5531,7 @@ let smT = 0;
 function saveMontage() { if (M.key) montages[M.key] = { clips: M.clips, hook: M.hook, T: M.T, v1Auto: M.v1Auto }; saveProject(); }
 function saveMontSoon() { clearTimeout(smT); smT = setTimeout(saveMontage, 800); }
 function wordsOf(mid) { if (mid === 'm0') return st.words; const m = MEDIA.get(mid); return m && m.ax && m.ax.words || null; }
-function refWord(ref) { if (typeof ref === 'number') return st.words[ref]; if (typeof ref !== 'string') return null; const k = ref.lastIndexOf('#'); const W = wordsOf(ref.slice(0, k)); return W ? W[+ref.slice(k + 1)] : null; }
+function refWord(ref) { if (typeof ref === 'number') return st.words[ref]; if (typeof ref !== 'string') return null; const k = ref.lastIndexOf('#'); if (ref.startsWith('tr:')) return trWordsOf(ref.slice(3, k))[+ref.slice(k + 1)] || null; const W = wordsOf(ref.slice(0, k)); return W ? W[+ref.slice(k + 1)] : null; }
 function wordIdxIn(W, t) { let lo = 0, hi = W.length; while (lo < hi) { const m = (lo + hi) >> 1; if (W[m].end <= t) lo = m + 1; else hi = m; } return Math.max(0, lo - 2); }
 function wordIdxAt(t) { const W = st.words; let lo = 0, hi = W.length; while (lo < hi) { const m = (lo + hi) >> 1; if (W[m].end <= t) lo = m + 1; else hi = m; } return Math.max(0, lo - 2); }
 function clipLabel(c) {
@@ -5150,8 +5562,11 @@ function buildMontPages() {
   let cur = [];
   const push = () => { if (cur.length) pages.push({ words: cur, start: cur[0].start, end: cur[cur.length - 1].end, id: cur[0].ref }); cur = []; };
   let prevMedia = null;
-  for (const c of trackClips('V1')) {
-    const W = wordsOf(c.media);
+  const pod = !!(st.multi && st.multi.mode === 'pod');
+  for (const c0 of trackClips('V1')) {
+    const sh = pod ? ((st.multi.vids.find(v => v.mid === c0.media) || {}).off || 0) : 0;
+    const c = pod ? Object.assign({}, c0, { media: 'm0', in: c0.in + sh, out: c0.out + sh }) : c0;
+    const W = capWordsOf(c.media);
     if (!W || !W.length) { push(); prevMedia = null; continue; }
     if (c.media !== prevMedia) push();
     prevMedia = c.media;
@@ -5160,7 +5575,7 @@ function buildMontPages() {
       if (w.start >= c.out) break;
       const mid = (w.start + w.end) / 2;
       if (mid < c.in || mid >= c.out || w.nocap || !w.w) continue;
-      const pw = { w: w.w, start: Math.max(c.tl, c.tl + (w.start - c.in)), end: Math.min(cend(c), c.tl + (w.end - c.in)), ref: c.media === 'm0' ? w.i : c.media + '#' + w.i };
+      const pw = { w: w.w, start: Math.max(c.tl, tAtSrc(c, w.start)), end: Math.min(cend(c), tAtSrc(c, w.end)), ref: w.tr ? 'tr:' + c.media + '#' + w.i : c.media === 'm0' ? w.i : c.media + '#' + w.i };
       const last = cur[cur.length - 1];
       if (last && (cur.length >= max || pw.start - last.end > 0.7 || (max > 1 && /[.!?]$/.test(last.w)))) push();
       cur.push(pw);
@@ -5183,15 +5598,16 @@ function editPageText(pg, text) {
     if (k === K - 1 && b < N) { w.w = toks.slice(a).join(' '); w.nocap = false; return; }
     if (b > a) { w.w = toks.slice(a, b).join(' '); w.nocap = false; } else w.nocap = true;
   });
+  if (refs.some(r => typeof r === 'string' && r.startsWith('tr:'))) trCommit();
   capChanged();
 }
 function shiftPage(pg, d) { pushUndo(true, 'mover legenda'); for (const pw of pg.words) { const w = refWord(pw.ref); if (!w) continue; w.start = Math.max(0, w.start + d); w.end = Math.max(w.start + 0.04, w.end + d); } capChanged(); }
-function hidePage(pg) { pushUndo(true, 'apagar legenda'); for (const pw of pg.words) { const w = refWord(pw.ref); if (w) w.nocap = true; } M.selCap = null; capChanged(); toast('Legenda removida. O áudio continua.', 1800); }
+function hidePage(pg) { pushUndo(true, 'apagar legenda'); for (const pw of pg.words) { const w = refWord(pw.ref); if (w) w.nocap = true; } if (pg.words.some(w => typeof w.ref === 'string' && w.ref.startsWith('tr:'))) trCommit(); M.selCap = null; capChanged(); toast('Legenda removida. O áudio continua.', 1800); }
 function capChanged() { computeRemoval(); buildPages(); changed(); saveProject(); }
 function addCaptionAtPlayhead() {
   const c = clipAt('V1', M.T);
   if (!c || c.media !== 'm0') { toast('Coloque o cursor sobre o vídeo principal.'); return; }
-  const s = c.in + (M.T - c.tl);
+  const s = srcT(c, M.T);
   pushUndo(true, 'nova legenda');
   let si = st.segs.findIndex(g => g.end >= s); if (si < 0) si = st.segs.length - 1;
   if (si < 0) { st.segs.push({ i: 0, start: s, end: s + 1.2, text: '', words: [] }); si = 0; }
@@ -5211,17 +5627,17 @@ function overwrite(track, a, b, except) {
     const s = c.tl, e = cend(c);
     if (e <= a + 1e-6 || s >= b - 1e-6) continue;
     if (s >= a - 1e-6 && e <= b + 1e-6) { M.clips = M.clips.filter(k => k !== c); continue; }
-    if (s < a && e > b) { const r = Object.assign({}, c, { id: nid() }); if (r.ts) r.ts = Object.assign({}, r.ts); if (r.lt) r.lt = Object.assign({}, r.lt); r.in = c.in + (b - s); r.tl = b; c.out = c.in + (a - s); M.clips.push(r); continue; }
-    if (s < a) c.out = c.in + (a - s);
-    else { c.in += b - s; c.tl = b; }
+    if (s < a && e > b) { const r = Object.assign({}, c, { id: nid() }); if (r.ts) r.ts = Object.assign({}, r.ts); if (r.lt) r.lt = Object.assign({}, r.lt); r.in = c.in + (b - s) * spd(c); r.tl = b; c.out = c.in + (a - s) * spd(c); M.clips.push(r); continue; }
+    if (s < a) c.out = c.in + (a - s) * spd(c);
+    else { c.in += (b - s) * spd(c); c.tl = b; }
   }
 }
 function splitClip(c, t) {
   if (t <= c.tl + 0.03 || t >= cend(c) - 0.03) return null;
   if (c.track === 'V1') M.v1Auto = false;
   const k = Object.assign({}, c, { id: nid() });
-  const off = t - c.tl;
-  c.out = c.in + off; k.in = c.in + off; k.tl = t; c.fadeOut = 0; k.fadeIn = 0;
+  const off = (t - c.tl) * spd(c);
+  c.out = c.in + off; k.in = c.in + off; k.tl = t; c.fadeOut = 0; k.fadeIn = 0; k.tr = null;
   if (k.ts) k.ts = Object.assign({}, k.ts);
   if (k.lt) k.lt = Object.assign({}, k.lt);
   M.clips.push(k); return k;
@@ -5363,11 +5779,11 @@ function addLowerThird() {
 }
 
 /* ---------- smart edit: V1 follows the cleanup while it is untouched ---------- */
-function srcAtT(T) { const c = clipAt('V1', T); return c && c.media === 'm0' ? c.in + (T - c.tl) : -1; }
+function srcAtT(T) { const c = clipAt('V1', T); return c && c.media === 'm0' ? srcT(c, T) : -1; }
 function srcToT(s, list) {
   const v = list || trackClips('V1').filter(c => c.media === 'm0');
   let next = null;
-  for (const c of v) { if (s >= c.in - 1e-6 && s < c.out) return c.tl + (s - c.in); if (c.in > s && (!next || c.in < next.in)) next = c; }
+  for (const c of v) { if (s >= c.in - 1e-6 && s < c.out) return tAtSrc(c, s); if (c.in > s && (!next || c.in < next.in)) next = c; }
   return next ? next.tl : null;
 }
 const multiFixed = () => !!(st.multi && st.multi.mode !== 'apoio');
@@ -5380,14 +5796,14 @@ function rebuildV1(fromUser, silent) {
   const oldSig = old.filter(c => c.media === 'm0').map(c => c.in.toFixed(3) + '-' + c.out.toFixed(3)).join('|');
   if (!fromUser && sig === oldSig) return;
   if (!silent) pushUndo(false, 'refazer o vídeo principal');
-  const props = ['scale', 'px', 'py', 'vol', 'opacity'];
+  const props = ['scale', 'px', 'py', 'vol', 'opacity', 'speed', 'col', 'tr'];
   let tl = 0;
   const nv = rs.map(r => {
     const k = { id: nid(), track: 'V1', media: 'm0', tl, in: r[0], out: r[1], vol: 1, fadeIn: 0, fadeOut: 0, scale: 1, px: 0, py: 0, opacity: 1 };
     let best = null, bo = 0;
     for (const o of old) { if (o.media !== 'm0') continue; const ov = Math.min(o.out, r[1]) - Math.max(o.in, r[0]); if (ov > bo) { bo = ov; best = o; } }
     if (best) for (const pp of props) if (best[pp] != null) k[pp] = best[pp];
-    tl += r[1] - r[0]; return k;
+    tl += cdur(k); return k;
   });
   if (nv.length && old.length) { nv[0].fadeIn = old[0].fadeIn || 0; nv[nv.length - 1].fadeOut = old[old.length - 1].fadeOut || 0; }
   // keep B-roll, texts and music anchored to what is being said
@@ -5396,7 +5812,7 @@ function rebuildV1(fromUser, silent) {
     if (c.track === 'V1') continue;
     const o = oldM.find(x => c.tl >= x.tl - 1e-6 && c.tl < cend(x));
     if (!o) continue;
-    const t2 = srcToT(o.in + (c.tl - o.tl), nv);
+    const t2 = srcToT(srcT(o, c.tl), nv);
     if (t2 != null) c.tl = Math.max(0, t2);
   }
   M.clips = M.clips.filter(k => k.track !== 'V1').concat(nv);
@@ -5433,7 +5849,8 @@ function syncTrack(tid, playing) {
   if (a && (!c || a.clip !== c.id)) { a.el.pause(); a.el.__use = null; M.active[tid] = a = null; }
   if (!c || !c.media) return;
   const m = MEDIA.get(c.media); if (!m || m.kind === 'image' || !m.els.length) return;
-  const s = c.in + (M.T - c.tl);
+  if (m.main && tid === 'A2' && m.els.length < 3) m.els.push(mkMediaEl('video', m.url));
+  const s = srcT(c, M.T);
   if (!a) {
     const el = takeEl(m, c);
     a = M.active[tid] = { clip: c.id, el };
@@ -5443,6 +5860,7 @@ function syncTrack(tid, playing) {
     if (!ready && Math.abs(el.currentTime - s) > 0.03) el.currentTime = s;
   }
   const el = a.el;
+  if (el.playbackRate !== spd(c)) { el.playbackRate = spd(c); el.preservesPitch = true; }
   if (playing && !(M.hold && tid !== 'V1')) {
     if (el.paused && !el.seeking) { el.__starting = true; el.addEventListener('playing', () => { el.__starting = false; }, { once: true }); const p = el.play(); if (p && p.catch) p.catch(() => { el.__starting = false; }); }
     else if (!el.seeking && !el.paused && tid !== 'V1' && Math.abs(el.currentTime - s) > 0.22) el.currentTime = s;
@@ -5472,12 +5890,12 @@ function speechAt(T) {
   if (c.media !== 'm0') {
     const m = MEDIA.get(c.media), env = m && m.ax && m.ax.env; if (!env) return false;
     if (m.ax.thr == null) m.ax.thr = envThr(env);
-    const s = c.in + (T - c.tl);
+    const s = srcT(c, T);
     for (let d = -0.15; d <= 0.15; d += 0.05) { const i = Math.floor((s + d) / 0.02); if (i >= 0 && i < env.length && env[i] > m.ax.thr) return true; }
     return false;
   }
   if (!st.env) return false;
-  const s = c.in + (T - c.tl), thr = curThr();
+  const s = srcT(c, T), thr = curThr();
   for (let d = -0.15; d <= 0.15; d += 0.05) if (envAt(s + d) > thr) return true;
   return false;
 }
@@ -5523,7 +5941,7 @@ function montTick(now) {
     const c1 = clipAt('V1', M.T);
     const a1 = c1 && M.active.V1 && M.active.V1.clip === c1.id ? M.active.V1 : null;
     if (a1 && !a1.el.paused && !a1.el.seeking && a1.el.readyState >= 2) {
-      const nt = c1.tl + (a1.el.currentTime - c1.in);
+      const nt = tAtSrc(c1, a1.el.currentTime);
       if (nt >= c1.tl - 0.001) M.T = Math.max(c1.tl, nt);
     } else if (!M.hold && !a1) M.T += dt;
     if (M.T >= seqEnd() - 0.001) {
@@ -5568,6 +5986,47 @@ function elFor(c, tid) {
   const m = MEDIA.get(c.media); if (!m) return null;
   return m.els.find(e => e.__prep === c.id) || null;
 }
+/* ---------- transições (sem sobrepor clipes: o efeito acontece nos 0,22 s antes e depois do corte) ---------- */
+const TR_D = 0.22, TR_NAMES = { zoom: 'Zoom', whip: 'Chicote', flash: 'Flash' };
+function trFx(c, T) {
+  if (!c || c.track !== 'V1') return null;
+  const t = T - c.tl;
+  if (c.tr && t < TR_D) return { kind: c.tr, e: 1 - t / TR_D, dir: 'in' };
+  const end = cend(c), rem = end - T;
+  if (rem < TR_D) { const n = M.clips.find(k => k.track === 'V1' && k.tr && k !== c && Math.abs(k.tl - end) < 0.05); if (n) return { kind: n.tr, e: 1 - rem / TR_D, dir: 'out' }; }
+  return null;
+}
+/* ---------- cor por clipe: brilho, contraste, saturação, temperatura e o "igualar" (ganhos por canal) ---------- */
+function colMatrix(col) {
+  if (!col) return null;
+  const m = col.m || {}, temp = col.t || 0, sat = col.s != null ? col.s : 1;
+  const k = (m.k || 1) * (col.b != null ? col.b : 1), con = (m.q || 1) * (col.c != null ? col.c : 1), piv = m.p || 0.5;
+  const R = (m.r || 1) * k * (1 + 0.14 * temp), G = (m.g || 1) * k, B = (m.b || 1) * k * (1 - 0.14 * temp);
+  if (Math.abs(R - 1) < 1e-3 && Math.abs(G - 1) < 1e-3 && Math.abs(B - 1) < 1e-3 && Math.abs(sat - 1) < 1e-3 && Math.abs(con - 1) < 1e-3) return null;
+  const lr = 0.2126, lg = 0.7152, lb = 0.0722;
+  const S = [[lr + (1 - lr) * sat, lg - lg * sat, lb - lb * sat], [lr - lr * sat, lg + (1 - lg) * sat, lb - lb * sat], [lr - lr * sat, lg - lg * sat, lb + (1 - lb) * sat]];
+  const A = [[R, 0, 0], [0, G, 0], [0, 0, B]];
+  const out = [];
+  for (let i = 0; i < 3; i++) { const row = [0, 1, 2].map(j => (S[i][0] * A[0][j] + S[i][1] * A[1][j] + S[i][2] * A[2][j]) * con); out.push(...row, 0, piv * (1 - con)); }
+  out.push(0, 0, 0, 1, 0);
+  return out;
+}
+const CCF = new Map();
+function ccFilter(c) {
+  const mx = colMatrix(c.col); if (!mx) return '';
+  const key = mx.map(v => v.toFixed(4)).join(' ');
+  let id = CCF.get(key);
+  if (!id) {
+    const defs = $('#ccDefs');
+    if (CCF.size > 300) { defs.innerHTML = ''; CCF.clear(); }
+    id = 'cc' + Math.random().toString(36).slice(2, 9);
+    const NS = 'http://www.w3.org/2000/svg', f = document.createElementNS(NS, 'filter'), cm = document.createElementNS(NS, 'feColorMatrix');
+    f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); f.setAttribute('x', '0'); f.setAttribute('y', '0'); f.setAttribute('width', '1'); f.setAttribute('height', '1');
+    cm.setAttribute('type', 'matrix'); cm.setAttribute('values', key); f.appendChild(cm); defs.appendChild(f);
+    CCF.set(key, id);
+  }
+  return `url(#${id})`;
+}
 function drawMediaClip(src, sw, sh, c, tid, alpha, T) {
   const W = cv.width, H = cv.height, F = st.fmt;
   const isMain = tid === 'V1';
@@ -5581,14 +6040,21 @@ function drawMediaClip(src, sw, sh, c, tid, alpha, T) {
   let z = (isMain ? F.zoom : 1) * (c.scale || 1);
   if (isMain && F.autoZoom && (M.v1idx.get(c.id) || 0) % 2 === 1) z *= F.zoomAmt;
   if (c.kb) z *= 1 + 0.08 * clamp((T - c.tl) / Math.max(0.1, cdur(c)), 0, 1);
+  const tfx = isMain ? trFx(c, T) : null; let blur = 0;
+  if (tfx && tfx.kind === 'zoom') { z *= 1 + 0.5 * tfx.e * tfx.e; blur = tfx.e * tfx.e * W * 0.014; }
   const dw = sw * base * z, dh = sh * base * z;
   const mm = c.media === 'm0' ? null : MEDIA.get(c.media);
-  const afx = !isMain ? null : c.media === 'm0' ? autoFX(c.in + (T - c.tl), W, dw) : mm && mm.ax && mm.ax.rf ? autoFX(c.in + (T - c.tl), W, dw, mm.ax.rf) : null;
+  const afx = !isMain ? null : c.media === 'm0' ? autoFX(srcT(c, T), W, dw) : mm && mm.ax && mm.ax.rf ? autoFX(srcT(c, T), W, dw, mm.ax.rf) : null;
   const fx = isMain ? (afx != null ? afx : c.media === 'm0' ? F.x : 0.5) : 0.5, fy = isMain && c.media === 'm0' ? F.y : 0.5;
   let x = dw > W ? (W - dw) * fx : (W - dw) / 2;
   let y = dh > H ? (H - dh) * fy : (H - dh) / 2;
   x += (c.px || 0) * W; y += (c.py || 0) * H;
-  ctx.globalAlpha = alpha; blit(src, x, y, dw, dh); ctx.globalAlpha = 1;
+  let wrap = 0;
+  if (tfx && tfx.kind === 'whip') { const sh2 = tfx.e * tfx.e * W * 0.85; x += tfx.dir === 'out' ? -sh2 : sh2; wrap = tfx.dir === 'out' ? dw : -dw; blur = tfx.e * W * 0.022; }
+  const flt = [ccFilter(c), blur > 0.5 ? `blur(${blur.toFixed(1)}px)` : ''].filter(Boolean).join(' ');
+  if (flt) { ctx.save(); ctx.filter = flt; }
+  ctx.globalAlpha = alpha; blit(src, x, y, dw, dh); if (wrap) blit(src, x + wrap, y, dw, dh); ctx.globalAlpha = 1;
+  if (flt) ctx.restore();
   M.rects[c.id] = { x, y, w: dw, h: dh };
   if (isMain) geo = { W, H, dw, dh };
 }
@@ -5623,6 +6089,7 @@ function drawTextClip(c, T, alpha) {
   M.rects[c.id] = { x: bx, y: by, w: bw, h: bh };
 }
 function drawMont(ov) {
+  if (cardPrev && !ov) return;
   const W = cv.width, H = cv.height, F = st.fmt, T = ov ? ov.T : M.T;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   let v1Pending = false;
@@ -5650,6 +6117,7 @@ function drawMont(ov) {
     else if (L.offline && !exporting) { const nm = (OFFLINE.get(L.c.media) || {}).name; ctx.fillStyle = 'rgba(229,83,75,.25)'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; ctx.font = `600 ${W * 0.034}px sans-serif`; ctx.fillText(nm ? `Arquivo faltando: ${nm}` : 'Arquivo faltando', W * 0.08, H * 0.48); ctx.font = `500 ${W * 0.028}px sans-serif`; ctx.fillText('Importe de novo em Mídia para reconectar', W * 0.08, H * 0.53); }
     else drawMediaClip(L.src, L.sw, L.sh, L.c, L.tid, alpha, T);
   }
+  { const ff = trFx(clipAt('V1', T), T); if (ff && ff.kind === 'flash') { ctx.fillStyle = `rgba(255,255,255,${(Math.pow(ff.e, 1.6) * 0.95).toFixed(3)})`; ctx.fillRect(0, 0, W, H); } }
   if (st.style.on && !M.trk.C1.hide) drawCaptions(T, M.pages);
   if (F.hook && M.hook && T < F.hookDur) drawHook(M.hook, T);
   const total = seqEnd();
@@ -5749,7 +6217,7 @@ function drawStrip(g, c, m, xa, xb, y, h) {
   const v0 = Math.max(xa, -tw), v1 = Math.min(xb, tlW);
   g.save(); g.beginPath(); g.rect(xa, y, xb - xa, h); g.clip();
   for (let x = xa + Math.floor((v0 - xa) / tw) * tw; x < v1; x += tw) {
-    const t = c.in + (x + tw / 2 - xa) / M.pps;
+    const t = c.in + (x + tw / 2 - xa) / M.pps * spd(c);
     let lo = 0, hi = fr.length - 1;
     while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (fr[mid].t <= t) lo = mid; else hi = mid - 1; }
     if (lo + 1 < fr.length && Math.abs(fr[lo + 1].t - t) < Math.abs(fr[lo].t - t)) lo++;
@@ -5849,13 +6317,14 @@ function drawBlock(g, c, x0, x1, y, h, sel, row) {
     if (bw > 14) {
       g.save(); g.beginPath(); g.rect(bx + 3, by, bw - 6, band); g.clip();
       g.fillStyle = col[2]; g.font = '600 10.5px ' + UIF;
-      const lab = M.labels.get(c.id) || (m ? (m.main ? 'Vídeo principal' : m.name) : '');
+      const lab = (spd(c) !== 1 ? fmtSpd(spd(c)) + ' · ' : '') + (M.labels.get(c.id) || (m ? (m.main ? 'Vídeo principal' : m.name) : ''));
       let right = 0;
       if (row === 'V1' && bw > 110) { g.font = '10px ' + MONOF; const dt = fmtT(cdur(c)); right = g.measureText(dt).width + 8; g.fillStyle = 'rgba(255,255,255,.72)'; g.fillText(dt, bx + bw - right + 2, by + band / 2 + 0.5); g.fillStyle = col[2]; g.font = '600 10.5px ' + UIF; }
       g.beginPath(); g.rect(bx + 3, by, bw - 6 - right, band); g.clip();
-      g.fillText(lab, bx + 5, by + band / 2 + 0.5);
+      g.fillText(lab, bx + 5 + (c.tr && row === 'V1' ? 9 : 0), by + band / 2 + 0.5);
       g.restore();
     }
+    if (c.tr && row === 'V1') { g.fillStyle = '#F4B942'; g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + 9, by + band / 2); g.lineTo(bx, by + band); g.closePath(); g.fill(); }
   }
   const drawFade = (len, left) => {
     if (!(len > 0)) return; const fw = Math.min(len * M.pps, bw);
@@ -5953,7 +6422,7 @@ tlc.addEventListener('pointerdown', e => {
     else if (!M.sel.has(h.clip.id)) M.sel = new Set([h.clip.id]);
     M.dirty = true; dirty = true; renderEC(); activateTab('clip');
     if (M.trk[h.clip.track].lock) return;
-    if (h.edge) tdrag = { kind: 'trim', edge: h.edge, clip: h.clip, t0: h.t, orig: { tl: h.clip.tl, in: h.clip.in, out: h.clip.out }, pushed: false };
+    if (h.edge) tdrag = { kind: 'trim', edge: h.edge, clip: h.clip, t0: h.t, orig: { tl: h.clip.tl, in: h.clip.in, out: h.clip.out, speed: h.clip.speed }, pushed: false };
     else {
       const orig = new Map(); for (const c of M.clips) if (M.sel.has(c.id)) orig.set(c.id, { tl: c.tl, track: c.track });
       tdrag = { kind: 'move', t0: h.t, orig, pushed: false, moved: false, rowTrack: trk };
@@ -6015,14 +6484,14 @@ tlc.addEventListener('pointermove', e => {
       const prevEnd = others.filter(k => cend(k) <= o.tl + 1e-6).reduce((a, k) => Math.max(a, cend(k)), 0);
       const minD = Math.max(-(o.in - (maxOut === Infinity ? -1e9 : 0)), prevEnd - o.tl, -o.tl);
       const sn = snapTo(o.tl + d, snapCandidates(except)); d = sn.t - o.tl; M.snapLine = sn.hit;
-      d = clamp(d, minD, (o.out - o.in) - 0.1);
-      c.in = o.in + d; c.tl = o.tl + d;
+      d = clamp(d, Math.max(minD, -o.in / spd(o)), (o.out - o.in) / spd(o) - 0.1);
+      c.in = o.in + d * spd(o); c.tl = o.tl + d;
     } else {
-      const nextStart = others.filter(k => k.tl >= o.tl + (o.out - o.in) - 1e-6).reduce((a, k) => Math.min(a, k.tl), Infinity);
-      const oEnd = o.tl + (o.out - o.in);
+      const nextStart = others.filter(k => k.tl >= cend(o) - 1e-6).reduce((a, k) => Math.min(a, k.tl), Infinity);
+      const oEnd = cend(o);
       const sn = snapTo(oEnd + d, snapCandidates(except)); d = sn.t - oEnd; M.snapLine = sn.hit;
-      d = clamp(d, -(o.out - o.in) + 0.1, Math.min(maxOut - o.out, nextStart - oEnd));
-      c.out = o.out + d;
+      d = clamp(d, -cdur(o) + 0.1, Math.min((maxOut - o.out) / spd(o), nextStart - oEnd));
+      c.out = o.out + d * spd(o);
     }
     M.dirty = true; dirty = true;
     return;
@@ -6186,6 +6655,59 @@ function ecButtons(c) {
   const b3 = ecEl('button', 'btn', 'Apagar e juntar'); b3.title = 'Apaga e puxa o que vem depois, sem buraco (Shift+Delete)'; b3.onclick = rippleDeleteSel;
   r.append(b1, b2, b3); return r;
 }
+function setClipSpeed(c, v) {
+  if (spd(c) === v) return;
+  const oldEnd = cend(c);
+  pushUndo(false, 'velocidade do clipe');
+  if (v === 1) delete c.speed; else c.speed = v;
+  const d = cend(c) - oldEnd;
+  // o que vinha depois anda junto (no V1, todas as trilhas; nas outras, só a mesma trilha)
+  for (const k of M.clips) if (k !== c && !M.trk[k.track].lock && (c.track === 'V1' || k.track === c.track) && k.tl >= oldEnd - 0.001) k.tl = Math.max(0, k.tl + d);
+  changed();
+  toastAction(v < 1 ? `Câmera lenta: ${fmtSpd(v)}. O clipe agora dura ${fmtT(cdur(c))}.` : v > 1 ? `${fmtSpd(v)} mais rápido. O clipe agora dura ${fmtT(cdur(c))}.` : 'Velocidade normal.', 'Desfazer', undo, 6000);
+}
+/* média de cor e de brilho de uma mídia, olhando quadros espalhados pelos trechos usados na edição */
+async function mediaColorStats(m) {
+  const cvs = document.createElement('canvas'); cvs.width = 64; cvs.height = 36;
+  const g = cvs.getContext('2d', { willReadFrequently: true });
+  let R = 0, G = 0, B = 0, Y = 0, Y2 = 0, n = 0;
+  const acc = () => { const d = g.getImageData(0, 0, 64, 36).data; for (let i = 0; i < d.length; i += 4) { const r = d[i] / 255, gg = d[i + 1] / 255, b = d[i + 2] / 255, y = 0.2126 * r + 0.7152 * gg + 0.0722 * b; R += r; G += gg; B += b; Y += y; Y2 += y * y; n++; } };
+  if (m.kind === 'image') { g.drawImage(m.img, 0, 0, 64, 36); acc(); }
+  else {
+    const MB = await loadMB(), x = await mbMedia(MB, m); if (!x.vsink) return null;
+    const used = M.clips.filter(c => c.media === m.id && c.text == null);
+    const times = []; const K = 8;
+    if (used.length) for (let j = 0; j < K; j++) { const c = used[j % used.length], f = (Math.floor(j / used.length) + 0.5) / Math.ceil(K / used.length); times.push(c.in + (c.out - c.in) * f); }
+    else for (let j = 0; j < K; j++) times.push((m.dur || 1) * (j + 0.5) / K);
+    for (const t of times) { const smp = await x.vsink.getSample(t); if (!smp) continue; try { smp.draw(g, 0, 0, 64, 36); acc(); } finally { smp.close(); } }
+  }
+  if (!n) return null;
+  const y = Y / n; return { r: R / n, g: G / n, b: B / n, y, sd: Math.sqrt(Math.max(0, Y2 / n - y * y)) };
+}
+/* igualar: os outros vídeos ganham o balanço de branco, o brilho e o contraste do vídeo de referência */
+async function matchColors(ref) {
+  const ids = [...new Set(M.clips.filter(c => c.media && c.text == null && (c.track === 'V1' || c.track === 'V2')).map(c => c.media))].filter(id => { const m = MEDIA.get(id); return m && (m.kind === 'video' || m.kind === 'image'); });
+  if (!ref || !ids.includes(ref)) ref = ids[0];
+  if (ids.length < 2) { toast('Para igualar, a edição precisa ter pelo menos dois vídeos ou fotos.', 3000); return; }
+  toast('Medindo a cor de cada vídeo…', 8000);
+  const stats = new Map();
+  for (const id of ids) { try { stats.set(id, await mediaColorStats(MEDIA.get(id))); } catch (e) { stats.set(id, null); } }
+  const Rf = stats.get(ref); if (!Rf || Rf.y < 0.02) { toast('Não deu para medir a cor do vídeo de referência.'); return; }
+  pushUndo(false, 'igualar a cor');
+  let n = 0;
+  for (const id of ids) {
+    const clips = M.clips.filter(c => c.media === id && (c.track === 'V1' || c.track === 'V2'));
+    if (id === ref) { for (const c of clips) if (c.col && c.col.m) { delete c.col.m; if (!Object.keys(c.col).length) delete c.col; } continue; }
+    const S = stats.get(id); if (!S || S.y < 0.02) continue;
+    const ch = (a, b) => clamp((a / Rf.y) / Math.max(1e-3, b / S.y), 0.8, 1.25);
+    const k = clamp(Rf.y / S.y, 0.5, 2.5); // o contraste gira em torno da média já corrigida, para não puxar o brilho de volta
+    const mm = { r: ch(Rf.r, S.r), g: ch(Rf.g, S.g), b: ch(Rf.b, S.b), k, q: clamp((Rf.sd / Rf.y) / Math.max(0.05, S.sd / S.y), 0.7, 1.4), p: clamp(S.y * k, 0.05, 0.95) };
+    for (const c of clips) { c.col = Object.assign({}, c.col, { m: mm }); n++; }
+  }
+  changed();
+  const nm = (MEDIA.get(ref) || {}).main ? 'o vídeo principal' : `“${(MEDIA.get(ref) || {}).name || 'o vídeo'}”`;
+  toastAction(n ? `Cor igualada em ${n} ${n === 1 ? 'clipe' : 'clipes'}, com base em ${nm}.` : 'Os vídeos já estavam iguais.', 'Desfazer', undo, 8000);
+}
 function renderEC() {
   const box = $('#ecBox'); if (!box) return;
   box.innerHTML = '';
@@ -6284,6 +6806,39 @@ function renderEC() {
       add(ecRange('Saída suave ', () => c.fadeOut || 0, v => { c.fadeOut = v; }, 0, 5, 0.1, secs));
       add(ecSwitch('Abaixar a música quando alguém fala', () => c.duck, v => { c.duck = v; }));
     } else if (k === 'video' || k === 'image') {
+      if (c.track === 'V1') {
+        add(ecEl('h4', null, 'Transição de entrada'));
+        const ts = ecEl('div', 'seg seg-full'); ts.id = 'ecTr';
+        for (const [v, t] of [[null, 'Corte seco'], ['zoom', 'Zoom'], ['whip', 'Chicote'], ['flash', 'Flash']]) {
+          const b = ecEl('button', null, t); b.type = 'button'; b.dataset.v = v || ''; b.setAttribute('aria-pressed', String((c.tr || null) === v));
+          b.onclick = () => { if ((c.tr || null) === v) return; pushUndo(false, 'transição'); if (v) c.tr = v; else delete c.tr; changed(); if (v && !M.playing) seekM(Math.max(0, c.tl - 0.8)); };
+          ts.appendChild(b);
+        }
+        add(ts);
+        const all = ecEl('button', 'btn block', 'Usar em todos os cortes do vídeo'); all.type = 'button'; all.id = 'ecTrAll';
+        all.onclick = () => { const v1 = trackClips('V1'); if (v1.length < 2) { toast('O vídeo só tem um clipe.', 1800); return; } pushUndo(false, 'transição em todos os cortes'); v1.forEach((k2, i) => { if (i === 0) return; if (c.tr) k2.tr = c.tr; else delete k2.tr; }); changed(); toastAction(c.tr ? `${TR_NAMES[c.tr]} em ${v1.length - 1} cortes.` : 'Transições tiradas dos cortes.', 'Desfazer', undo, 6000); };
+        add(all);
+        add(ecEl('p', 'fine', 'Acontece no corte, sem sobrepor os clipes: 0,2 s antes e 0,2 s depois.'));
+      }
+      if (k === 'video') {
+        add(ecEl('h4', null, 'Velocidade'));
+        const sp = ecEl('div', 'seg seg-full'); sp.id = 'ecSpeed';
+        for (const v of [0.25, 0.5, 0.75, 1, 1.5, 2]) { const b = ecEl('button', null, fmtSpd(v)); b.type = 'button'; b.dataset.v = v; b.setAttribute('aria-pressed', String(spd(c) === v)); b.onclick = () => setClipSpeed(c, v); sp.appendChild(b); }
+        add(sp);
+        add(ecEl('p', 'fine', 'Abaixo de 1× é câmera lenta. O som acompanha sem mudar o tom; vídeo gravado a 60 fps fica mais liso.'));
+      }
+      add(ecEl('h4', null, 'Cor'));
+      const col = () => c.col || (c.col = {});
+      const cg = key => () => (c.col && c.col[key] != null ? c.col[key] : key === 't' ? 0 : 1);
+      add(ecRange('Brilho ', cg('b'), v => { col().b = v; }, 0.5, 1.5, 0.01, pct));
+      add(ecRange('Contraste ', cg('c'), v => { col().c = v; }, 0.5, 1.5, 0.01, pct));
+      add(ecRange('Saturação ', cg('s'), v => { col().s = v; }, 0, 2, 0.01, pct));
+      add(ecRange('Temperatura ', cg('t'), v => { col().t = v; }, -1, 1, 0.02, v => v > 0.02 ? `quente ${Math.round(v * 100)}` : v < -0.02 ? `fria ${Math.round(-v * 100)}` : 'neutra'));
+      const crow = ecEl('div', 'row');
+      const mb2 = ecEl('button', 'btn', 'Igualar os outros vídeos a este'); mb2.type = 'button'; mb2.id = 'ecMatch'; mb2.onclick = () => matchColors(c.media);
+      const zb = ecEl('button', 'btn ghost', 'Zerar cor'); zb.type = 'button'; zb.onclick = () => { if (!c.col) return; pushUndo(false, 'zerar cor'); delete c.col; changed(); };
+      crow.append(mb2, zb); add(crow);
+      if (c.col && c.col.m) add(ecEl('p', 'fine', 'A cor deste clipe foi igualada com outro vídeo; os controles acima ajustam por cima.'));
       add(ecEl('h4', null, 'Movimento'));
       add(ecRange('Escala ', () => c.scale || 1, v => { c.scale = v; }, 0.2, 3, 0.01, pct));
       add(ecRange('Posição X ', () => c.px || 0, v => { c.px = v; }, -0.6, 0.6, 0.005, v => Math.round(v * 100) + '%'));
@@ -6306,6 +6861,28 @@ function renderEC() {
     add(ecEl('h4', null, MULTI_NAMES[st.multi.mode] || 'Montagem'));
     add(ecEl('p', 'fine', `${st.multi.n} vídeos${st.multi.musicName ? ` · música: ${st.multi.musicName}` : ''}${st.multi.q ? ` · procurando “${st.multi.q}”` : ''}. Os vídeos já foram analisados: montar de novo é rápido.`));
     const rb2 = ecEl('button', 'btn block', 'Montar de novo…'); rb2.type = 'button'; rb2.id = 'ecRemont'; rb2.onclick = remontMulti; add(rb2);
+  }
+  { // transições e cor da edição inteira
+    const v1c = trackClips('V1');
+    if (v1c.length > 1) {
+      add(ecEl('h4', null, 'Transição nos cortes'));
+      const cur = v1c.slice(1).every(k2 => (k2.tr || null) === (v1c[1].tr || null)) ? (v1c[1].tr || null) : undefined;
+      const ts = ecEl('div', 'seg seg-full'); ts.id = 'ecTrSeq';
+      for (const [v, t] of [[null, 'Corte seco'], ['zoom', 'Zoom'], ['whip', 'Chicote'], ['flash', 'Flash']]) {
+        const b = ecEl('button', null, t); b.type = 'button'; b.dataset.v = v || ''; b.setAttribute('aria-pressed', String(cur === v));
+        b.onclick = () => { pushUndo(false, 'transição nos cortes'); v1c.forEach((k2, i) => { if (i === 0) return; if (v) k2.tr = v; else delete k2.tr; }); changed(); toastAction(v ? `${TR_NAMES[v]} em ${v1c.length - 1} cortes.` : 'Cortes secos, sem transição.', 'Desfazer', undo, 6000); };
+        ts.appendChild(b);
+      }
+      add(ts);
+    }
+    const vids = new Set(M.clips.filter(k2 => k2.media && k2.text == null && (k2.track === 'V1' || k2.track === 'V2') && MEDIA.get(k2.media) && MEDIA.get(k2.media).kind !== 'audio').map(k2 => k2.media));
+    if (vids.size > 1) {
+      add(ecEl('h4', null, 'Cor'));
+      add(ecEl('p', 'fine', 'Vídeos de câmeras diferentes ficam com o mesmo brilho, contraste e balanço de branco.'));
+      const mb3 = ecEl('button', 'btn block', 'Igualar a cor dos vídeos'); mb3.type = 'button'; mb3.id = 'ecMatchSeq';
+      mb3.onclick = () => { const f = v1c.find(k2 => k2.media && vids.has(k2.media)); matchColors(f ? f.media : [...vids][0]); };
+      add(mb3);
+    }
   }
   add(ecEl('h4', null, 'Edição inteligente'));
   const sOn = smartAny();
@@ -6500,18 +7077,20 @@ new ResizeObserver(() => { document.documentElement.style.setProperty('--toph', 
 /* ================= montagem com vários vídeos ================= */
 /* Quatro jeitos de juntar vídeos numa edição só. Cada vídeo é analisado uma vez (som, fala quando
    precisa, qualidade da imagem e rostos) e a análise fica guardada: montar de novo é instantâneo. */
-const MULTI_NAMES = { lances: 'Melhores lances', after: 'Aftermovie', apoio: 'Fala com imagens de apoio', depo: 'Depoimentos' };
+const MULTI_NAMES = { lances: 'Melhores lances', after: 'Aftermovie', apoio: 'Fala com imagens de apoio', depo: 'Depoimentos', pod: 'Podcast com várias câmeras' };
 const MULTI_DESC = {
   lances: 'Jogos e eventos: acha os gritos da torcida e a narração e junta os lances.',
   after: 'Vídeos de celular de um evento, cortados no ritmo da música.',
   apoio: 'Um vídeo de alguém falando, com cenas dos outros vídeos por cima.',
-  depo: 'Várias pessoas falando: as melhores frases de cada uma num vídeo só.'
+  depo: 'Várias pessoas falando: as melhores frases de cada uma num vídeo só.',
+  pod: 'Uma câmera por pessoa (e um plano aberto): corta para quem fala.'
 };
 const MULTI_NOTE = {
   lances: 'Os lances são achados pelo som: torcida e narração que explodem, e as palavras do campo “O que procurar”. Ele não enxerga a imagem: lance sem torcida nem narração passa batido.',
   after: 'Escolhe os trechos mais nítidos e vivos de cada vídeo e corta na batida da música, na ordem em que os vídeos foram gravados.',
   apoio: 'O vídeo de quem fala fica inteiro; as cenas dos outros entram por cima a cada poucos segundos, sem som. Se o nome de um arquivo aparecer na fala (ex.: “loja.mp4” e “loja”), a cena entra nessa hora.',
-  depo: 'Transcreve todos os vídeos e escolhe as frases mais completas e fortes de cada pessoa, alternando quem fala.'
+  depo: 'Transcreve todos os vídeos e escolhe as frases mais completas e fortes de cada pessoa, alternando quem fala.',
+  pod: 'Sincroniza as câmeras pelo som e corta para a câmera de quem está falando, pelo volume do microfone de cada uma. Quando falam ao mesmo tempo, vai para o plano aberto. O som é um só do começo ao fim.'
 };
 const mxKey = f => 'mx:' + f.name + ':' + f.size;
 async function mxCacheGet(f) { try { return f ? await idb.getKV(mxKey(f)) : null; } catch (e) { return null; } }
@@ -6643,7 +7222,8 @@ function multiSources() {
   return ids.map((mid, i) => {
     const m = mid === 'm0' ? ensureMainMedia() : MEDIA.get(mid); if (!m) return null;
     const ax = mid === 'm0' ? Object.assign({ env: st.env, rf: st.reframe }, m.ax || {}) : (m.ax || {});
-    return { mid, i, m, ax, dur: mid === 'm0' ? st.dur : m.dur, words: wordsOf(mid) || [], segs: mid === 'm0' ? st.segs : ax.segs || [], name: m.name, person: (st.multi.vids[i] || {}).person || '' };
+    const v = st.multi.vids[i] || {};
+    return { mid, i, m, ax, dur: mid === 'm0' ? st.dur : m.dur, words: wordsOf(mid) || [], segs: mid === 'm0' ? st.segs : ax.segs || [], name: m.name, person: v.person || '', off: v.off || 0, wide: !!v.wide };
   }).filter(Boolean);
 }
 const vclip = (mid, tl, a, b, o = {}) => Object.assign({ id: nid(), track: 'V1', media: mid, tl, in: a, out: b, vol: 1, fadeIn: 0.04, fadeOut: 0.06, scale: 1, px: 0, py: 0, opacity: 1 }, o);
@@ -6824,9 +7404,144 @@ function planDepo(ch, srcs, mus) {
   }
   return { clips: [...v, ...lt, ...musicClips(mus, tl, 0.16, true)], v1Auto: false, summary: `${v.length} ${v.length === 1 ? 'frase' : 'frases'} de ${new Set(seq.map(x => x.s)).size} ${new Set(seq.map(x => x.s)).size === 1 ? 'pessoa' : 'pessoas'}, ${fmtT(tl)}`, empty: !v.length };
 }
+/* ---- podcast com várias câmeras ---- */
+/* sincroniza pelo som: correlação dos envelopes (50 por segundo) feita com FFT; devolve quanto somar ao tempo da câmera para cair no tempo do som principal */
+function fftInPlace(re, im, inv) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = (inv ? 2 : -2) * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let j = 0; j < len / 2; j++) { const a = i + j, b = a + len / 2, tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr; re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti; const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr; } }
+  }
+  if (inv) for (let i = 0; i < n; i++) { re[i] /= n; im[i] /= n; }
+}
+function envSync(refEnv, env) {
+  const prep = e => { // ritmo da fala: o envelope menos a média de 1 s em volta
+    const n = e.length, o = new Float32Array(n), ps = new Float64Array(n + 1);
+    for (let i = 0; i < n; i++) ps[i + 1] = ps[i] + Math.max(-90, e[i]);
+    for (let i = 0; i < n; i++) { const a = Math.max(0, i - 25), b = Math.min(n, i + 26); o[i] = clamp(Math.max(-90, e[i]) - (ps[b] - ps[a]) / (b - a), -20, 20); }
+    return o;
+  };
+  const a = prep(refEnv), b = prep(env); let N = 1; while (N < a.length + b.length) N <<= 1;
+  const ar = new Float64Array(N), ai = new Float64Array(N), br = new Float64Array(N), bi = new Float64Array(N);
+  ar.set(a); br.set(b); fftInPlace(ar, ai, false); fftInPlace(br, bi, false);
+  for (let i = 0; i < N; i++) { const r = ar[i] * br[i] + ai[i] * bi[i], im = ai[i] * br[i] - ar[i] * bi[i]; ar[i] = r; ai[i] = im; }
+  fftInPlace(ar, ai, true);
+  let best = -Infinity, bk = 0;
+  for (let k = 0; k < N; k++) { const lag = k > N / 2 ? k - N : k; if (lag > a.length || -lag > b.length) continue; if (ar[k] > best) { best = ar[k]; bk = k; } }
+  const at = k => ar[(k + N) % N];
+  const y0 = at(bk - 1), y1 = best, y2 = at(bk + 1), den = y0 - 2 * y1 + y2, frac = den < 0 ? clamp(0.5 * (y0 - y2) / den, -0.5, 0.5) : 0;
+  const lag = (bk > N / 2 ? bk - N : bk) + frac;
+  // confiança: correlação normalizada na parte em que os dois se sobrepõem
+  const L = Math.round(lag); let sab = 0, saa = 0, sbb = 0;
+  for (let t = Math.max(0, -L); t < b.length && t + L < a.length; t++) { const x = a[t + L], y = b[t]; sab += x * y; saa += x * x; sbb += y * y; }
+  return { off: lag / 50, conf: sab / Math.sqrt(saa * sbb + 1e-9) };
+}
+/* quem fala em cada momento: a câmera cujo microfone está mais alto em relação ao normal dela */
+function planPod(ch, srcs) {
+  const FPS = 50, main = srcs.find(x => x.mid === 'm0') || srcs[0], T = main.dur, n = Math.floor(T * FPS);
+  const cams = srcs.filter(x => x.ax && x.ax.env).map(x => {
+    const e = x.ax.env, sorted = Array.from(e).filter(v => v > -100).sort((p, q) => p - q);
+    const hi = sorted[Math.floor(sorted.length * 0.95)] || -20, lo = sorted[Math.floor(sorted.length * 0.25)] || -60;
+    const lev = new Float32Array(n), sh = Math.round(x.off * FPS);
+    for (let k = 0; k < n; k++) { const i = k - sh; lev[k] = i >= 0 && i < e.length ? e[i] : -200; }
+    const sm = new Float32Array(n); { const W = 15; let acc = 0, cnt = 0; for (let k = 0; k < n + W; k++) { if (k < n) { acc += lev[k]; cnt++; } if (k - 2 * W - 1 >= 0) { acc -= lev[k - 2 * W - 1]; cnt--; } const c = k - W; if (c >= 0 && c < n) sm[c] = acc / cnt; } }
+    const avail = k => { const i = k - sh; return i >= 0 && i < e.length; };
+    return { x, hi, lo, sm, avail };
+  });
+  const people = cams.filter(c => !c.x.wide), wide = cams.find(c => c.x.wide) || null;
+  if (!people.length) return { clips: [], empty: true };
+  const lab = new Int16Array(n), gap = new Float32Array(n).fill(-1); // -2 silêncio, -1 os dois falando, i = pessoa i
+  for (let k = 0; k < n; k++) {
+    let b1 = -1, v1 = -Infinity, v2 = -Infinity;
+    people.forEach((c, i) => { if (!c.avail(k)) return; const r = c.sm[k] - c.hi; if (r > v1) { v2 = v1; v1 = r; b1 = i; } else if (r > v2) v2 = r; });
+    const loud = b1 >= 0 && people[b1].sm[k] > people[b1].lo + 8 && v1 > -14;
+    lab[k] = loud ? b1 : -2; if (loud && v2 > -Infinity) gap[k] = v1 - v2;
+  }
+  planPod.last = { lab, gap };
+  // falando ao mesmo tempo: os microfones ficam bem mais parecidos do que costumam ficar quando só um fala
+  if (people.length > 1) {
+    const gs = Array.from(gap).filter(x => x >= 0).sort((p, q) => p - q), sep = gs.length ? gs[gs.length >> 1] : 0, thr = clamp(sep * 0.4, 1.5, 4);
+    if (sep >= 3) for (let k = 0; k < n; k++) if (lab[k] >= 0 && gap[k] >= 0 && gap[k] < thr) lab[k] = -1;
+  }
+  const MIN = 2 * FPS, WP = Math.round(0.5 * FPS), WW = Math.round(0.8 * FPS), LONG = 16 * FPS, VAR = 3 * FPS;
+  const shots = []; let cur = null, start = 0;
+  { let f = -1; for (let k = 0; k < n; k++) if (lab[k] >= 0) { f = lab[k]; break; } cur = f >= 0 ? people[f] : (wide || people[0]); }
+  // contagens numa janela que anda: quantos quadros de cada pessoa (e de "os dois") nos últimos 0,5 s e 0,8 s
+  const cP = new Int32Array(people.length); let cX = 0;
+  const xs = new Int32Array(n + 1); for (let k = 0; k < n; k++) xs[k + 1] = xs[k] + (lab[k] === -1 ? 1 : 0);
+  const xAhead = k => { const b = Math.min(n, k + FPS); return b > k ? (xs[b] - xs[k]) / (b - k) : 0; }; // a edição é feita depois: dá para olhar 1 s à frente
+  for (let k = 0; k < n; k++) {
+    if (lab[k] >= 0) cP[lab[k]]++; if (k - WP >= 0 && lab[k - WP] >= 0) cP[lab[k - WP]]--;
+    if (lab[k] === -1) cX++; if (k - WW >= 0 && lab[k - WW] === -1) cX--;
+    if (!cur.avail(k)) { // a câmera acabou (ou ainda não começou): vai para outra que está gravando
+      const alt = [wide, ...people].find(c => c && c.avail(k)); if (alt && alt !== cur) { shots.push({ c: cur, a: start, b: k }); cur = alt; start = k; }
+      continue;
+    }
+    if (k - start < MIN) continue;
+    let next = null, back = 0;
+    if (wide && cur !== wide && wide.avail(k) && cX >= WW * 0.5) { next = wide; back = WW; }
+    else { let bj = -1, bv = 0; cP.forEach((v, j) => { if (v > bv) { bv = v; bj = j; } }); if (bj >= 0 && people[bj] !== cur && bv >= WP * 0.8 && people[bj].avail(k) && !(cur === wide && cX >= WW * 0.3)) { next = people[bj]; back = WP; } }
+    if (next && next !== wide && wide && wide.avail(k) && xAhead(k) >= 0.5) next = cur === wide ? null : wide; // vão falar juntos logo em seguida
+    if (next) { const at = Math.max(start + MIN, k - back + 1); shots.push({ c: cur, a: start, b: at }); cur = next; start = at; continue; }
+    if (wide && cur !== wide && k - start >= LONG && wide.avail(k)) { shots.push({ c: cur, a: start, b: k }); shots.push({ c: wide, a: k, b: Math.min(n, k + VAR) }); start = Math.min(n, k + VAR); k = start - 1; cP.fill(0); cX = 0; }
+  }
+  if (start < n) shots.push({ c: cur, a: start, b: n });
+  // junta tomadas seguidas da mesma câmera
+  const merged = []; for (const sh of shots) { if (sh.b <= sh.a) continue; const l = merged[merged.length - 1]; if (l && l.c === sh.c) l.b = sh.b; else merged.push(Object.assign({}, sh)); }
+  const v = [], lt = [], seen = new Set();
+  for (const sh of merged) {
+    const a = sh.a / FPS, b = sh.b / FPS, x = sh.c.x;
+    v.push(vclip(x.mid, a, a - x.off, b - x.off, { vol: 0, fadeIn: 0, fadeOut: 0 }));
+    if (ch.lt && x.person && !x.wide && !seen.has(x) && b - a >= 2.5) { seen.add(x); lt.push(makeLtClip(ltBase(x.person), st.lt.y, a + 0.4, Math.min(3.5, b - a - 0.6))); }
+  }
+  // o som: um só, do começo ao fim (o do gravador, se veio junto, ou o da câmera escolhida)
+  const au = st.multi && st.multi.audioId ? MEDIA.get(st.multi.audioId) : null;
+  const aOff = au ? st.multi.audioOff || 0 : 0;
+  const prog = au ? { id: nid(), track: 'A2', media: au.id, tl: Math.max(0, aOff), in: Math.max(0, -aOff), out: Math.min(au.dur || T, T - aOff), vol: 1, fadeIn: 0, fadeOut: 0.3, duck: false }
+    : { id: nid(), track: 'A2', media: 'm0', tl: 0, in: 0, out: T, vol: 1, fadeIn: 0, fadeOut: 0.3, duck: false };
+  const nCam = new Set(merged.map(sh => sh.c)).size;
+  return { clips: [...v, ...lt, prog], v1Auto: false, summary: `${merged.length} ${merged.length === 1 ? 'tomada' : 'tomadas'} de ${nCam} ${nCam === 1 ? 'câmera' : 'câmeras'}, ${fmtT(T)}`, empty: !v.length };
+}
+/* câmeras do podcast: quem aparece, qual é o plano aberto e de qual câmera vem o som */
+async function podDialog(vids, aud, prev) {
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const wideRe = /(aberto|abert|wide|geral|master|plano|todos|mesa)/i;
+  const S = { names: vids.map((f, i) => prev && prev.names ? prev.names[i] || '' : wideRe.test(f.name) ? '' : guessName(f.name || '')), wide: vids.map((f, i) => prev && prev.wide ? !!prev.wide[i] : wideRe.test(f.name)), lt: prev ? prev.lt !== false : store.get('cs:multi', {}).lt !== false };
+  S.mainIdx = prev && prev.mainIdx != null ? prev.mainIdx : Math.max(0, S.wide.indexOf(true)) || 0;
+  const box = el('div', 'mm');
+  const fCams = el('div', 'field'); fCams.append(el('span', 'lbl', 'Câmeras'));
+  const list = el('div', 'mm-names');
+  vids.forEach((f, i) => {
+    const r = el('div', 'mm-name pod-cam'); const sp = el('span', 'fine', f.name);
+    const inp = el('input'); inp.type = 'text'; inp.placeholder = 'Quem aparece'; inp.value = S.names[i]; inp.maxLength = 60; inp.addEventListener('input', () => { S.names[i] = inp.value; }); inp.addEventListener('keydown', e => e.stopPropagation());
+    const wl = el('label', 'chip'); const wi = el('input'); wi.type = 'checkbox'; wi.checked = S.wide[i]; wl.append(wi, el('span', null, 'Plano aberto'));
+    wi.addEventListener('change', () => { S.wide[i] = wi.checked; inp.disabled = wi.checked; if (wi.checked) inp.value = ''; });
+    inp.disabled = S.wide[i];
+    r.append(sp, inp, wl); list.appendChild(r);
+  });
+  fCams.appendChild(list);
+  const fMain = el('div', 'field');
+  if (aud) fMain.append(el('span', 'lbl', 'Som'), el('p', 'fine', `${aud.name}: o som do gravador vai do começo ao fim. As câmeras são sincronizadas por ele.`));
+  else {
+    const lm = el('label', null, 'Som principal (a câmera com o melhor microfone)'); const sm = el('select'); sm.id = 'podMain'; lm.htmlFor = 'podMain';
+    vids.forEach((f, i) => { const o = el('option', null, f.name); o.value = i; sm.appendChild(o); }); sm.value = String(S.mainIdx); sm.addEventListener('change', () => { S.mainIdx = +sm.value; });
+    if (prev) sm.disabled = true;
+    fMain.append(lm, sm);
+  }
+  const ltSw = el('label', 'switch'); ltSw.append(el('span', null, 'Nome de quem fala (lower third)')); const ltI = el('input'); ltI.type = 'checkbox'; ltI.checked = S.lt; ltI.addEventListener('change', () => { S.lt = ltI.checked; }); ltSw.appendChild(ltI);
+  box.append(fCams, fMain, ltSw, el('p', 'fine mm-note', MULTI_NOTE.pod));
+  const r = await openModal(prev ? 'Podcast · montar de novo' : `Podcast · ${vids.length} câmeras`, box, [{ label: 'Cancelar', value: 'cancel', ghost: true }, { label: prev ? 'Montar de novo' : 'Montar', value: 'go', primary: true }], false);
+  if (r !== 'go') return null;
+  store.set('cs:multi', Object.assign(store.get('cs:multi', {}), { lt: S.lt }));
+  if (S.wide.every(Boolean)) S.wide = S.wide.map(() => false);
+  // com gravador, a câmera que manda no tempo é o plano aberto (ou a gravação mais longa)
+  if (aud && !prev) { const wi = S.wide.indexOf(true); S.mainIdx = wi >= 0 ? wi : vids.reduce((bi, f, i, a) => ((f.size || 0) > (a[bi].size || 0) ? i : bi), 0); }
+  return { mode: 'pod', len: 0, q: '', music: null, musicName: '', musicId: null, audio: aud || null, mainIdx: S.mainIdx, names: S.names.map(x => (x || '').trim()), wide: S.wide, lt: !!S.lt };
+}
 function planMulti(ch) {
   const srcs = multiSources(), mus = ch.musicId ? MEDIA.get(ch.musicId) : null;
-  const plan = ch.mode === 'after' ? planAfter(ch, srcs, mus) : ch.mode === 'apoio' ? planApoio(ch, srcs, mus) : ch.mode === 'depo' ? planDepo(ch, srcs, mus) : planLances(ch, srcs, mus);
+  const plan = ch.mode === 'pod' ? planPod(ch, srcs) : ch.mode === 'after' ? planAfter(ch, srcs, mus) : ch.mode === 'apoio' ? planApoio(ch, srcs, mus) : ch.mode === 'depo' ? planDepo(ch, srcs, mus) : planLances(ch, srcs, mus);
   return plan;
 }
 
@@ -6890,11 +7605,11 @@ async function startMulti(files) {
 }
 async function runMulti(vids, ch) {
   cancelWork(); pause(); resetAll();
-  const main = vids[ch.mode === 'apoio' ? clamp(ch.mainIdx || 0, 0, vids.length - 1) : 0];
+  const main = vids[ch.mode === 'apoio' || ch.mode === 'pod' ? clamp(ch.mainIdx || 0, 0, vids.length - 1) : 0];
   st.file = main; st.url = URL.createObjectURL(main); st.model = st.opts.model;
   work = { cancelled: false, workers: [] }; const myWork = work;
   show('scrWork');
-  const needAsr = f => ch.mode === 'depo' || (ch.mode === 'apoio' && f === main) || (ch.mode === 'lances' && !!ch.q);
+  const needAsr = f => ch.mode === 'depo' || ((ch.mode === 'apoio' || ch.mode === 'pod') && f === main) || (ch.mode === 'lances' && !!ch.q);
   $('#workFile').textContent = `${vids.length} vídeos`; $('#workTitle').textContent = 'Montando';
   $('#workSet').textContent = [MULTI_NAMES[ch.mode], ch.len ? `até ${ch.len} s` : '', ch.musicName ? `música: ${ch.musicName}` : '', ch.q ? `procurando “${ch.q}”` : ''].filter(Boolean).join(' · ');
   $('#live').innerHTML = ''; $('#workErr').hidden = true; $('#workMeter').style.width = '0%';
@@ -6902,11 +7617,12 @@ async function runMulti(vids, ch) {
   $('#stages').innerHTML = (vids.some(needAsr) ? '<li data-s="model"><span class="dot"></span><span>Modelo de transcrição</span><span class="det"></span></li>' : '')
     + vids.map((f, i) => `<li data-s="v${i}"><span class="dot"></span><span>${esc(f.name)}</span><span class="det">na fila</span></li>`).join('')
     + (ch.music ? '<li data-s="mus"><span class="dot"></span><span>Batida da música</span><span class="det"></span></li>' : '')
+    + (ch.mode === 'pod' ? '<li data-s="sync"><span class="dot"></span><span>Sincronizando as câmeras pelo som</span><span class="det"></span></li>' : '')
     + '<li data-s="mount"><span class="dot"></span><span>Escolhendo os trechos e montando</span><span class="det"></span></li>';
   try { await loadVideoMeta(st.url); st.dur = vid.duration; st.vw = vid.videoWidth; st.vh = vid.videoHeight; setFileInfo(); }
   catch (e) { return failWork(`Não consegui abrir “${main.name}” ${HERE}. Tente exportar em MP4 (H.264).`); }
   const others = vids.filter(f => f !== main);
-  const added = await importMedia(others.concat(ch.music ? [ch.music] : []), { quiet: true });
+  const added = await importMedia(others.concat(ch.music ? [ch.music] : [], ch.audio ? [ch.audio] : []), { quiet: true });
   ensureMainMedia();
   const list = [];
   for (let i = 0; i < vids.length; i++) {
@@ -6921,7 +7637,7 @@ async function runMulti(vids, ch) {
     if (mid === 'm0') { st.env = ax.env; if (ax.segs) setSegments(axToSave(ax).segs); st.reframe = ax.rf || null; const m0 = MEDIA.get('m0'); m0.env = st.env; m0.ax = { env: ax.env, vis: ax.vis, rf: ax.rf }; }
     else { MEDIA.get(mid).ax = ax; MEDIA.get(mid).env = ax.env; }
     stage('v' + i, 'done', [fmtT(f === main ? st.dur : MEDIA.get(mid).dur), ax.segs ? `${ax.segs.length} frases` : '', ax.noAudio ? 'sem som' : ''].filter(Boolean).join(' · '));
-    list.push({ mid, person: ch.names[i] || '', name: f.name });
+    list.push({ mid, person: ch.names[i] || '', name: f.name, wide: !!(ch.wide && ch.wide[i]) || undefined });
   }
   if (!list.length) return failWork('Não consegui analisar nenhum desses vídeos.');
   if (ch.music) {
@@ -6934,8 +7650,26 @@ async function runMulti(vids, ch) {
       stage('mus', 'done', mm.ax.bpm ? `${mm.ax.bpm} BPM` : 'sem batida clara');
     }
   }
+  let audioId = null, audioOff = 0;
+  if (ch.mode === 'pod') { // sincroniza cada câmera (e o gravador) com o som principal
+    stage('sync', 'on', 'comparando o som');
+    let refEnv = st.env;
+    const am = ch.audio ? added.find(m => m.file === ch.audio) : null;
+    if (am) {
+      try { let env = (await mxCacheGet(ch.audio) || {}).env; if (!env) { const pcm = await decodeAudio(ch.audio); env = WhisperCore.envelope(pcm, 16000); await mxCachePut(ch.audio, { env }); } am.ax = { env }; am.env = env; } catch (e) {}
+      if (am.ax && am.ax.env) { const r = envSync(am.ax.env, st.env); audioId = am.id; audioOff = -r.off; refEnv = st.env; if (r.conf < 0.2) toast(`Não deu para sincronizar “${ch.audio.name}” com segurança pelo som. Confira na linha do tempo.`, 8000); }
+    }
+    const weak = [];
+    for (const v of list) {
+      if (v.mid === 'm0') { v.off = 0; continue; }
+      const m = MEDIA.get(v.mid), env = m && m.ax && m.ax.env; if (!env || !refEnv) { v.off = 0; weak.push(v.name); continue; }
+      const r = envSync(refEnv, env); v.off = +r.off.toFixed(3); if (r.conf < 0.2) weak.push(v.name);
+    }
+    stage('sync', 'done', weak.length ? `sem certeza: ${weak.join(', ')}` : list.filter(v => v.mid !== 'm0').map(v => `${v.name.replace(/\.[^.]+$/, '')} ${v.off >= 0 ? '+' : '−'}${Math.abs(v.off).toFixed(2).replace('.', ',')} s`).join(' · '));
+    if (weak.length) toast(`Não deu para sincronizar pelo som: ${weak.join(', ')}. Grave todas as câmeras com o som ligado.`, 9000);
+  }
   stage('mount', 'on');
-  st.multi = { key: 'cs:multi:' + Date.now().toString(36), mode: ch.mode, n: list.length, len: ch.len, q: ch.q, musicId: ch.musicId || null, musicName: ch.musicName || '', lt: ch.lt, mainIdx: ch.mainIdx, vids: list };
+  st.multi = { key: 'cs:multi:' + Date.now().toString(36), mode: ch.mode, n: list.length, len: ch.len, q: ch.q, musicId: ch.musicId || null, musicName: ch.musicName || '', lt: ch.lt, mainIdx: ch.mainIdx, vids: list, audioId, audioOff };
   st.clips = [fullClip(), { id: 'multi', title: MULTI_NAMES[ch.mode], hook: '', start: 0, end: st.dur, score: null, src: 'multi', why: '' }]; st.cur = 'multi';
   setSmart(smartNone()); st.lt.on = false; computeRemoval();
   const plan = planMulti(ch);
@@ -6959,7 +7693,19 @@ async function remontMulti() {
     const m = v.mid === 'm0' ? ensureMainMedia() : MEDIA.get(v.mid); if (!m || !m.file) continue;
     if (!m.ax || !m.ax.vis) { const c = await mxCacheGet(v.mid === 'm0' ? st.file : m.file); if (c) m.ax = Object.assign(m.ax || {}, { env: (m.ax && m.ax.env) || c.env, vis: c.vis, rf: (m.ax && m.ax.rf) || c.rf }); }
   }
-  const prev = { mode: st.multi.mode, len: st.multi.len || 60, q: st.multi.q || '', lt: st.multi.lt, mainIdx: mainI, names: st.multi.vids.map(v => v.person || ''), musicName: st.multi.musicName || '', musicId: st.multi.musicId || null };
+  const prev = { mode: st.multi.mode, len: st.multi.len || 60, q: st.multi.q || '', lt: st.multi.lt, mainIdx: mainI, names: st.multi.vids.map(v => v.person || ''), musicName: st.multi.musicName || '', musicId: st.multi.musicId || null, wide: st.multi.vids.map(v => !!v.wide) };
+  if (st.multi.mode === 'pod') {
+    const ch = await podDialog(srcFiles, null, prev); if (!ch) return;
+    st.multi.vids.forEach((v, i) => { v.person = ch.names[i] || ''; v.wide = ch.wide[i] || undefined; });
+    st.multi.lt = ch.lt;
+    const plan = planMulti(ch);
+    if (plan.empty) { toast('Não deu para montar com essa escolha. Nada mudou.', 4000); return; }
+    pushUndo(false, 'montar de novo');
+    M.clips = plan.clips; M.v1Auto = false; M.sel.clear(); M.selCap = null; M.gap = null;
+    changed(); zoomFit(); seekM(0); saveMontage(); updateMultiUI();
+    toastAction(`Montado de novo: ${plan.summary}.`, 'Desfazer', undo, 9000);
+    return;
+  }
   const ch = await multiDialog(srcFiles, null, prev);
   if (!ch) return;
   if (ch.mode === 'apoio' && ch.mainIdx !== mainI) { toast(`Aqui quem fala continua sendo “${st.multi.vids[mainI].name}”. Para trocar, comece uma montagem nova pela tela inicial.`, 6000); ch.mainIdx = mainI; }
@@ -6999,9 +7745,9 @@ function updateMultiUI() {
   if (multi) $('#modeSeg').hidden = true;
   const hideTx = multi && st.multi.mode !== 'apoio';
   const tc = $('#tabs button[data-t="clean"]'), tt = $('#tabs button[data-t="text"]');
-  if (MODE === 'mont' && tc && tt) { tc.hidden = hideTx; tt.hidden = hideTx; }
+  if (MODE === 'mont' && tc && tt) { tc.hidden = hideTx; tt.hidden = hideTx && st.multi.mode !== 'pod'; }
 }
 
-window.__cs = { st, M, MEDIA, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips };
+window.__cs = { st, M, MEDIA, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
 })();
 </script>
