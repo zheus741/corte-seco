@@ -1791,10 +1791,26 @@ async function probeMeta(file) {
 function vidMeta() { const p = vid.__probe; return { dur: isFinite(vid.duration) && vid.duration > 0 ? vid.duration : p ? p.dur : 0, w: vid.videoWidth || (p ? p.w : 0), h: vid.videoHeight || (p ? p.h : 0) }; }
 
 /* big files: decode the audio track piece by piece instead of loading the whole file in memory */
+/* qual faixa de som usar: o iPhone (16 em diante) grava áudio espacial e o .MOV leva duas faixas, uma estéreo comum (AAC)
+   e uma APAC de 4 canais que só a Apple lê. A escolha automática pega a de maior qualidade, que é justamente a que não abre. */
+async function audioTrackOf(input) {
+  const all = await input.getAudioTracks(); if (!all.length) return null;
+  let v = null; try { v = await input.getPrimaryVideoTrack(); } catch (e) {}
+  let best = null, bs = -1;
+  for (const t of all) {
+    let ok = false, d = {}, pair = true;
+    try { ok = await t.canDecode(); } catch (e) {}
+    try { d = await t.getDisposition(); } catch (e) {}
+    try { if (v) pair = t.canBePairedWith(v); } catch (e) {}
+    const sc = (ok ? 100 : t.codec === 'aac' ? 50 : 0) + (d.default ? 10 : 0) + (pair ? 5 : 0) + ((t.numberOfChannels || 0) <= 2 ? 2 : 0);
+    if (sc > bs) { bs = sc; best = t; }
+  }
+  return best;
+}
 async function decodeAudioStream(file, onP) {
   const MB = await loadMB();
   const input = new MB.Input({ source: new MB.BlobSource(file), formats: MB.ALL_FORMATS });
-  const tr = await input.getPrimaryAudioTrack(); if (!tr) throw new Error('sem áudio');
+  const tr = await audioTrackOf(input); if (!tr) throw new Error('sem áudio');
   if (!(await tr.canDecode())) { if (tr.codec === 'aac') return decodeAudioADTS(input, tr, onP); throw new Error('codec de áudio ' + tr.codec); }
   const dur = await input.computeDuration();
   const out = new Float32Array(Math.ceil(dur * 16000) + 32000);
@@ -1905,7 +1921,8 @@ async function startAnalysis(file, force) {
     setFileInfo();
     $('#workClock').innerHTML = `00:00 <small>/ ${fmtClock(st.dur)}</small>`;
   } catch (e) {
-    return failWork(`Não consegui abrir esse vídeo ${HERE}. Tente exportar em MP4 (H.264) e soltar de novo.`, e);
+    const mov = /\.mov$/i.test(file.name) || /quicktime/.test(file.type);
+    return failWork(mov ? `Não consegui abrir esse vídeo ${HERE}. Vídeo do iPhone costuma vir em HEVC, que alguns computadores não abrem: no iPhone, use Ajustes › Câmera › Formatos › “Mais Compatível” para os próximos, ou exporte este em MP4 (H.264).` : `Não consegui abrir esse vídeo ${HERE}. Tente exportar em MP4 (H.264) e soltar de novo.`, e);
   }
   stage('audio', 'on');
   let pcm;
@@ -4366,7 +4383,7 @@ async function mbMedia(MB, m) {
   if (!m.file) throw Object.assign(new Error('mídia sem arquivo'), { code: 'decode' });
   const input = new MB.Input({ source: new MB.BlobSource(m.file), formats: MB.ALL_FORMATS });
   const video = m.kind === 'video' ? await input.getPrimaryVideoTrack() : null;
-  let audio = m.kind !== 'image' ? await input.getPrimaryAudioTrack() : null;
+  let audio = m.kind !== 'image' ? await audioTrackOf(input) : null;
   if (video && !(await video.canDecode())) throw Object.assign(new Error(`o codec de vídeo de “${m.name}” não é suportado aqui`), { code: 'decode' });
   if (audio && !(await audio.canDecode())) audio = null;
   x = { file: m.file, input, video, audio, vsink: video ? new MB.VideoSampleSink(video) : null, asink: audio ? new MB.AudioBufferSink(audio) : null };
@@ -8287,7 +8304,7 @@ $('#emptyIn').addEventListener('change', async e => { const f = [...e.target.fil
   bb.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); bb.classList.remove('over'); endHomeDrag(); withHandles(e, fs => openBlank(fs)); });
 }
 
-window.__cs = { st, M, MEDIA, decodeAudio, decodeAudioBuffer, decodeAudioStream, decodeAudioADTS, loadMB, probeMeta, lowMem, asrPlan, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
+window.__cs = { st, M, MEDIA, audioTrackOf, decodeAudio, decodeAudioBuffer, decodeAudioStream, decodeAudioADTS, loadMB, probeMeta, lowMem, asrPlan, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
 })();
 </script>
 </body>
