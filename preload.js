@@ -2,7 +2,8 @@
 'use strict';
 const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
-const listeners = { download: new Set(), pool: new Set() };
+const listeners = { download: new Set(), pool: new Set(), link: new Set() };
+ipcRenderer.on('link:progress', (e, p) => { for (const f of listeners.link) try { f(p); } catch (_) {} });
 ipcRenderer.on('asr:download', (e, p) => { for (const f of listeners.download) try { f(p); } catch (_) {} });
 ipcRenderer.on('asr:pool', (e, n) => { for (const f of listeners.pool) try { f(n); } catch (_) {} });
 
@@ -38,5 +39,12 @@ contextBridge.exposeInMainWorld('desktop', {
     stat: (p) => ipcRenderer.invoke('files:stat', p)
   },
   ai: { claude: (args) => ipcRenderer.invoke('ai:claude', args) },
+  link: {
+    info: (url) => ipcRenderer.invoke('link:info', url),
+    get: (url) => ipcRenderer.invoke('link:get', url),
+    cancel: () => ipcRenderer.invoke('link:cancel'),
+    ready: () => ipcRenderer.invoke('link:ready'),
+    onProgress: (fn) => { listeners.link.add(fn); return () => listeners.link.delete(fn); }
+  },
   openExternal: (url) => ipcRenderer.invoke('app:openExternal', url)
 });

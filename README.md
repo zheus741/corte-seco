@@ -30,6 +30,15 @@ Vários vídeos numa edição só (pode soltar uma música junto):
 Tudo abre na Edição para ajustar; "Montar de novo…" troca o tipo ou a duração sem analisar de novo.
 A análise não enxerga a imagem: lance sem torcida nem narração passa batido.
 
+## Colar um link
+No início, cole o link do vídeo e clique em **Fazer cortes** (ou cole em qualquer lugar da tela inicial). Dentro de um
+módulo de um vídeo (Cortes, Achar um momento, Editar, Legendar) também dá para usar um link no lugar do arquivo.
+- **App de Mac e Windows:** YouTube, Instagram, TikTok, Vimeo, X e quase qualquer site de vídeo. Na primeira vez o app
+  baixa as ferramentas de download (yt-dlp e ffmpeg, ~60 MB, conferidas por SHA-256); o yt-dlp se atualiza sozinho a cada
+  poucos dias. O vídeo vem em até 1080p para a pasta Corte Seco › Baixados e segue a análise normal.
+- **Site:** o navegador não deixa baixar de redes sociais. Funcionam links diretos de arquivo de vídeo (.mp4) e do Dropbox.
+- Vídeo privado, com login ou ao vivo não baixa: o app explica o motivo. Use com vídeos seus ou que você tem autorização para usar.
+
 ## Abrir o editor (projeto livre)
 Na tela inicial, **Abrir o editor** abre a linha do tempo vazia, como num editor tradicional, sem soltar nada antes.
 - Importe vídeos, fotos e música (botão, arrastando, ou ⌘I / Ctrl+I). Com a linha do tempo vazia, tudo entra na ordem do

@@ -207,6 +207,19 @@ details.more[open]>summary{margin-bottom:10px}
 .mod .m-go{position:absolute;right:14px;top:16px;width:18px;height:18px;color:var(--dim);transition:transform .15s,color .15s}
 .mod:hover .m-go,.mod:focus-visible .m-go{color:var(--amber);transform:translateX(3px)}
 .home.dragging .mod{border-style:dashed}
+.linkbar{display:flex;align-items:center;gap:0;margin-top:6px;border:1px solid var(--line2);background:var(--well);transition:border-color .15s,box-shadow .15s}
+.linkbar:focus-within{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber) inset}
+.linkbar .lb-ico{display:grid;place-items:center;width:46px;align-self:stretch;color:var(--amber);flex:none}
+.linkbar .lb-ico svg{width:20px;height:20px}
+.linkbar input{flex:1;min-width:0;border:0;background:transparent;padding:14px 10px 14px 0;font:inherit;font-size:15.5px;color:var(--ink);outline:none;box-shadow:none}
+.linkbar input::placeholder{color:var(--dim)}
+.linkbar .btn{border-radius:0;align-self:stretch;padding:0 20px;font-weight:700;white-space:nowrap;margin:-1px -1px -1px 0}
+.linkbar.small{margin-top:0}
+.linkbar.small input{padding:11px 10px 11px 0;font-size:14px}
+.linkbar.small .lb-ico{width:40px}
+.lb-note{margin-top:-4px}
+.lb-note a{color:var(--amber)}
+@media (max-width:520px){ .linkbar .btn{padding:0 14px} .linkbar input{font-size:15px} }
 .hh-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 28px;flex-wrap:wrap}
 .blank-cta{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;width:min(100%,370px);padding:15px 16px;text-align:left;border:1px solid rgba(244,185,66,.55);background:linear-gradient(180deg,#17150F,#111110);color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,background .15s,transform .18s;animation:modIn .5s cubic-bezier(.2,.7,.2,1) backwards}
 .blank-cta:hover,.blank-cta:focus-visible,.blank-cta.over{border-color:var(--amber);background:#1E1A10;transform:translateY(-2px)}
@@ -680,6 +693,12 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
           <svg class="m-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
         </button>
       </div>
+      <form class="linkbar" id="linkForm" novalidate>
+        <span class="lb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4L12 18.4"/></svg></span>
+        <input type="url" id="linkIn" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Cole o link de um vídeo: YouTube, Instagram, TikTok…" aria-label="Link do vídeo">
+        <button type="submit" class="btn primary" id="linkGo">Fazer cortes</button>
+      </form>
+      <p class="fine lb-note" id="linkNote"></p>
     </header>
     <section class="mod-group" aria-labelledby="mgOne">
       <h2 id="mgOne">Um vídeo</h2>
@@ -746,6 +765,11 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--raise2);border:1px s
       <b id="dzTitle">Solte o vídeo aqui</b>
       <span class="fine" id="dzHint">ou clique para escolher · MP4, MOV ou WebM</span>
     </label>
+    <form class="linkbar small" id="stepLinkForm" novalidate>
+      <span class="lb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4L12 18.4"/></svg></span>
+      <input type="url" id="stepLinkIn" inputmode="url" autocomplete="off" spellcheck="false" placeholder="ou cole o link do vídeo" aria-label="Link do vídeo">
+      <button type="submit" class="btn" id="stepLinkGo">Usar link</button>
+    </form>
     <div class="dz-held" id="dzHeld" hidden><span class="nm" id="dzHeldName"></span><button type="button" class="btn ghost" id="dzHeldX">Trocar</button><button type="button" class="btn primary" id="stepGo">Procurar</button></div>
     <div class="setline"><span id="setSummary"></span><button type="button" class="linkbtn" id="setToggle" aria-expanded="false" aria-controls="optsBox">Ajustar</button></div>
     <div class="opts" id="optsBox" hidden>
@@ -1381,7 +1405,7 @@ $('#optLang').addEventListener('change', e => { st.opts.lang = e.target.value; s
 $('#optLen').addEventListener('change', e => { st.opts.clipLen = e.target.value; $('#findLen').value = st.opts.clipLen; syncSetSummary(); store.set('cs:opts', st.opts); });
 $('#optFind').addEventListener('input', () => { syncSetSummary(); $('#findQ').value = $('#optFind').value; });
 $('#optFind').addEventListener('focus', e => { if (e.target.value) setTimeout(() => e.target.select(), 0); });
-$('#optFind').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (heldFiles && e.target.value.trim()) modGo(heldFiles); else e.target.blur(); } });
+$('#optFind').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (heldFiles && e.target.value.trim()) modGo(heldFiles); else if (e.target.value.trim() && $('#stepLinkIn').value.trim() && !$('#stepLinkForm').hidden) goLink($('#stepLinkIn').value, curMod); else e.target.blur(); } });
 let srtText = null;
 $('#srtIn').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -1522,6 +1546,7 @@ function openMod(k, files) {
   $('#dzTitle').textContent = multi ? 'Solte os vídeos aqui' : 'Solte o vídeo aqui';
   $('#dzHint').textContent = k === 'pod' ? 'ou clique para escolher · um vídeo por câmera · pode soltar o som do gravador junto' : multi ? `ou clique para escolher${k === 'depo' ? ' · um vídeo por pessoa' : k === 'apoio' ? ' · a fala e as cenas' : ''} · pode soltar a música junto` : 'ou clique para escolher · MP4, MOV ou WebM · vários de uma vez viram uma fila';
   $('#srtField').hidden = multi;
+  $('#stepLinkForm').hidden = multi;
   syncSetSummary();
   $('#home').hidden = true;
   const sp = $('#modStep'); sp.hidden = false; sp.style.animation = 'none'; void sp.offsetWidth; sp.style.animation = '';
@@ -1635,6 +1660,133 @@ $('#stepIn').addEventListener('change', e => { const fs = [...e.target.files]; e
   });
 }
 $('#stepGo').addEventListener('click', () => { if (heldFiles) modGo(heldFiles); });
+/* ---- vídeo de um link: no app, baixa com o yt-dlp (YouTube, Instagram, TikTok…); no site, só links diretos de arquivo ---- */
+const APP_URL = 'https://github.com/zheus741/corte-seco/releases/latest';
+const SOCIAL_HOST = /(^|\.)(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|vimeo\.com|facebook\.com|fb\.watch|twitter\.com|x\.com|twitch\.tv|kwai\.com|linkedin\.com|threads\.net|threads\.com|dailymotion\.com|drive\.google\.com|pinterest\.com|reddit\.com|globo\.com|globoplay\.globo\.com)$/i;
+function parseLink(raw) {
+  const t = String(raw || '').trim().replace(/^<|>$/g, '');
+  if (!t) return null;
+  try { const u = new URL(/^https?:\/\//i.test(t) ? t : (/^[\w-]+(\.[\w-]+)+(\/|$)/.test(t) ? 'https://' + t : t)); return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u : null; } catch (e) { return null; }
+}
+function syncLinkNote() {
+  const n = $('#linkNote'); if (!n) return;
+  if (DESK) n.textContent = 'YouTube, Instagram, TikTok, Vimeo, X e outros. Baixa em até 1080p na pasta Corte Seco › Baixados. Use com vídeos seus ou que você tem autorização para usar.';
+  else { n.innerHTML = ''; n.append('No site funcionam links diretos de arquivo de vídeo (.mp4) e do Dropbox. Para YouTube, Instagram e TikTok, use o '); const a = document.createElement('a'); a.href = APP_URL; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'app de Mac ou Windows'; n.append(a, ': lá é só colar o link.'); }
+}
+syncLinkNote();
+{ const mq = matchMedia('(max-width: 520px)'), ph = () => { $('#linkIn').placeholder = mq.matches ? 'Cole o link do vídeo' : 'Cole o link de um vídeo: YouTube, Instagram, TikTok…'; }; ph(); mq.addEventListener('change', ph); }
+function linkErrText(e) {
+  const m = String(e && e.message || e);
+  if (/private|privad/i.test(m)) return 'Esse vídeo é privado: só quem tem acesso consegue ver. Baixe pelo próprio app e solte o arquivo aqui.';
+  if (/sign in|log ?in|cookies|confirm your age|age-restricted|idade/i.test(m)) return 'Esse vídeo pede login (conta, idade ou perfil fechado). Baixe pelo próprio app (Instagram, YouTube…) e solte o arquivo aqui.';
+  if (/is_live|live event|ao vivo|premieres? in/i.test(m)) return 'É uma transmissão ao vivo (ou ainda não estreou). Espere terminar e cole o link de novo.';
+  if (/unsupported url/i.test(m)) return 'Não reconheço esse link. Confira se é o link do vídeo (e não do perfil ou da página inicial).';
+  if (/HTTP Error 4\d\d|not available|unavailable|removed|deleted|indispon|copyright/i.test(m)) return 'O vídeo não está disponível: foi apagado, está bloqueado na sua região ou o link está errado.';
+  if (/getaddrinfo|ENOTFOUND|ECONN|EAI_AGAIN|network|Unable to connect|sem resposta|timed? ?out/i.test(m)) return 'Sem internet, ou o site não respondeu. Confira a conexão e tente de novo.';
+  if (/ainda não funciona neste sistema/.test(m)) return 'Baixar de links ainda não funciona neste computador. Baixe o vídeo e solte o arquivo aqui.';
+  if (/cors/.test(m)) return 'Esse endereço não deixa o navegador baixar o vídeo. Baixe o arquivo e solte aqui, ou use o app de Mac/Windows, que baixa de quase qualquer site.';
+  if (/não é vídeo/.test(m)) return 'Esse link abre uma página, não um arquivo de vídeo. No site funcionam links diretos (.mp4); no app de Mac/Windows, links de qualquer site de vídeo.';
+  return 'Não consegui baixar esse vídeo: ' + m.slice(0, 220);
+}
+async function linkWebInfo(u) { // site: o navegador não consegue baixar de redes sociais
+  const p = document.createElement('p'); p.textContent = `No site, o navegador não deixa baixar vídeos de ${u.hostname.replace(/^www\./, '')} (YouTube, Instagram, TikTok…). No app de Mac e Windows é só colar o link. Aqui no site: baixe o vídeo e solte o arquivo.`;
+  const r = await openModal('Link de rede social', p, [{ label: 'Entendi', value: 'ok', ghost: true }, { label: 'Baixar o app', value: 'app', primary: true }]);
+  if (r === 'app') window.open(APP_URL, '_blank', 'noopener');
+}
+const mbFmt = n => (n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace('.', ',');
+async function goLink(raw, k) {
+  const u = parseLink(raw);
+  if (!u) { toast('Cole o link do vídeo (começa com https://).', 3000); return; }
+  if (exporting) { toast('Espere a exportação terminar.'); return; }
+  k = MODS[k] && !MODS[k].multi ? k : 'cortes';
+  if (k === 'momento' && !$('#optFind').value.trim()) { if (curMod !== 'momento') openMod('momento'); toast('Escreva o que você procura e cole o link de novo (ou aperte Usar link).', 4000); $('#stepLinkIn').value = u.href; $('#optFind').focus(); return; }
+  if (!DESK && SOCIAL_HOST.test(u.hostname)) { await linkWebInfo(u); return; }
+  const m = MODS[k];
+  cancelWork(); pause(); resetAll();
+  show('scrWork');
+  $('#stages').innerHTML = '<li data-s="tools"><span class="dot"></span><span>Preparando o download (só na primeira vez)</span><span class="det"></span></li><li data-s="info"><span class="dot"></span><span>Lendo o link</span><span class="det"></span></li><li data-s="dl"><span class="dot"></span><span>Baixando o vídeo</span><span class="det"></span></li>';
+  $('#workTitle').textContent = 'Baixando'; $('#workFile').textContent = u.hostname.replace(/^www\./, '') + u.pathname.slice(0, 40);
+  $('#workSet').textContent = `${m.t} · do link`; $('#workClock').innerHTML = '00:00 <small>/ --:--</small>';
+  $('#live').innerHTML = ''; $('#workErr').hidden = true; $('#workMeter').style.width = '0%';
+  const myWork = work = { cancelled: false, workers: [], onCancel: () => { if (DESK && DESK.link) DESK.link.cancel(); } };
+  let file = null;
+  try { file = DESK && DESK.link ? await linkDesk(u.href, myWork) : await linkWeb(u, myWork); }
+  catch (e) { if (myWork.cancelled || /cancelad/.test(String(e && e.message))) return; const ce = new Error(String(e && e.message || e).replace(/^Error invoking remote method '[^']+':\s*(Error:\s*)?/, '')); return failWork(linkErrText(ce), ce); }
+  if (myWork.cancelled || !file) return;
+  work = null;
+  $('#linkIn').value = ''; $('#stepLinkIn').value = '';
+  PRESET = { mod: k, title: m.t, captions: k === 'legenda', style: k === 'legenda' ? capPick : null };
+  st.opts.goal = m.goal; store.set('cs:opts', st.opts);
+  startAnalysis(file);
+}
+async function linkDesk(url, myWork) {
+  const meter = x => { $('#workMeter').style.width = (clamp(x, 0, 1) * 100).toFixed(1) + '%'; };
+  const off = DESK.link.onProgress(p => {
+    if (myWork.cancelled) return;
+    if (p.phase === 'tools') { stage('tools', 'on', p.total ? `${mbFmt(p.done)} de ${mbFmt(p.total)} MB` : 'baixando'); meter(p.total ? p.done / p.total * 0.15 : 0); }
+    else if (p.phase === 'info') { stage('tools', 'done', 'pronto'); stage('info', 'on', 'lendo'); }
+    else if (p.phase === 'dl') {
+      const pc = p.total ? p.done / p.total : 0, what = p.part > 1 ? 'som' : 'vídeo';
+      stage('dl', 'on', `${what} · ${Math.round(pc * 100)}%${p.speed ? ` · ${mbFmt(p.speed)} MB/s` : ''}${p.eta ? ` · falta ${fmtT(p.eta)}` : ''}`);
+      meter(0.2 + (p.part > 1 ? 0.7 + pc * 0.1 : pc * 0.7));
+    } else if (p.phase === 'merge') stage('dl', 'on', 'juntando vídeo e som');
+  });
+  try {
+    if (await DESK.link.ready()) stage('tools', 'done', 'pronto');
+    stage('info', 'on', 'lendo');
+    const info = await DESK.link.info(url);
+    if (myWork.cancelled) return null;
+    if (info.live) throw new Error('is_live');
+    stage('tools', 'done', 'pronto');
+    stage('info', 'done', [info.site, info.duration ? fmtT(info.duration) : '', info.channel].filter(Boolean).join(' · '));
+    if (info.title) $('#workFile').textContent = info.title;
+    if (info.duration) $('#workClock').innerHTML = `00:00 <small>/ ${fmtClock(info.duration)}</small>`;
+    stage('dl', 'on', 'começando');
+    const path = await DESK.link.get(url);
+    if (myWork.cancelled) return null;
+    stage('dl', 'done', 'salvo em Corte Seco › Baixados'); meter(1);
+    const f = await fileFromPath(path);
+    if (!f) throw new Error('não consegui abrir o arquivo baixado');
+    return f;
+  } finally { off(); }
+}
+async function linkWeb(u, myWork) {
+  let href = u.href;
+  if (/(^|\.)dropbox\.com$/i.test(u.hostname)) { const d = new URL(u.href); d.searchParams.delete('dl'); d.searchParams.set('raw', '1'); href = d.href; }
+  stage('tools', 'done', '—'); stage('info', 'done', u.hostname.replace(/^www\./, '')); stage('dl', 'on', 'começando');
+  let r;
+  try { r = await fetch(href, { mode: 'cors' }); } catch (e) { throw new Error('cors'); }
+  if (!r.ok) throw new Error('HTTP Error ' + r.status);
+  const type = (r.headers.get('content-type') || '').toLowerCase();
+  if (!/video|octet-stream|binary|quicktime|mp4/.test(type) && !/\.(mp4|mov|m4v|webm|mkv)(\?|$)/i.test(href)) { try { r.body && r.body.cancel(); } catch (e) {} throw new Error('não é vídeo (' + (type || '?') + ')'); }
+  const total = +r.headers.get('content-length') || 0, rd = r.body.getReader(), parts = []; let got = 0;
+  for (;;) {
+    const { done, value } = await rd.read(); if (done) break;
+    if (myWork.cancelled) { try { rd.cancel(); } catch (e) {} return null; }
+    parts.push(value); got += value.length;
+    stage('dl', 'on', total ? `${Math.round(got / total * 100)}% · ${mbFmt(got)} de ${mbFmt(total)} MB` : `${mbFmt(got)} MB`);
+    if (total) $('#workMeter').style.width = (got / total * 100).toFixed(1) + '%';
+  }
+  stage('dl', 'done', `${mbFmt(got)} MB`);
+  let name = ''; try { name = decodeURIComponent(new URL(href).pathname.split('/').pop() || ''); } catch (e) {}
+  if (!/\.(mp4|mov|m4v|webm|mkv)$/i.test(name)) name = (name || 'video') + (/webm/.test(type) ? '.webm' : /quicktime/.test(type) ? '.mov' : '.mp4');
+  return new File(parts, name, { type: /^video\//.test(type) ? type : EXT_TYPE[name.split('.').pop().toLowerCase()] || 'video/mp4', lastModified: Date.now() });
+}
+$('#linkForm').addEventListener('submit', e => { e.preventDefault(); goLink($('#linkIn').value, 'cortes'); });
+$('#stepLinkForm').addEventListener('submit', e => { e.preventDefault(); goLink($('#stepLinkIn').value, curMod); });
+// colar um link em qualquer lugar da tela inicial já começa
+document.addEventListener('paste', e => {
+  if ($('#scrStart').hidden || $('#dlg').open) return;
+  const t = e.target, tag = (t && t.tagName || '').toLowerCase();
+  if ((tag === 'input' && t.id !== 'linkIn' && t.id !== 'stepLinkIn') || tag === 'textarea') return;
+  const txt = (e.clipboardData && e.clipboardData.getData('text') || '').trim();
+  const u = !/\s/.test(txt) && parseLink(txt); if (!u) return;
+  e.preventDefault();
+  const single = curMod && MODS[curMod] && !MODS[curMod].multi;
+  if (single) { $('#stepLinkIn').value = u.href; goLink(u.href, curMod); }
+  else { $('#linkIn').value = u.href; goLink(u.href, 'cortes'); }
+});
+
 $('#dzHeldX').addEventListener('click', () => { unhold(); $('#stepIn').click(); });
 $('#optLenSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $('#optLen').value = b.dataset.v; $('#optLen').dispatchEvent(new Event('change')); });
 $('#mLenSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MSTEP.len = +b.dataset.v; syncMStep(); });
@@ -1734,6 +1886,7 @@ function cancelWork() {
   busyClear();
   if (!work) return;
   work.cancelled = true;
+  if (work.onCancel) try { work.onCancel(); } catch (e) {}
   if (DESK && deskModels) DESK.asr.cancel().catch(() => {});
   (work.workers || []).forEach(w => w.terminate());
   work = null;
@@ -8304,7 +8457,7 @@ $('#emptyIn').addEventListener('change', async e => { const f = [...e.target.fil
   bb.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); bb.classList.remove('over'); endHomeDrag(); withHandles(e, fs => openBlank(fs)); });
 }
 
-window.__cs = { st, M, MEDIA, audioTrackOf, decodeAudio, decodeAudioBuffer, decodeAudioStream, decodeAudioADTS, loadMB, probeMeta, lowMem, asrPlan, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
+window.__cs = { st, M, MEDIA, goLink, parseLink, audioTrackOf, decodeAudio, decodeAudioBuffer, decodeAudioStream, decodeAudioADTS, loadMB, probeMeta, lowMem, asrPlan, openBlank, livreClean, livreSpans, livreSmartSecs, get LV() { return LV; }, startMulti, runMulti, remontMulti, detectBeats, planMulti, multiSources, excitePeaks, addLowerThird, drawLowerThird, seekM, applySmart, openSmart, smartNow, smartSecs, get smartPick() { return smartPick; }, undo, undoLooks, isExporting: () => exporting, exportVideo, startAnalysis, drawFrame, buildSRT, buildEDL, rangesFor, computeRemoval, setMode, importMedia, insertMedia, splitAllAt, rippleTrimTo, closeAllGaps, buildMontSRT, buildMontEDL, seqEnd, trackClips, setClipSpeed, matchColors, trFx, colMatrix, cdur, srcT, wsola, renderEC, planPod, envSync, translateCaptions, reviewTranslation, capWordsOf, buildSRT, curClip, drawCard, previewCard, shiftSRT, visualFind, visualFindCuts, grabFrames };
 })();
 </script>
 </body>

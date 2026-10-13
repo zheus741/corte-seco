@@ -9,6 +9,9 @@ const os = require('os');
 const https = require('https');
 const http = require('http');
 const { pathToFileURL } = require('url');
+const { spawn, execFile } = require('child_process');
+const zlib = require('zlib');
+const crypto = require('crypto');
 
 const APP_DIR = path.join(__dirname, 'app');
 const unpacked = (p) => p.replace(/app\.asar([\\/])/, 'app.asar.unpacked$1');
@@ -183,6 +186,153 @@ function claude({ key, prompt, model, maxTokens }) {
   });
 }
 
+
+/* ---------------- vídeo de um link (YouTube, Instagram, TikTok…) ----------------
+   Usa o yt-dlp (baixado do GitHub na primeira vez, conferido pelo SHA-256 do próprio lançamento) e o ffmpeg
+   (versão fixa, conferida por SHA-256) para juntar vídeo e som. O próprio Electron faz o papel de Node.js
+   para o yt-dlp resolver os desafios do YouTube. */
+const BIN_DIR = () => path.join(app.getPath('userData'), 'bin');
+const EXE = process.platform === 'win32' ? '.exe' : '';
+const ytPath = () => path.join(BIN_DIR(), 'yt-dlp' + EXE);
+const ffPath = () => path.join(BIN_DIR(), 'ffmpeg' + EXE);
+const YT_ASSET = { darwin: 'yt-dlp_macos', win32: process.arch === 'arm64' ? 'yt-dlp_arm64.exe' : 'yt-dlp.exe', linux: 'yt-dlp_linux' }[process.platform];
+const YT_BASE = process.env.CS_YTDLP_BASE || 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/';
+const FF_BASE = process.env.CS_FFMPEG_BASE || 'https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/';
+const FF_ASSET = {
+  'darwin-arm64': ['ffmpeg-darwin-arm64.gz', '8923876afa8db5585022d7860ec7e589af192f441c56793971276d450ed3bbfa', 19246198],
+  'darwin-x64': ['ffmpeg-darwin-x64.gz', '929b375c1182d956c51f7ac25e0b2b0411fb01f6f407aa15c9758efeb4242106', 25296431],
+  'win32-x64': ['ffmpeg-win32-x64.gz', '8883a3dffbd0a16cf4ef95206ea05283f78908dbfb118f73c83f4951dcc06d77', 29581307],
+  'win32-arm64': ['ffmpeg-win32-x64.gz', '8883a3dffbd0a16cf4ef95206ea05283f78908dbfb118f73c83f4951dcc06d77', 29581307],
+  'linux-x64': ['ffmpeg-linux-x64.gz', 'bfe8a8fc511530457b528c48d77b5737527b504a3797a9bc4866aeca69c2dffa', 29354986]
+}[process.platform + '-' + process.arch];
+function httpGet(url, onRes, hops = 0) {
+  return new Promise((resolve, reject) => {
+    const req = (url.startsWith('http:') ? http : https).get(url, { headers: { 'User-Agent': 'CorteSeco/' + app.getVersion() } }, (res) => {
+      if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && hops < 8) { res.resume(); return resolve(httpGet(new URL(res.headers.location, url).href, onRes, hops + 1)); }
+      if (res.statusCode !== 200) { res.resume(); return reject(new Error('download HTTP ' + res.statusCode)); }
+      onRes(res, resolve, reject);
+    });
+    req.setTimeout(60000, () => req.destroy(new Error('sem resposta do servidor')));
+    req.on('error', reject);
+  });
+}
+const getText = (url) => httpGet(url, (res, ok, bad) => { let d = ''; res.setEncoding('utf8'); res.on('data', (c) => (d += c)); res.on('end', () => ok(d)); res.on('error', bad); });
+function getFile(url, dest, { sha, gunzip, onBytes }) { // baixa, confere o SHA-256 do que veio e só então põe no lugar
+  const tmp = dest + '.part';
+  return httpGet(url, (res, ok, bad) => {
+    const h = crypto.createHash('sha256'), out = fs.createWriteStream(tmp);
+    res.on('data', (b) => { h.update(b); if (onBytes) onBytes(b.length, +res.headers['content-length'] || 0); });
+    res.on('error', bad); out.on('error', bad);
+    (gunzip ? res.pipe(zlib.createGunzip()).on('error', bad) : res).pipe(out);
+    out.on('finish', () => {
+      const got = h.digest('hex');
+      if (sha && got !== sha) { try { fs.unlinkSync(tmp); } catch (e) {} return bad(new Error('o arquivo baixado não confere (SHA-256)')); }
+      try { fs.chmodSync(tmp, 0o755); fs.renameSync(tmp, dest); ok(dest); } catch (e) { bad(e); }
+    });
+  });
+}
+let toolsP = null;
+function ensureTools(send) {
+  if (fs.existsSync(ytPath()) && fs.existsSync(ffPath())) return Promise.resolve(true);
+  if (toolsP) return toolsP;
+  toolsP = (async () => {
+    if (!YT_ASSET || !FF_ASSET) throw new Error('baixar de links ainda não funciona neste sistema');
+    fs.mkdirSync(BIN_DIR(), { recursive: true });
+    const total = (fs.existsSync(ytPath()) ? 0 : 36e6) + (fs.existsSync(ffPath()) ? 0 : FF_ASSET[2]); let done = 0;
+    const tick = (n) => { done += n; send({ phase: 'tools', done: Math.min(done, total), total }); };
+    if (!fs.existsSync(ytPath())) {
+      for (let i = 0; ; i++) { // "latest" pode mudar entre um pedido e outro: tenta de novo
+        try {
+          const sums = await getText(YT_BASE + 'SHA2-256SUMS');
+          const line = sums.split('\n').find((l) => l.trim().endsWith('  ' + YT_ASSET)); if (!line) throw new Error('lançamento sem ' + YT_ASSET);
+          await getFile(YT_BASE + YT_ASSET, ytPath(), { sha: line.split(/\s+/)[0], onBytes: tick });
+          break;
+        } catch (e) { if (i >= 2) throw e; await new Promise((r) => setTimeout(r, 1500)); }
+      }
+    }
+    if (!fs.existsSync(ffPath())) await getFile(FF_BASE + FF_ASSET[0], ffPath(), { sha: FF_ASSET[1], gunzip: true, onBytes: tick });
+    return true;
+  })().finally(() => { toolsP = null; });
+  return toolsP;
+}
+function ytArgs() { return ['--no-config', '--no-playlist', '--js-runtimes', 'node:' + process.execPath, '--ffmpeg-location', ffPath()]; }
+const ytEnv = () => Object.assign({}, process.env, { ELECTRON_RUN_AS_NODE: '1', PYTHONIOENCODING: 'utf-8' });
+function ytRun(args, onLine, job) {
+  return new Promise((resolve, reject) => {
+    const p = spawn(ytPath(), [...ytArgs(), ...args], { env: ytEnv(), windowsHide: true, detached: process.platform !== 'win32' });
+    if (job) job.proc = p;
+    let out = '', err = '', buf = '';
+    p.stdout.setEncoding('utf8'); p.stderr.setEncoding('utf8');
+    p.stdout.on('data', (d) => { out += d; buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (l && onLine) onLine(l); } });
+    p.stderr.on('data', (d) => { err += d; if (onLine) for (const l of d.split('\n')) if (l.trim()) onLine(l.trim()); });
+    p.on('error', reject);
+    p.on('close', (code) => {
+      if (job && job.cancelled) return reject(new Error('cancelado'));
+      if (code === 0) return resolve(out);
+      const m = (err.match(/ERROR: (.+)/g) || []).pop() || err.trim().split('\n').pop() || ('saiu com código ' + code);
+      reject(new Error(m.replace(/^ERROR:\s*/, '').slice(0, 400)));
+    });
+  });
+}
+function killJob(job) {
+  if (!job || !job.proc) return;
+  job.cancelled = true;
+  try { if (process.platform === 'win32') execFile('taskkill', ['/pid', String(job.proc.pid), '/T', '/F']); else process.kill(-job.proc.pid, 'SIGTERM'); } catch (e) { try { job.proc.kill(); } catch (_) {} }
+}
+async function ytUpdate(force) { // o YouTube muda sempre: o yt-dlp se atualiza a cada poucos dias
+  try {
+    const age = Date.now() - fs.statSync(ytPath()).mtimeMs;
+    if (!force && age < 4 * 86400e3) return false;
+    await Promise.race([ytRun(['-U'], null, null), new Promise((r) => setTimeout(r, 90000))]);
+    const now = new Date(); fs.utimesSync(ytPath(), now, now);
+    return true;
+  } catch (e) { return false; }
+}
+let linkJob = null;
+const downloadsDir = () => path.join(outDir(), 'Baixados');
+async function linkInfo(url, send) {
+  await ensureTools(send);
+  await ytUpdate(false);
+  send({ phase: 'info' });
+  const job = linkJob = { cancelled: false, proc: null };
+  try {
+    const j = JSON.parse(await ytRun(['-J', '--no-warnings', url], null, job));
+    const e = j.entries ? j.entries[0] || {} : j;
+    return { title: e.title || j.title || '', duration: e.duration || 0, channel: e.channel || e.uploader || '', site: e.extractor_key || j.extractor_key || '', thumbnail: e.thumbnail || '', live: !!e.is_live, id: e.id || '' };
+  } finally { if (linkJob === job) linkJob = null; }
+}
+async function linkGet(url, send, retried) {
+  await ensureTools(send);
+  const dir = downloadsDir(); fs.mkdirSync(dir, { recursive: true });
+  const job = linkJob = { cancelled: false, proc: null }, t0 = Date.now() - 2000;
+  let part = 0, lastFmt = null, final = '';
+  const args = ['--newline', '--progress', '--no-mtime', '--windows-filenames', '--no-overwrites',
+    '--progress-template', 'download:CSPROG %(progress.downloaded_bytes)s %(progress.total_bytes)s %(progress.total_bytes_estimate)s %(progress.speed)s %(progress.eta)s %(info.format_id)s',
+    '-f', 'bv*[height<=1080]+ba/b[height<=1080]/bv*+ba/b', '-S', 'vcodec:h264,res:1080,acodec:aac', '--merge-output-format', 'mp4',
+    '-o', path.join(dir, '%(title).90B [%(id)s].%(ext)s'), '--print', 'after_move:CSFILE %(filepath)s', url];
+  try {
+    await ytRun(args, (l) => {
+      if (l.startsWith('CSPROG ')) {
+        const [, d, t, te, sp, eta, fmt] = l.split(' ');
+        if (fmt !== lastFmt) { lastFmt = fmt; part++; }
+        const tot = +t || +te || 0;
+        send({ phase: 'dl', part, done: +d || 0, total: tot, speed: +sp || 0, eta: +eta || 0 });
+      } else if (l.startsWith('CSFILE ')) final = l.slice(7).trim();
+      else if (/^\[Merger\]|^\[VideoConvertor\]|^\[ExtractAudio\]/.test(l)) send({ phase: 'merge' });
+    }, job);
+  } catch (e) {
+    if (job.cancelled) { // cancelou: apaga os pedaços deste download (o resto da pasta fica como está)
+      await new Promise((r) => setTimeout(r, 600));
+      try { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); if (/\.(part|ytdl|temp)$|\.part-Frag\d+/.test(f) && fs.statSync(p).mtimeMs >= t0) fs.rmSync(p, { force: true }); } } catch (_) {}
+      throw e;
+    }
+    if (!retried && !/private|privado|sign in|login|age|idade|unsupported url|not available|indispon|HTTP Error 40[14]|HTTP Error 410/i.test(e.message) && await ytUpdate(true)) return linkGet(url, send, true);
+    throw e;
+  } finally { if (linkJob === job) linkJob = null; }
+  if (!final || !fs.existsSync(final)) throw new Error('o download terminou, mas não achei o arquivo');
+  return final;
+}
+
 /* ---------------- IPC ---------------- */
 function registerIpc() {
   ipcMain.handle('info', () => ({ platform: process.platform, arch: process.arch, version: app.getVersion(), native: nativeAvailable(), cores: os.cpus().length, memGB: Math.round(os.totalmem() / 2 ** 30), outDir: outDir() }));
@@ -238,6 +388,11 @@ function registerIpc() {
   ipcMain.handle('files:stat', (e, p) => { try { const s = fs.statSync(p); return { exists: s.isFile(), size: s.size, mtime: s.mtimeMs }; } catch (err) { return { exists: false }; } });
   ipcMain.handle('files:openFolder', () => { fs.mkdirSync(outDir(), { recursive: true }); shell.openPath(outDir()); return true; });
   ipcMain.handle('ai:claude', (e, args) => claude(args));
+  const linkSend = (wc) => (p) => { if (!wc.isDestroyed()) wc.send('link:progress', p); };
+  ipcMain.handle('link:info', (e, url) => linkInfo(String(url), linkSend(e.sender)));
+  ipcMain.handle('link:get', (e, url) => linkGet(String(url), linkSend(e.sender)));
+  ipcMain.handle('link:cancel', () => { if (linkJob) killJob(linkJob); return true; });
+  ipcMain.handle('link:ready', () => fs.existsSync(ytPath()) && fs.existsSync(ffPath()));
   ipcMain.handle('app:openExternal', (e, url) => { if (/^https:\/\//.test(url)) shell.openExternal(url); return true; });
 }
 
@@ -313,5 +468,5 @@ app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
-app.on('window-all-closed', () => { if (host) try { host.kill(); } catch (e) {} if (!isMac) app.quit(); });
+app.on('window-all-closed', () => { if (host) try { host.kill(); } catch (e) {} if (linkJob) killJob(linkJob); if (!isMac) app.quit(); });
 app.on('before-quit', () => { if (host) try { host.kill(); } catch (e) {} });
